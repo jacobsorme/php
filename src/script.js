@@ -30,6 +30,7 @@ function communicate(messageFunc,callback){
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
       callback(this.responseText);
+      document.getElementById("recv").innerHTML = this.responseText; 
     }
   }
   xmlhttp.open("GET","server.php?msg="+message,true);
@@ -47,7 +48,7 @@ function createPlayer(id){
   p.style.top = "100px";
   p.style.opacity = 0.5;
   p.style.transform = "rotate(0deg)";
-  p.innerHTML = document.getElementById("username").value;
+  p.innerHTML = "ASs";
   document.getElementById("frame").appendChild(p);
   checkMyPlayer(p);
 }
