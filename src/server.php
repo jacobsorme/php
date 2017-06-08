@@ -6,6 +6,7 @@
 
   $receive = $_GET["msg"];
 
+
   // Convert message to a Object
   $msg = decode($receive);
   //$_SESSION["count"] = $_SESSION["count"] + 1;
@@ -43,7 +44,7 @@
       array_push($players,$newplayer);
     }
 
-    write('players',$players);
+    //write('players',$players);
 
 
     //Send all the players (except the one the message came from)

@@ -1,3 +1,4 @@
+var name = "PREFAGGIT";
 var player;
 var keymap = [];
 var runInterval;
@@ -12,11 +13,13 @@ function start() {
   }
   communicate(idMessage,createPlayer);
   startController();
-  runInterval = setInterval(run,100);
+  setTimeout(function() {
+    runInterval = setInterval(run,100);
+  }, 100);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
   }, 2000);
 
 }
@@ -30,10 +33,10 @@ function communicate(messageFunc,callback){
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
       callback(this.responseText);
-      document.getElementById("recv").innerHTML = this.responseText; 
+      document.getElementById("recv").innerHTML = this.responseText;
     }
   }
-  xmlhttp.open("GET","server.php?msg="+message,true);
+  xmlhttp.open("GET","server.php"+message,true);
   xmlhttp.send();
 }
 
@@ -46,12 +49,14 @@ function createPlayer(id){
   p.style.position = "absolute";
   p.style.left = "100px";
   p.style.top = "100px";
-  p.style.opacity = 0.5;
+  p.style.opacity = 1;
   p.style.transform = "rotate(0deg)";
-  p.innerHTML = "ASs";
+  p.innerHTML = "<?php echo "'kuke'";?>";
   document.getElementById("frame").appendChild(p);
   checkMyPlayer(p);
 }
+
+
 
 function checkMyPlayer(p){
   if(player == undefined) {
@@ -114,7 +119,7 @@ function update(answer){
 
 // Create a message with ID-request
 function idMessage(){
-  return "ID";
+  return "?msg=ID";
 }
 
 // Create a message with data of player
@@ -124,5 +129,5 @@ function dataMessage(){
   var left = parseInt(player.style.left);
   var top = parseInt(player.style.top);
   var rot = calculateRot(player);
-  return tag + " " + id + " " + left + " " + top + " " + rot;
+  return "?msg=" + tag + " " + id + " " + left + " " + top + " " + rot;
 }
