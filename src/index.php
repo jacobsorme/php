@@ -9,7 +9,7 @@
 
 <body>
 <div style="position:absolute;left:50%; transform:translate(-50%,0);">
-<h1>hooo</h1>
+<h1>- JetLag -  </h1>
 <form method="get" action="play.php">
 <input type="text" name="username"><br>
 <input type="submit" value="Play">

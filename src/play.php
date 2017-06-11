@@ -4,18 +4,22 @@
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
+<script type="text/javascript" src="script.js">
+  function penus() {
+    var username = <?php echo $_GET["username"] ?>;
+    communicate(idMessage(username),createPlayer);
+    start();
+  }
+
+</script>
 </head>
 
-<body>
+<body onload="penus()">
 
 
 <h3>Welcome <?php echo $_GET["username"]; ?> - let's play!</h3>
 
-<script type="text/javascript" src="script.js">
-  var username = <?php echo $_GET["username"] ?>;
-  communicate(idMessage.bind(username),createPlayer); 
 
-</script>
 
 
 <div id="values"></div>

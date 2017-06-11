@@ -14,12 +14,12 @@ function start() {
   startController();
   setTimeout(function() {
     runInterval = setInterval(run,100);
-  }, 100);
+  }, 1000);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
     sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
-  }, 2000);
+  }, 1000);
 
 }
 
@@ -111,6 +111,7 @@ function update(answer){
         document.getElementById(players[i].id).style.left = players[i].left + "px";
         document.getElementById(players[i].id).style.top = players[i].top + "px";
         document.getElementById(players[i].id).style.transform = "rotate("+players[i].rotate+"deg)";
+        document.getElementById(players[i].id).innerHTML = players[i].name;
       }
     }
   }

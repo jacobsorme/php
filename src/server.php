@@ -9,22 +9,25 @@
 
   // Convert message to a Object
   $msg = decode($receive);
-  //$_SESSION["count"] = $_SESSION["count"] + 1;
+
+  // Read from database
+  $jsontext = read();
+  $json = json_decode($jsontext);
+  $players = $json->{'players'};
+
 
   // Echo a valid ID to the client. Read/write to JSON in database
   if($msg->{'type'} == "ID"){
-    $jsontext = read();
-    $json = json_decode($jsontext);
     $id = $json->{'id'};
     write('id',($id+1));
+    $newplayer->{'id'} = $id;
+    $newplayer->{'name'} = $msg->{'name'};
+    array_push($players,$newplayer); 
+    write('players',$players);
     echo $id;
 
   // Ehco the players. Update JSON in database.
   } else if($msg->{'type'} == "PD"){
-    $jsontext = read();
-    $obj = json_decode($jsontext);
-    $players = $obj->{'players'};
-
     // Update the database with new info from player
     $found = false;
     for($i = 0; $i < count($players); $i++){
@@ -44,16 +47,7 @@
       array_push($players,$newplayer);
     }
 
-    //write('players',$players);
-
-
-    //Send all the players (except the one the message came from)
-    // for($i = 0; $i < count($players); $i++){
-    //   if($players[$i]->{'id'} != $msg->{'id'}){
-    //     //echo '<div style="position:absolute;width:100px;height:100px;background-color:red;left:' . $players[$i]->{'left'} . 'px;top:' . $players[$i]->{'top'} . 'px;transform:rotate(' . $players[$i]->{'rotate'} . 'deg)">'.  (memory_get_peak_usage()/1000000) .' MB</div>';
-    //     echo '<div style="position:absolute;width:100px;height:100px;background-color:red;left:' . $players[$i]->{'left'} . 'px;top:' . $players[$i]->{'top'} . 'px;transform:rotate(' . $players[$i]->{'rotate'} . 'deg)">'.' </div>';
-    //   }
-    // }
+    write('players',$players);
     echo (json_encode($players));
   }
 
@@ -97,7 +91,7 @@
     $obj;
     if($msg->{'tag'} == "ID"){
       $obj->{'type'} = "ID";
-      $obj->{'name'} = $msg->{'name'}; 
+      $obj->{'name'} = $msg->{'name'};
     } else {
       // Making a object with the string received from client ;
       $obj->{'type'} = (string)$msgarray[0];
