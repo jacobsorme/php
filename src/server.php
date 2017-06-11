@@ -92,11 +92,12 @@
 
   // Decode the message from client into a object.
   function decode($message){
-    $msgarray = preg_split('/\s+/',$message,-1,PREG_SPLIT_NO_EMPTY);
+    $msg = json_decode($message);
 
     $obj;
-    if($msgarray[0] == "ID"){
+    if($msg->{'tag'} == "ID"){
       $obj->{'type'} = "ID";
+      $obj->{'name'} = $msg->{'name'}; 
     } else {
       // Making a object with the string received from client ;
       $obj->{'type'} = (string)$msgarray[0];

@@ -11,7 +11,6 @@ function start() {
     clearInterval(runInterval);
     clearInterval(sendInterval);
   }
-  communicate(idMessage,createPlayer);
   startController();
   setTimeout(function() {
     runInterval = setInterval(run,100);
@@ -51,7 +50,7 @@ function createPlayer(id){
   p.style.top = "100px";
   p.style.opacity = 1;
   p.style.transform = "rotate(0deg)";
-  p.innerHTML = "<?php echo "'kuke'";?>";
+  p.innerHTML = "bih";
   document.getElementById("frame").appendChild(p);
   checkMyPlayer(p);
 }
@@ -118,8 +117,12 @@ function update(answer){
 }
 
 // Create a message with ID-request
-function idMessage(){
-  return "?msg=ID";
+function idMessage(name){
+  var message = {
+    tag: "ID",
+    name: name,
+  }
+  return "?msg=" +JSON.stringify(message);
 }
 
 // Create a message with data of player
@@ -129,5 +132,12 @@ function dataMessage(){
   var left = parseInt(player.style.left);
   var top = parseInt(player.style.top);
   var rot = calculateRot(player);
-  return "?msg=" + tag + " " + id + " " + left + " " + top + " " + rot;
+  var message = {
+    tag: tag,
+    id: id,
+    left: left,
+    top: top,
+    rot: rot,
+  }
+  return "?msg=" + JSON.stringify(message);
 }
