@@ -18,14 +18,13 @@ function start() {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
+    sendInterval = setInterval(communicate.bind(null,dataMessage(),update),200);
   }, 1000);
 
 }
 
 // Send message to server.php, call callback with answer
-function communicate(messageFunc,callback){
-  var message = messageFunc();
+function communicate(message,callback){
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
   }

@@ -5,19 +5,21 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
 <script type="text/javascript" src="script.js">
-  function penus() {
-    var username = <?php echo $_GET["username"] ?>;
+  function startup() {
+    var username = "<?php echo ((string)$_GET["username"]) ?>";
     communicate(idMessage(username),createPlayer);
     start();
+    document.write("nibba");
+    console.log("nihhi");
   }
-
+  window.onload = startup;
 </script>
 </head>
 
-<body onload="penus()">
+<body>
 
 
-<h3>Welcome <?php echo $_GET["username"]; ?> - let's play!</h3>
+<h3>Welcome <?php echo $_GET["username"]; ?> (with ID <?php echo $_GET["id"] ?>) - let's play!</h3>
 
 
 
