@@ -14,11 +14,11 @@
 
   <script>
   function response(text){
-    document.getElementById("id").innerHTML = text;
+    document.getElementById("id").value = text;
   }
 
   function setup(){
-    communicate(idMessage(document.getElementById("username")),response);
+    communicate(idMessage(document.getElementById("username").value),response);
   }
 
 
@@ -28,11 +28,11 @@
 <input type="button" onclick="ass()">
 
 <div style="position:absolute;left:50%; transform:translate(-50%,0);">
-<h1>hooo</h1>
-<form method="get" action="play.php">
+<h1>JetLag</h1>
+<form method="get" action="play.php" onsubmit="setup()">
 <input type="text" id="username" name="username"><p>
-<input type="text" id="id" name="id" style="display:none">
-<input type="submit" value="Play" onclick="">
+<input type="text" id="id" name="id" style="">
+<input type="submit" value="Play">
 </form>
 </div>
 

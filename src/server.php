@@ -12,16 +12,24 @@
 
   $jsontext = read();
   $json = json_decode($jsontext);
+  $players = $json->{'players'};
 
   // Echo a valid ID to the client. Read/write to JSON in database
   if($tag == "ID"){
+    $username = $_GET["username"];
     $id = $json->{'id'};
+
+    $newplayer->{'id'} = $id;
+    $newplayer->{'username'} = $username;
+    array_push($players,$newplayer);
+
+    write('players',$players);
     write('id',($id+1));
     echo $id;
 
   // Ehco the players. Update JSON in database.
 } else if($tag == "PD"){
-    $players = $json->{'players'};
+
 
     // Update the database with new info from player
     $found = false;

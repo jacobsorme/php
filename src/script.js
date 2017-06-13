@@ -14,20 +14,19 @@ function start() {
     clearInterval(runInterval);
     clearInterval(sendInterval);
   }
-  communicate(idMessage,createPlayer);
+  createPlayer(13);
   startController();
   runInterval = setInterval(run,100);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
+    sendInterval = setInterval(communicate.bind(null,dataMessage(),update),200);
   }, 2000);
 
 }
 
 // Send message to server.php, call callback with answer
-function communicate(messageFunc,callback){
-  var message = messageFunc();
+function communicate(message,callback){
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
   }
@@ -119,7 +118,7 @@ function update(answer){
 // Create a message with ID-request
 function idMessage(username){
   var tag = "ID";
-  return "tag=" + tag;
+  return "tag=" + tag + "&username=" + username;
 }
 
 // Create a message with data of player
