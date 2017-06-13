@@ -3,6 +3,10 @@ var keymap = [];
 var runInterval;
 var sendInterval;
 
+function test(text){
+  document.write(text); 
+
+}
 
 // Start function, used by button
 function start() {
@@ -30,7 +34,7 @@ function communicate(messageFunc,callback){
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
       callback(this.responseText);
-      document.getElementById("recv").innerHTML = this.responseText; 
+      document.getElementById("recv").innerHTML = this.responseText;
     }
   }
   xmlhttp.open("GET","server.php?msg="+message,true);
