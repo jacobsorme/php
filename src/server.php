@@ -4,42 +4,41 @@
   // Enable garbage collector (?)
   gc_enable();
 
-  $receive = $_GET["msg"];
+  $tag = $_GET["tag"];
 
   // Convert message to a Object
-  $msg = decode($receive);
+  //$msg = decode($receive);
   //$_SESSION["count"] = $_SESSION["count"] + 1;
 
+  $jsontext = read();
+  $json = json_decode($jsontext);
+
   // Echo a valid ID to the client. Read/write to JSON in database
-  if($msg->{'type'} == "ID"){
-    $jsontext = read();
-    $json = json_decode($jsontext);
+  if($tag == "ID"){
     $id = $json->{'id'};
     write('id',($id+1));
     echo $id;
 
   // Ehco the players. Update JSON in database.
-  } else if($msg->{'type'} == "PD"){
-    $jsontext = read();
-    $obj = json_decode($jsontext);
-    $players = $obj->{'players'};
+} else if($tag == "PD"){
+    $players = $json->{'players'};
 
     // Update the database with new info from player
     $found = false;
     for($i = 0; $i < count($players); $i++){
-      if($players[$i]->{'id'} == $msg->{'id'}){
-        $players[$i]->{'left'} = $msg->{'left'};
-        $players[$i]->{'top'} = $msg->{'top'};
-        $players[$i]->{'rotate'} = $msg->{'rotate'};
+      if($players[$i]->{'id'} == $_GET["id"]){
+        $players[$i]->{'left'} = $_GET["left"];
+        $players[$i]->{'top'} = $_GET["top"];
+        $players[$i]->{'rotate'} = $_GET["rotate"];
         $found = true;
       }
     }
     if(!$found){
       //$newplayer = array('left' => substr($msg,3), 'id' => substr($msg,2,1));
-      $newplayer->{'id'} = $msg->{'id'};
-      $newplayer->{'left'} = $msg->{'left'};
-      $newplayer->{'top'} = $msg->{'top'};
-      $newplayer->{'rotate'} = $msg->{'rotate'};
+      $newplayer->{'id'} = $_GET["id"];
+      $newplayer->{'left'} = $_GET["left"];
+      $newplayer->{'top'} = $_GET["top"];
+      $newplayer->{'rotate'} = $_GET["rotate"];
       array_push($players,$newplayer);
     }
 

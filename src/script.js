@@ -4,7 +4,7 @@ var runInterval;
 var sendInterval;
 
 function test(text){
-  document.write(text); 
+  document.write(text);
 
 }
 
@@ -37,7 +37,7 @@ function communicate(messageFunc,callback){
       document.getElementById("recv").innerHTML = this.responseText;
     }
   }
-  xmlhttp.open("GET","server.php?msg="+message,true);
+  xmlhttp.open("GET","server.php?"+message,true);
   xmlhttp.send();
 }
 
@@ -117,8 +117,9 @@ function update(answer){
 }
 
 // Create a message with ID-request
-function idMessage(){
-  return "ID";
+function idMessage(username){
+  var tag = "ID";
+  return "tag=" + tag;
 }
 
 // Create a message with data of player
@@ -128,5 +129,5 @@ function dataMessage(){
   var left = parseInt(player.style.left);
   var top = parseInt(player.style.top);
   var rot = calculateRot(player);
-  return tag + " " + id + " " + left + " " + top + " " + rot;
+  return "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
 }
