@@ -1,10 +1,15 @@
 #frame > * {
   -webkit-transition: linear left 0.1s, linear top 0.1s, linear transform 0.1s;
   transition: linear left 0.1s, linear top 0.1s, linear transform 0.1s;
+  font-size: 30px; 
 }
 
 h {
   font-family: Britannic Bold;
 
 
+}
+
+table, th, td {
+    border: 1px solid black;
 }
