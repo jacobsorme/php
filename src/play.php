@@ -30,12 +30,13 @@ setup();
 <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div>
 
 
-<table id="connections">
+<!--<table id="connections">
   <tr>
     <th>sendage</th>
     <th>receive</th>
   </tr>
 </table>
+-->
 
 
 </body>

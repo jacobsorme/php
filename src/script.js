@@ -27,14 +27,14 @@ function start(id) {
 
 // Send message to server.php, call callback with answer
 function communicate(message,callback){
-  var message = message(); 
+  var message = message();
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
   }
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
       callback(this.responseText);
-      document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + this.responseText + "</td></tr>" );
+      //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + this.responseText + "</td></tr>" );
     }
   }
   xmlhttp.open("GET","server.php?"+message,true);
@@ -50,13 +50,10 @@ function createPlayer(id){
   p.style.position = "absolute";
   p.style.left = "100px";
   p.style.top = "100px";
-  p.style.opacity = 0.5;
+  p.style.opacity = 0.8;
   p.style.transform = "rotate(0deg)";
-  p.innerHTML = "ASs";
   document.getElementById("frame").appendChild(p);
-
-  player = p;
-  //checkMyPlayer(p);
+  checkMyPlayer(p);
 }
 
 function checkMyPlayer(p){
@@ -106,14 +103,18 @@ function run(){
 function update(answer){
   var players = JSON.parse(answer);
   for( i = 0; i< players.length; i++){
+
     if(players[i].id != player.id){
       if(document.getElementById(players[i].id) == undefined){
-        createPlayer(players[i].id)
+        createPlayer(players[i].id);
+        document.getElementById(players[i].id).innerHTML = players[i].username;
       } else {
         document.getElementById(players[i].id).style.left = players[i].left + "px";
         document.getElementById(players[i].id).style.top = players[i].top + "px";
         document.getElementById(players[i].id).style.transform = "rotate("+players[i].rotate+"deg)";
       }
+    } else {
+      document.getElementById(players[i].id).innerHTML = players[i].username;
     }
   }
 }
