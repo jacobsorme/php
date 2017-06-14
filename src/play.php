@@ -7,22 +7,34 @@
 <script type="text/javascript" src="script.js">
 
 </script>
+<script>
+var username = "<?php echo $_GET["username"] ?>";
+
+
+
+function setup() {
+  communicate(idMessage(username),start);
+}
+
+setup();
+
+</script>
 </head>
 
-<body onload="start();">
+<body>
 
 
-<h3>Welcome <?php echo $_GET["username"] ?> (id: <?php echo $_GET["id"] ?>) - let's play!</h3>
+<h3 id="welcome"></h3>
 
 <div id="values"></div>
 <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div>
 
 
-<table style="width:500px">
- <tr>
-   <td id="recv"></td>
-   <td id="send"></td>
- </tr>
+<table id="connections">
+  <tr>
+    <th>sendage</th>
+    <th>receive</th>
+  </tr>
 </table>
 
 

@@ -9,19 +9,19 @@ function test(text){
 }
 
 // Start function, used by button
-function start() {
+function start(id) {
   if (runInterval != undefined){
     clearInterval(runInterval);
     clearInterval(sendInterval);
   }
-  createPlayer(13);
+  createPlayer(id);
   startController();
   runInterval = setInterval(run,100);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage(),update),200);
-  }, 2000);
+    sendInterval = setInterval(communicate.bind(null,dataMessage(),update),1000);
+  }, 1000);
 
 }
 
@@ -33,7 +33,7 @@ function communicate(message,callback){
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
       callback(this.responseText);
-      document.getElementById("recv").innerHTML = this.responseText;
+      document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + this.responseText + "</td></tr>" );
     }
   }
   xmlhttp.open("GET","server.php?"+message,true);
@@ -53,7 +53,9 @@ function createPlayer(id){
   p.style.transform = "rotate(0deg)";
   p.innerHTML = "ASs";
   document.getElementById("frame").appendChild(p);
-  checkMyPlayer(p);
+
+  player = p; 
+  //checkMyPlayer(p);
 }
 
 function checkMyPlayer(p){
@@ -96,7 +98,7 @@ function run(){
   if(keymap[37]) rotate(player,-5);
   if(keymap[38]) throttle(player,15,15);
   if(keymap[39]) rotate(player,5);
-  if(keymap[32]) shoot(player);
+  // if(keymap[32]) shoot(player);
 }
 
 // Update frame with data from server
@@ -128,5 +130,7 @@ function dataMessage(){
   var left = parseInt(player.style.left);
   var top = parseInt(player.style.top);
   var rot = calculateRot(player);
-  return "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
+  return res;
+
 }

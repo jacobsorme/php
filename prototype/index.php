@@ -12,6 +12,12 @@
   </script>
 
   <script>
+  ass();
+  function ass(){
+    document.write("kok"); 
+  }
+
+
   function response1(text){
     document.getElementById("input_response").value = text;
     return true;

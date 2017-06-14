@@ -10,8 +10,8 @@
   //$msg = decode($receive);
   //$_SESSION["count"] = $_SESSION["count"] + 1;
 
-  $jsontext = read();
-  $json = json_decode($jsontext);
+  $data = read();
+  $json = json_decode($data);
   $players = $json->{'players'};
 
   // Echo a valid ID to the client. Read/write to JSON in database
@@ -29,27 +29,16 @@
 
   // Ehco the players. Update JSON in database.
 } else if($tag == "PD"){
-
-
     // Update the database with new info from player
-    $found = false;
+    $id = $_GET["id"];
     for($i = 0; $i < count($players); $i++){
-      if($players[$i]->{'id'} == $_GET["id"]){
+      if($players[$i]->{'id'} == $id){
         $players[$i]->{'left'} = $_GET["left"];
         $players[$i]->{'top'} = $_GET["top"];
         $players[$i]->{'rotate'} = $_GET["rotate"];
         $found = true;
       }
     }
-    if(!$found){
-      //$newplayer = array('left' => substr($msg,3), 'id' => substr($msg,2,1));
-      $newplayer->{'id'} = $_GET["id"];
-      $newplayer->{'left'} = $_GET["left"];
-      $newplayer->{'top'} = $_GET["top"];
-      $newplayer->{'rotate'} = $_GET["rotate"];
-      array_push($players,$newplayer);
-    }
-
     write('players',$players);
 
 
