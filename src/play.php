@@ -13,7 +13,7 @@ var username = "<?php echo $_GET["username"] ?>";
 
 
 function setup() {
-  communicate(idMessage(username),start);
+  communicate(idMessage.bind(null,username),start);
 }
 
 setup();
