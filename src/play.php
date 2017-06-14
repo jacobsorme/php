@@ -8,7 +8,7 @@
 
 </script>
 <script>
-var username = "<?php echo $_GET["username"] ?>";
+var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
 
 
 
