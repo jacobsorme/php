@@ -13,8 +13,13 @@
 <div style="position:absolute;left:50%; transform:translate(-50%,0);">
 <h1>JetLag</h1>
 <form method="get" action="play.php">
-<input type="text" id="username" name="username"><p>
+<input type="text" id="username" name="username" placeholder="username"><p>
+r<input type="range" name="r" value="0" min="0" max="255" step="17"><br>
+g<input type="range" name="g" value="0" min="0" max="255" step="17"><br>
+b<input type="range" name="b" value="0" min="0" max="255" step="17"><p>
 <input type="submit" value="Play">
+
+
 </form>
 </div>
 

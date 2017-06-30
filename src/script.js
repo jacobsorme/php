@@ -41,12 +41,13 @@ function communicate(message,callback){
   xmlhttp.send();
 }
 
-function createPlayer(id){
+function createPlayer(idMessage){
+  var idPlayer = JSON.parse(idMessage);
   var p = document.createElement("DIV");
-  p.id = id;
+  p.id = idPlayer.id;
   p.style.width = "100px";
   p.style.height = "100px";
-  p.style.backgroundColor = "#0000ff";
+  p.style.backgroundColor = "rgb(" + idPlayer.r + "," + idPlayer.g + "," + idPlayer.b + ")";
   p.style.position = "absolute";
   p.style.left = "100px";
   p.style.top = "100px";
@@ -106,7 +107,7 @@ function update(answer){
 
     if(players[i].id != player.id){
       if(document.getElementById(players[i].id) == undefined){
-        createPlayer(players[i].id);
+        createPlayer(players[i]);
         document.getElementById(players[i].id).innerHTML = players[i].username;
       } else {
         document.getElementById(players[i].id).style.left = players[i].left + "px";
@@ -120,9 +121,9 @@ function update(answer){
 }
 
 // Create a message with ID-request
-function idMessage(username){
+function idMessage(username,r,g,b){
   var tag = "ID";
-  return "tag=" + tag + "&username=" + username;
+  return "tag=" + tag + "&username=" + username + "&r=" + r + "&g=" + g + "&b=" + b;
 }
 
 // Create a message with data of player
