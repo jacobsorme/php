@@ -33,8 +33,10 @@ function communicate(message,callback){
   }
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
-      callback(this.responseText);
-      //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + this.responseText + "</td></tr>" );
+      var res = this.responseText;
+      callback(res);
+      //console.log(res);
+      //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
   xmlhttp.open("GET","server.php?"+message,true);
@@ -42,6 +44,8 @@ function communicate(message,callback){
 }
 
 function createPlayer(idMessage){
+  //console.log(idMessage + "PUSSYAASSSSSSS");
+  //console.log("\n");
   var idPlayer = JSON.parse(idMessage);
   var p = document.createElement("DIV");
   p.id = idPlayer.id;
@@ -107,7 +111,7 @@ function update(answer){
 
     if(players[i].id != player.id){
       if(document.getElementById(players[i].id) == undefined){
-        createPlayer(players[i]);
+        createPlayer(JSON.stringify(players[i]));
         document.getElementById(players[i].id).innerHTML = players[i].username;
       } else {
         document.getElementById(players[i].id).style.left = players[i].left + "px";

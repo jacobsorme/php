@@ -22,6 +22,7 @@
     $b = $_GET["b"];
     $id = $json->{'id'};
 
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
     $newplayer;
     $newplayer->{'id'} = $id;
     $newplayer->{'username'} = $username;

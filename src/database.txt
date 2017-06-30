@@ -1,1 +1,1 @@
-{"id":2,"players":[{"id":0,"username":"Pussy ASS b","r":"187","g":"0","b":"68","left":"522","top":"-49","rotate":"45"}]}
+{"id":4,"players":[]}
