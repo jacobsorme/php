@@ -17,15 +17,25 @@
   // Echo a valid ID to the client. Read/write to JSON in database
   if($tag == "ID"){
     $username = $_GET["username"];
+    $r = $_GET["r"];
+    $g = $_GET["g"];
+    $b = $_GET["b"];
     $id = $json->{'id'};
 
+    // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%55
+    $newplayer;
     $newplayer->{'id'} = $id;
     $newplayer->{'username'} = $username;
+    $newplayer->{'r'} = $r;
+    $newplayer->{'g'} = $g;
+    $newplayer->{'b'} = $b;
+
     array_push($players,$newplayer);
 
     write('players',$players);
     write('id',($id+1));
-    echo $id;
+
+    echo (json_encode($newplayer));
 
   // Ehco the players. Update JSON in database.
 } else if($tag == "PD"){

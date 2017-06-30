@@ -9,11 +9,13 @@
 </script>
 <script>
 var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
-
+var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
+var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
+var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
 
 
 function setup() {
-  communicate(idMessage.bind(null,username),start);
+  communicate(idMessage.bind(null,username,r,g,b),start);
 }
 
 setup();
@@ -30,13 +32,13 @@ setup();
 <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div>
 
 
-<!--<table id="connections">
+<table id="connections">
   <tr>
     <th>sendage</th>
     <th>receive</th>
   </tr>
 </table>
--->
+
 
 
 </body>
