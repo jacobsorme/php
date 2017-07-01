@@ -20,7 +20,7 @@ function start(id) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),1000);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
   }, 1000);
 
 }
