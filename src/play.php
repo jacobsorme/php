@@ -4,6 +4,28 @@
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
+
+</head>
+
+<body>
+
+
+<h3 id="welcome"></h3>
+
+<div id="values"></div>
+<!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
+
+<canvas id="frame" width="800" height="500" style="border:1px solid #000"></canvas>
+
+
+
+<!-- <table id="connections">
+  <tr>
+    <th>sendage</th>
+    <th>receive</th>
+  </tr>
+</table> -->
+
 <script type="text/javascript" src="script.js">
 
 </script>
@@ -21,25 +43,6 @@ function setup() {
 setup();
 
 </script>
-</head>
-
-<body>
-
-
-<h3 id="welcome"></h3>
-
-<div id="values"></div>
-<div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div>
-
-
-<!-- <table id="connections">
-  <tr>
-    <th>sendage</th>
-    <th>receive</th>
-  </tr>
-</table> -->
-
-
 
 </body>
 </html>
