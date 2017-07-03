@@ -104,6 +104,7 @@ function update(answer){
   var players = JSON.parse(answer);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for( i = 0; i< players.length; i++){
+    // ctx.fillstyle = "rgb(" 
     ctx.fillRect(players[i].left, players[i].top, 100, 100);
   }
 }
