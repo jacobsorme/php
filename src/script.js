@@ -1,4 +1,5 @@
-var player;
+var _player;
+var _players;
 var keymap = [];
 var runInterval;
 var sendInterval;
@@ -58,8 +59,8 @@ function createPlayer(idMessage){
 }
 
 function checkMyPlayer(p){
-  if(player == undefined) {
-    player = p;
+  if(_player == undefined) {
+    _player = p;
   }
 }
 
@@ -93,18 +94,24 @@ function calculateRot(object) {
 
 
 function run(){
-  if(keymap[37]) rotate(player,-2);
-  if(keymap[38]) throttle(player,2,2);
-  if(keymap[39]) rotate(player,2);
-  // if(keymap[32]) shoot(player);
+  if(keymap[37]) rotate(_player,-2);
+  if(keymap[38]) throttle(_player,2,2);
+  if(keymap[39]) rotate(_player,2);
+  // if(keymap[32]) shoot(_player);
+  //render(_player);
+}
+
+
+function update(answer){
+  _players = JSON.parse(answer);
+  render(_players);
 }
 
 // Update frame with data from server
-function update(answer){
-  var players = JSON.parse(answer);
+function render(data){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for( i = 0; i< players.length; i++){
-    var p = players[i];
+  for( i = 0; i< data.length; i++){
+    var p = data[i];
     ctx.fillStyle = p.color;
     ctx.translate(p.left,p.top);
     ctx.rotate(p.rotate*(Math.PI/180));
@@ -123,10 +130,10 @@ function idMessage(username,r,g,b){
 // Create a message with data of player
 function dataMessage(){
   var tag = "PD";
-  var id = player.id;
-  var left = parseInt(player.left);
-  var top = parseInt(player.top);
-  var rot = player.rotate;
+  var id = _player.id;
+  var left = parseInt(_player.left);
+  var top = parseInt(_player.top);
+  var rot = _player.rotate;
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
   return res;
 
