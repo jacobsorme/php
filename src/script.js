@@ -85,9 +85,9 @@ function throttle(object, xSpeed, ySpeed) {
 // Could reset the rotation, 360 = 0 etc. Cause trouble with smoothening CSS
 function calculateRot(object) {
 	var rot = object.rotate;
-  // if((rot > 360) || (rot < -360) ){
-  //   rot = 0;
-  // }
+  if((rot > 360) || (rot < -360) ){
+    rot = 0;
+  }
   return rot;
 }
 
@@ -106,7 +106,11 @@ function update(answer){
   for( i = 0; i< players.length; i++){
     var p = players[i];
     ctx.fillStyle = p.color;
-    ctx.fillRect(p.left, p.top, 100, 100);
+    ctx.translate(p.left,p.top);
+    ctx.rotate(p.rotate*(Math.PI/180));
+    ctx.fillRect(0, 0, 100, 100);
+    ctx.rotate(-1*p.rotate*(Math.PI/180));
+    ctx.translate(-p.left,-p.top);
   }
 }
 

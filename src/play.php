@@ -15,7 +15,7 @@
 <div id="values"></div>
 <!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
 
-<canvas id="frame" width="800" height="500" style="border:1px solid #000"></canvas>
+<canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas>
 
 
 
