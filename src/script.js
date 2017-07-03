@@ -18,7 +18,7 @@ function start(id) {
   }
   createPlayer(id);
   startController();
-  runInterval = setInterval(run,100);
+  runInterval = setInterval(run,33.333333333333);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
@@ -73,7 +73,7 @@ function startController(){
 }
 
 function rotate(object, direction) {
-	object.rot = object.rot + direction
+	object.rotate = object.rotate + direction
 }
 
 function throttle(object, xSpeed, ySpeed) {
@@ -84,7 +84,7 @@ function throttle(object, xSpeed, ySpeed) {
 
 // Could reset the rotation, 360 = 0 etc. Cause trouble with smoothening CSS
 function calculateRot(object) {
-	var rot = object.rot;
+	var rot = object.rotate;
   // if((rot > 360) || (rot < -360) ){
   //   rot = 0;
   // }
@@ -93,9 +93,9 @@ function calculateRot(object) {
 
 
 function run(){
-  if(keymap[37]) rotate(player,-5);
-  if(keymap[38]) throttle(player,15,15);
-  if(keymap[39]) rotate(player,5);
+  if(keymap[37]) rotate(player,-2);
+  if(keymap[38]) throttle(player,2,2);
+  if(keymap[39]) rotate(player,2);
   // if(keymap[32]) shoot(player);
 }
 
@@ -120,7 +120,7 @@ function dataMessage(){
   var id = player.id;
   var left = player.left;
   var top = player.top;
-  var rot = player.rot;
+  var rot = player.rotate;
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
   return res;
 

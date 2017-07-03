@@ -1,1 +1,1 @@
-{"players":[{"id":8,"username":"ass","r":"85","g":"17","b":"17","left":"NaN","top":"NaN","rotate":"NaN"},{"id":9,"username":"ass","r":"85","g":"17","b":"17","left":"NaN","top":"NaN","rotate":"NaN"}],"id":10}
+{"players":[{"id":10,"username":"PuusyAsss","r":"153","g":"17","b":"170","left":"100","top":"-65","rotate":"0"},{"id":11,"username":"PuusyAsss","r":"153","g":"17","b":"170","left":"100","top":"-5","rotate":"0"}],"id":12}
