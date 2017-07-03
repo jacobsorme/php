@@ -1,1 +1,1 @@
-{"players":[{"id":10,"username":"PuusyAsss","r":"153","g":"17","b":"170","left":"100","top":"-65","rotate":"0"},{"id":11,"username":"PuusyAsss","r":"153","g":"17","b":"170","left":"100","top":"-5","rotate":"0"}],"id":12}
+{"players":[{"id":12,"username":"asd","color":"rgb(238,17,17)","left":"342.5208689216657","top":"94.51243146325388","rotate":"490"}],"id":13}

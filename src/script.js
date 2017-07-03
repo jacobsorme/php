@@ -104,23 +104,24 @@ function update(answer){
   var players = JSON.parse(answer);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   for( i = 0; i< players.length; i++){
-    // ctx.fillstyle = "rgb(" 
-    ctx.fillRect(players[i].left, players[i].top, 100, 100);
+    var p = players[i];
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.left, p.top, 100, 100);
   }
 }
 
 // Create a message with ID-request
 function idMessage(username,r,g,b){
   var tag = "ID";
-  return "tag=" + tag + "&username=" + username + "&r=" + r + "&g=" + g + "&b=" + b;
+  return "tag=" + tag + "&username=" + username + "&color=rgb(" + r + "," + g + "," + b + ")";
 }
 
 // Create a message with data of player
 function dataMessage(){
   var tag = "PD";
   var id = player.id;
-  var left = player.left;
-  var top = player.top;
+  var left = parseInt(player.left);
+  var top = parseInt(player.top);
   var rot = player.rotate;
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
   return res;
