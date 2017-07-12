@@ -1,5 +1,5 @@
 var _player;
-var _players;
+var _players = [] ;
 var keymap = [];
 var runInterval;
 var sendInterval;
@@ -19,11 +19,11 @@ function start(id) {
   }
   createPlayer(id);
   startController();
-  runInterval = setInterval(run,33.333333333333);
+  runInterval = setInterval(run,25);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
   }, 1000);
 
 }
@@ -53,9 +53,10 @@ function createPlayer(idMessage){
     left: 100,
     top: 100,
     rotate: 0,
+    color: idPlayer.color,
   };
-
-  checkMyPlayer(p);
+  _player = p;
+  //checkMyPlayer(p);
 }
 
 function checkMyPlayer(p){
@@ -87,7 +88,7 @@ function throttle(object, xSpeed, ySpeed) {
 function calculateRot(object) {
 	var rot = object.rotate;
   if((rot > 360) || (rot < -360) ){
-    rot = 0;
+    object.rotate = 0;
   }
   return rot;
 }
@@ -98,27 +99,44 @@ function run(){
   if(keymap[38]) throttle(_player,2,2);
   if(keymap[39]) rotate(_player,2);
   // if(keymap[32]) shoot(_player);
-  //render(_player);
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  display(_players);
+  render(_player);
+
 }
 
 
 function update(answer){
   _players = JSON.parse(answer);
-  render(_players);
+  //display(_players);
 }
 
 // Update frame with data from server
-function render(data){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+function display(data){
+  render(_player);
   for( i = 0; i< data.length; i++){
     var p = data[i];
-    ctx.fillStyle = p.color;
-    ctx.translate(p.left,p.top);
-    ctx.rotate(p.rotate*(Math.PI/180));
-    ctx.fillRect(0, 0, 100, 100);
-    ctx.rotate(-1*p.rotate*(Math.PI/180));
-    ctx.translate(-p.left,-p.top);
+    if(_player.id != p.id){
+        render(p);
+    }
   }
+
+}
+
+function render(p){
+  // Fill
+  ctx.fillStyle = p.color;
+  ctx.translate(p.left,p.top);
+  ctx.rotate(p.rotate*(Math.PI/180));
+  ctx.fillRect(-50,-50, 100, 100);
+
+  // Border
+  ctx.lineWidth = 3;
+  ctx.lineStyle = "#000";
+  ctx.strokeRect(-50,-50,100,100);
+  ctx.rotate(-1*p.rotate*(Math.PI/180));
+  ctx.translate(-p.left,-p.top);
 }
 
 // Create a message with ID-request
