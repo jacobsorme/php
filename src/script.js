@@ -6,6 +6,12 @@ var sendInterval;
 var canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
 
+// The points
+var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
+var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
+// 40,30 35,90 46,90 50,60 54,90 65,90 60,30 50,0
+var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-50]];
+
 function test(text){
   document.write(text);
 
@@ -19,11 +25,11 @@ function start(id) {
   }
   createPlayer(id);
   startController();
-  runInterval = setInterval(run,25);
+  runInterval = setInterval(run,50);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
   }, 1000);
 
 }
@@ -50,8 +56,8 @@ function createPlayer(idMessage){
   var idPlayer = JSON.parse(idMessage);
   var p = {
     id: idPlayer.id,
-    left: 100,
-    top: 100,
+    left: 200,
+    top: 200,
     rotate: 0,
     color: idPlayer.color,
   };
@@ -96,7 +102,7 @@ function calculateRot(object) {
 
 function run(){
   if(keymap[37]) rotate(_player,-2);
-  if(keymap[38]) throttle(_player,2,2);
+  if(keymap[38]) throttle(_player,4,4);
   if(keymap[39]) rotate(_player,2);
   // if(keymap[32]) shoot(_player);
 
@@ -114,30 +120,56 @@ function update(answer){
 
 // Update frame with data from server
 function display(data){
-  render(_player);
-  for( i = 0; i< data.length; i++){
+  //render(_player);
+  for( i = 0; i < data.length; i++){
     var p = data[i];
+    console.log(p.username + "\n");
     if(_player.id != p.id){
         render(p);
     }
   }
-
 }
 
 function render(p){
-  // Fill
-  ctx.fillStyle = p.color;
+
+
   ctx.translate(p.left,p.top);
   ctx.rotate(p.rotate*(Math.PI/180));
-  ctx.fillRect(-50,-50, 100, 100);
 
-  // Border
+
+  ctx.fillStyle = p.color;
+  ctx.fillRect(-50,-50, 100, 100);
   ctx.lineWidth = 3;
   ctx.lineStyle = "#000";
   ctx.strokeRect(-50,-50,100,100);
+
+  // polygon(planeBody,true,true,p.color,"#000",4);
+  // polygon(planeWing,true,true,"#888","#000",4);
+  // polygon(planeWindow,true,true,"#3FF","#000",4);
+
   ctx.rotate(-1*p.rotate*(Math.PI/180));
   ctx.translate(-p.left,-p.top);
 }
+
+// Draws polygon accordingly
+function polygon(points,fill,stroke,fillColor,strokeColor,lineWidth){
+  ctx.beginPath();
+  ctx.moveTo(points[0][0],points[0][1]);
+  for(i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i][0],points[i][1]);
+  }
+  ctx.closePath();
+  if(fill == true){
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+  }
+  if(stroke == true){
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = lineWidth;
+    ctx.stroke();
+  }
+}
+
 
 // Create a message with ID-request
 function idMessage(username,r,g,b){
