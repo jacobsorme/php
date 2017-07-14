@@ -60,8 +60,8 @@ function createPlayer(idMessage){
     top: 200,
     rotate: 0,
     color: idPlayer.color,
-    vx: 0,
-
+    speed: 1,
+    movementRotate: 0,
   };
   _player = p;
   checkMyPlayer(p);
@@ -82,29 +82,57 @@ function startController(){
   }
 }
 
-function rotate(object, direction) {
-	object.rotate = object.rotate + direction
+function rotate(object, direction, throttle) {
+  object.rotate = object.rotate + direction
+  if(throttle){
+      object.movementRotate = object.rotate;
+  }
 }
 
-function throttle(object, xSpeed, ySpeed) {
+function throttle(object, speed) {
 	var rot = (calculateRot(object)/360)*2*Math.PI;
-	object.top = object.top - ySpeed*Math.cos(rot);
-	object.left  = object.left + xSpeed*Math.sin(rot);
+	object.top = object.top - speed*Math.cos(rot);
+	object.left  = object.left + speed*Math.sin(rot);
+}
+
+function glide(object, speed) {
+	var rot = (object.movementRotate/360)*2*Math.PI;
+	object.top = object.top - speed*Math.cos(rot);
+	object.left  = object.left + speed*Math.sin(rot);
 }
 
 // Could reset the rotation, 360 = 0 etc. Cause trouble with smoothening CSS
 function calculateRot(object) {
 	var rot = object.rotate;
-  if((rot > 360) || (rot < -360) ){
-    object.rotate = 0;
-  }
+  // if((rot > 360) || (rot < -360) ){
+  //   object.otate = 0;
+  // }
   return rot;
 }
 
 function run(){
-  if(keymap[0]) rotate(_player,-2);
-  if(keymap[1]) throttle(_player,4,4);
-  if(keymap[2]) rotate(_player,2);
+  if(_player.speed > 0){
+      _player.speed -= 0.05 ;
+  } else {
+    _player.speed = 0;
+  }
+
+  // To check the real rotation and the rotation/direction of movement
+  if(keymap[1]) {
+    _player.speed = 5;
+    throttle(_player,_player.speed);
+    if(keymap[0]) rotate(_player,-4,true);
+    if(keymap[2]) rotate(_player,4,true);
+  } else {
+    glide(_player,_player.speed);
+  }
+
+  if(!keymap[1]) {
+    if(keymap[0]) rotate(_player,-4,false);
+    if(keymap[2]) rotate(_player,4,false);
+  }
+
+
   // if(keymap[32]) shoot(_player);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
