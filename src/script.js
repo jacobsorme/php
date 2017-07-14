@@ -29,7 +29,7 @@ function start(id) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
   }, 1000);
 
 }
@@ -60,8 +60,8 @@ function createPlayer(idMessage){
     top: 200,
     rotate: 0,
     color: idPlayer.color,
-    vx: 0,
-
+    speed: 1,
+    movementRotate: 0,
   };
   _player = p;
   checkMyPlayer(p);
@@ -82,29 +82,67 @@ function startController(){
   }
 }
 
-function rotate(object, direction) {
-	object.rotate = object.rotate + direction
+function rotate(object, direction, throttle) {
+  object.rotate = object.rotate + direction
 }
 
-function throttle(object, xSpeed, ySpeed) {
-	var rot = (calculateRot(object)/360)*2*Math.PI;
-	object.top = object.top - ySpeed*Math.cos(rot);
-	object.left  = object.left + xSpeed*Math.sin(rot);
+function throttle(object,rotateVariable, speed) {
+	var rot = (rotateVariable/360)*2*Math.PI;
+	object.top = object.top - speed*Math.cos(rot);
+	object.left  = object.left + speed*Math.sin(rot);
+}
+
+
+// Controls the slow-down of player
+function speedDown(current){
+  if(current < 1){
+    return 0;
+  } else {
+    return current*0.985;
+  }
+}
+
+function speedUp(current){
+  if(current + 0.5 > 5) {
+    return 5;
+  } else {
+    return current + 0.5;
+  }
 }
 
 // Could reset the rotation, 360 = 0 etc. Cause trouble with smoothening CSS
 function calculateRot(object) {
 	var rot = object.rotate;
-  if((rot > 360) || (rot < -360) ){
-    object.rotate = 0;
-  }
+  // if((rot > 360) || (rot < -360) ){
+  //   object.otate = 0;
+  // }
   return rot;
 }
 
 function run(){
-  if(keymap[0]) rotate(_player,-2);
-  if(keymap[1]) throttle(_player,4,4);
-  if(keymap[2]) rotate(_player,2);
+
+  // To check the real rotation and the rotation/direction of movement
+  if(keymap[1]) {
+    _player.speed = speedUp(_player.speed);
+    _player.movementRotate = _player.rotate;
+    throttle(_player,_player.rotate,_player.speed);
+    if(keymap[0]) rotate(_player,-4,true);
+    if(keymap[2]) rotate(_player,4,true);
+  } else {
+    throttle(_player,_player.movementRotate,_player.speed);
+  }
+
+  if(!keymap[1]) {
+    if(keymap[0]) rotate(_player,-4,false);
+    if(keymap[2]) rotate(_player,4,false);
+    if(_player.speed > 0){
+        _player.speed = speedDown(_player.speed) ;
+    } else {
+      _player.speed = 0;
+    }
+  }
+
+
   // if(keymap[32]) shoot(_player);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
