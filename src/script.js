@@ -84,15 +84,30 @@ function startController(){
 
 function rotate(object, direction, throttle) {
   object.rotate = object.rotate + direction
-  if(throttle){
-      object.movementRotate = object.rotate;
+}
+
+function throttle(object,rotateVariable, speed) {
+	var rot = (rotateVariable/360)*2*Math.PI;
+	object.top = object.top - speed*Math.cos(rot);
+	object.left  = object.left + speed*Math.sin(rot);
+}
+
+
+// Controls the slow-down of player
+function speedDown(current){
+  if(current < 1){
+    return 0;
+  } else {
+    return current*0.985;
   }
 }
 
-function throttle(object,rotateVar, speed) {
-	var rot = (rotateVar/360)*2*Math.PI;
-	object.top = object.top - speed*Math.cos(rot);
-	object.left  = object.left + speed*Math.sin(rot);
+function speedUp(current){
+  if(current + 0.5 > 5) {
+    return 5;
+  } else {
+    return current + 0.5;
+  }
 }
 
 // Could reset the rotation, 360 = 0 etc. Cause trouble with smoothening CSS
@@ -105,15 +120,10 @@ function calculateRot(object) {
 }
 
 function run(){
-  if(_player.speed > 0){
-      _player.speed -= 0.05 ;
-  } else {
-    _player.speed = 0;
-  }
 
   // To check the real rotation and the rotation/direction of movement
   if(keymap[1]) {
-    _player.speed = 5;
+    _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
     throttle(_player,_player.rotate,_player.speed);
     if(keymap[0]) rotate(_player,-4,true);
@@ -125,6 +135,11 @@ function run(){
   if(!keymap[1]) {
     if(keymap[0]) rotate(_player,-4,false);
     if(keymap[2]) rotate(_player,4,false);
+    if(_player.speed > 0){
+        _player.speed = speedDown(_player.speed) ;
+    } else {
+      _player.speed = 0;
+    }
   }
 
 
