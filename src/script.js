@@ -55,6 +55,7 @@ function communicate(message,callback){
 function createPlayer(idMessage){
   var idPlayer = JSON.parse(idMessage);
   var p = {
+    username: idPlayer.username,
     id: idPlayer.id,
     left: 200,
     top: 200,
@@ -82,14 +83,14 @@ function startController(){
   }
 }
 
-function rotate(object, direction, throttle) {
-  object.rotate = object.rotate + direction
+function rotate(object, direction) {
+  object.rotate = (object.rotate + direction) % 360;
 }
 
 function throttle(object,rotateVariable, speed) {
 	var rot = (rotateVariable/360)*2*Math.PI;
-	object.top = object.top - speed*Math.cos(rot);
-	object.left  = object.left + speed*Math.sin(rot);
+	object.top = object.top - (speed*Math.cos(rot));
+	object.left  = object.left + (speed*Math.sin(rot));
 }
 
 
@@ -103,20 +104,11 @@ function speedDown(current){
 }
 
 function speedUp(current){
-  if(current + 0.5 > 5) {
-    return 5;
+  if(current + 0.5 > 6) {
+    return 6;
   } else {
     return current + 0.5;
   }
-}
-
-// Could reset the rotation, 360 = 0 etc. Cause trouble with smoothening CSS
-function calculateRot(object) {
-	var rot = object.rotate;
-  // if((rot > 360) || (rot < -360) ){
-  //   object.otate = 0;
-  // }
-  return rot;
 }
 
 function run(){
@@ -126,35 +118,23 @@ function run(){
     _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
     throttle(_player,_player.rotate,_player.speed);
-    if(keymap[0]) rotate(_player,-4,true);
-    if(keymap[2]) rotate(_player,4,true);
   } else {
+    if(_player.speed > 0) _player.speed = speedDown(_player.speed);
+    else _player.speed = 0;
     throttle(_player,_player.movementRotate,_player.speed);
   }
-
-  if(!keymap[1]) {
-    if(keymap[0]) rotate(_player,-4,false);
-    if(keymap[2]) rotate(_player,4,false);
-    if(_player.speed > 0){
-        _player.speed = speedDown(_player.speed) ;
-    } else {
-      _player.speed = 0;
-    }
-  }
-
-
-  // if(keymap[32]) shoot(_player);
+  if(keymap[0]) rotate(_player,-4);
+  if(keymap[2]) rotate(_player,4);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   display(_players);
+  console.log("\n Stage1 Done");
   render(_player);
-
+  console.log("\n Stage2 Done")
 }
-
 
 function update(answer){
   _players = JSON.parse(answer);
-  //display(_players);
 }
 
 // Update frame with data from server
@@ -170,12 +150,9 @@ function display(data){
 }
 
 function render(p){
-
-
+  console.log(p.username);
   ctx.translate(p.left,p.top);
   ctx.rotate(p.rotate*(Math.PI/180));
-
-
 
   ctx.fillStyle = p.color;
   ctx.beginPath();
@@ -209,17 +186,19 @@ function render(p){
   //   object = objects[i];
   //   points = object[0];
   //
-  //   ctx.beginPath();
-  //   ctx.moveTo(points[0][0],points[0][1]);
-  //   for(i = 1; i < points.length; i++) {
-  //     ctx.lineTo(points[i][0],points[i][1]);
-  //   }
-  //   ctx.closePath();
-  //   ctx.fillStyle = object[1];
-  //   ctx.strokeStyle = "#000";
-  //   ctx.lineWidth = 4;
-  //   ctx.fill();
-  //   ctx.stroke();
+
+    // var points = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
+    // ctx.beginPath();
+    // ctx.moveTo(points[0][0],points[0][1]);
+    // for(i = 1; i < points.length; i++) {
+    //   ctx.lineTo(points[i][0],points[i][1]);
+    // }
+    // ctx.closePath();
+    // ctx.fillStyle = "#3FF";
+    // ctx.strokeStyle = "#000";
+    // ctx.lineWidth = 4;
+    // ctx.fill();
+    // ctx.stroke();
   // }
 
     ctx.rotate(-1*p.rotate*(Math.PI/180));
