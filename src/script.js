@@ -74,7 +74,6 @@ function checkMyPlayer(p){
   }
 }
 
-
 // Start the controlling of keys
 function startController(){
   onkeydown = onkeyup = function(e) {
@@ -92,7 +91,6 @@ function throttle(object,rotateVariable, speed) {
 	object.top = object.top - (speed*Math.cos(rot));
 	object.left  = object.left + (speed*Math.sin(rot));
 }
-
 
 // Controls the slow-down of player
 function speedDown(current){
@@ -112,7 +110,6 @@ function speedUp(current){
 }
 
 function run(){
-
   // To check the real rotation and the rotation/direction of movement
   if(keymap[1]) {
     _player.speed = speedUp(_player.speed);
@@ -128,9 +125,7 @@ function run(){
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   display(_players);
-  console.log("\n Stage1 Done");
   render(_player);
-  console.log("\n Stage2 Done")
 }
 
 function update(answer){
@@ -141,8 +136,6 @@ function update(answer){
 function display(data){
   //render(_player);
   for( i = 0; i < data.length; i++){
-    var p = data[i];
-    //console.log(p.username + "\n");
     if(_player.id != p.id){
         render(p);
     }
@@ -150,7 +143,6 @@ function display(data){
 }
 
 function render(p){
-  console.log(p.username);
   ctx.translate(p.left,p.top);
   ctx.rotate(p.rotate*(Math.PI/180));
 
@@ -172,37 +164,8 @@ function render(p){
   ctx.closePath();
   ctx.fill();
 
-  // ctx.fillRect(-50,-50, 100, 100);
-  // ctx.lineWidth = 3;
-  // ctx.lineStyle = "#000";
-  // ctx.strokeRect(-50,-50,100,100);
-
-  //polygons([[planeWing,"#888"],[planeBody,p.color],[planeWindow,"#3FF"]]);
-
-  // var objects = [[planeWing,"#888"],[planeBody,p.color],[planeWindow,"#3FF"]];
-  // var points;
-  // var object;
-  // for(i = 0; i < objects.length; i++) {
-  //   object = objects[i];
-  //   points = object[0];
-  //
-
-    // var points = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
-    // ctx.beginPath();
-    // ctx.moveTo(points[0][0],points[0][1]);
-    // for(i = 1; i < points.length; i++) {
-    //   ctx.lineTo(points[i][0],points[i][1]);
-    // }
-    // ctx.closePath();
-    // ctx.fillStyle = "#3FF";
-    // ctx.strokeStyle = "#000";
-    // ctx.lineWidth = 4;
-    // ctx.fill();
-    // ctx.stroke();
-  // }
-
-    ctx.rotate(-1*p.rotate*(Math.PI/180));
-    ctx.translate(-p.left,-p.top);
+  ctx.rotate(-1*p.rotate*(Math.PI/180));
+  ctx.translate(-p.left,-p.top);
 
 }
 
@@ -225,13 +188,8 @@ function polygons(objects){
     ctx.lineWidth = 4;
     ctx.fill();
     ctx.stroke();
-
   }
-
-
-
 }
-
 
 // Create a message with ID-request
 function idMessage(username,r,g,b){
@@ -248,5 +206,4 @@ function dataMessage(){
   var rot = _player.rotate;
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
   return res;
-
 }
