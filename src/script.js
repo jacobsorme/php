@@ -29,7 +29,7 @@ function start(id) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
   }, 1000);
 
 }
@@ -89,14 +89,8 @@ function rotate(object, direction, throttle) {
   }
 }
 
-function throttle(object, speed) {
-	var rot = (calculateRot(object)/360)*2*Math.PI;
-	object.top = object.top - speed*Math.cos(rot);
-	object.left  = object.left + speed*Math.sin(rot);
-}
-
-function glide(object, speed) {
-	var rot = (object.movementRotate/360)*2*Math.PI;
+function throttle(object,rotateVar, speed) {
+	var rot = (rotateVar/360)*2*Math.PI;
 	object.top = object.top - speed*Math.cos(rot);
 	object.left  = object.left + speed*Math.sin(rot);
 }
@@ -120,11 +114,12 @@ function run(){
   // To check the real rotation and the rotation/direction of movement
   if(keymap[1]) {
     _player.speed = 5;
-    throttle(_player,_player.speed);
+    _player.movementRotate = _player.rotate;
+    throttle(_player,_player.rotate,_player.speed);
     if(keymap[0]) rotate(_player,-4,true);
     if(keymap[2]) rotate(_player,4,true);
   } else {
-    glide(_player,_player.speed);
+    throttle(_player,_player.movementRotate,_player.speed);
   }
 
   if(!keymap[1]) {
