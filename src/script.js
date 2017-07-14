@@ -25,11 +25,11 @@ function start(id) {
   }
   createPlayer(id);
   startController();
-  runInterval = setInterval(run,50);
+  runInterval = setInterval(run,25);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),200);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
   }, 1000);
 
 }
@@ -60,9 +60,11 @@ function createPlayer(idMessage){
     top: 200,
     rotate: 0,
     color: idPlayer.color,
+    vx: 0,
+
   };
   _player = p;
-  //checkMyPlayer(p);
+  checkMyPlayer(p);
 }
 
 function checkMyPlayer(p){
@@ -75,8 +77,8 @@ function checkMyPlayer(p){
 // Start the controlling of keys
 function startController(){
   onkeydown = onkeyup = function(e) {
-    keymap[e.keyCode] = (e.type == "keydown");
-    document.getElementById("values").innerHTML = e.keyCode;
+    keymap[e.keyCode % 37] = (e.type == "keydown");
+    //document.getElementById("values").innerHTML = e.keyCode;
   }
 }
 
@@ -99,11 +101,10 @@ function calculateRot(object) {
   return rot;
 }
 
-
 function run(){
-  if(keymap[37]) rotate(_player,-2);
-  if(keymap[38]) throttle(_player,4,4);
-  if(keymap[39]) rotate(_player,2);
+  if(keymap[0]) rotate(_player,-2);
+  if(keymap[1]) throttle(_player,4,4);
+  if(keymap[2]) rotate(_player,2);
   // if(keymap[32]) shoot(_player);
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -123,7 +124,7 @@ function display(data){
   //render(_player);
   for( i = 0; i < data.length; i++){
     var p = data[i];
-    console.log(p.username + "\n");
+    //console.log(p.username + "\n");
     if(_player.id != p.id){
         render(p);
     }
@@ -137,37 +138,81 @@ function render(p){
   ctx.rotate(p.rotate*(Math.PI/180));
 
 
+
   ctx.fillStyle = p.color;
-  ctx.fillRect(-50,-50, 100, 100);
-  ctx.lineWidth = 3;
-  ctx.lineStyle = "#000";
-  ctx.strokeRect(-50,-50,100,100);
+  ctx.beginPath();
+  ctx.moveTo(0,20);
+  ctx.lineTo(-50,50);
+  ctx.lineTo(0,-50);
+  ctx.lineTo(50,50);
+  ctx.closePath();
+  ctx.fill();
 
-  // polygon(planeBody,true,true,p.color,"#000",4);
-  // polygon(planeWing,true,true,"#888","#000",4);
-  // polygon(planeWindow,true,true,"#3FF","#000",4);
+  ctx.fillStyle = "#000";
+  ctx.beginPath();
+  ctx.moveTo(0,20);
+  ctx.lineTo(-20,0);
+  ctx.lineTo(0,-20);
+  ctx.lineTo(20,0);
+  ctx.closePath();
+  ctx.fill();
 
-  ctx.rotate(-1*p.rotate*(Math.PI/180));
-  ctx.translate(-p.left,-p.top);
+  // ctx.fillRect(-50,-50, 100, 100);
+  // ctx.lineWidth = 3;
+  // ctx.lineStyle = "#000";
+  // ctx.strokeRect(-50,-50,100,100);
+
+  //polygons([[planeWing,"#888"],[planeBody,p.color],[planeWindow,"#3FF"]]);
+
+  // var objects = [[planeWing,"#888"],[planeBody,p.color],[planeWindow,"#3FF"]];
+  // var points;
+  // var object;
+  // for(i = 0; i < objects.length; i++) {
+  //   object = objects[i];
+  //   points = object[0];
+  //
+  //   ctx.beginPath();
+  //   ctx.moveTo(points[0][0],points[0][1]);
+  //   for(i = 1; i < points.length; i++) {
+  //     ctx.lineTo(points[i][0],points[i][1]);
+  //   }
+  //   ctx.closePath();
+  //   ctx.fillStyle = object[1];
+  //   ctx.strokeStyle = "#000";
+  //   ctx.lineWidth = 4;
+  //   ctx.fill();
+  //   ctx.stroke();
+  // }
+
+    ctx.rotate(-1*p.rotate*(Math.PI/180));
+    ctx.translate(-p.left,-p.top);
+
 }
 
 // Draws polygon accordingly
-function polygon(points,fill,stroke,fillColor,strokeColor,lineWidth){
-  ctx.beginPath();
-  ctx.moveTo(points[0][0],points[0][1]);
-  for(i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i][0],points[i][1]);
-  }
-  ctx.closePath();
-  if(fill == true){
-    ctx.fillStyle = fillColor;
+function polygons(objects){
+  var object;
+  var points;
+  for(i = 0; i < objects.length; i++) {
+    object = objects[i];
+    points = object[0];
+
+    ctx.beginPath();
+    ctx.moveTo(points[0][0],points[0][1]);
+    for(i = 1; i < points.length; i++) {
+      ctx.lineTo(points[i][0],points[i][1]);
+    }
+    ctx.closePath();
+    ctx.fillStyle = object[1];
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 4;
     ctx.fill();
-  }
-  if(stroke == true){
-    ctx.strokeStyle = strokeColor;
-    ctx.lineWidth = lineWidth;
     ctx.stroke();
+
   }
+
+
+
 }
 
 
