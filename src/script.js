@@ -12,12 +12,8 @@ var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
 // 40,30 35,90 46,90 50,60 54,90 65,90 60,30 50,0
 var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-50]];
 
-function test(text){
-  document.write(text);
-
-}
-
 // Start function, used by button
+// Starts the operation
 function start(id) {
   if (runInterval != undefined){
     clearInterval(runInterval);
@@ -31,7 +27,6 @@ function start(id) {
   setTimeout(function () {
     sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
   }, 1000);
-
 }
 
 // Send message to server.php, call callback with answer
@@ -52,6 +47,8 @@ function communicate(message,callback){
   xmlhttp.send();
 }
 
+// Create a player - the variable _palyer is assigned
+// Callback from communicate()
 function createPlayer(idMessage){
   var idPlayer = JSON.parse(idMessage);
   var p = {
@@ -75,6 +72,7 @@ function checkMyPlayer(p){
 }
 
 // Start the controlling of keys
+// Use variable keymap
 function startController(){
   onkeydown = onkeyup = function(e) {
     keymap[e.keyCode % 37] = (e.type == "keydown");
@@ -82,6 +80,7 @@ function startController(){
   }
 }
 
+// Rotate - never more than 360
 function rotate(object, direction) {
   object.rotate = (object.rotate + direction) % 360;
 }
@@ -134,7 +133,6 @@ function update(answer){
 
 // Update frame with data from server
 function display(data){
-  //render(_player);
   for( i = 0; i < data.length; i++){
     if(_player.id != p.id){
         render(p);

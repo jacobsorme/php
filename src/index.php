@@ -3,13 +3,8 @@
 <head>
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="mystyle.css">
-<title>php</title>
-
-
-
+<title>JetLag</title>
 </head>
-
-
 <body>
 
 <div id="login">
@@ -39,8 +34,5 @@ function color(){
 }
 
 </script>
-
-
-
 </body>
 </html>
