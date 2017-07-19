@@ -122,7 +122,7 @@ function run(){
   if(keymap[38]) rotate(_player,-4);
   if(keymap[39]) rotate(_player,4);
   if(keymap[32]) {
-    // Shoot 
+    // Shoot
   }
 
 
@@ -138,7 +138,8 @@ function update(answer){
 // Update frame with data from server
 function display(data){
   for( i = 0; i < data.length; i++){
-    if(_player.id != data[i].id){
+    var p = data[i];
+    if(_player.id != p.id){
         render(p);
     }
   }
@@ -202,10 +203,9 @@ function idMessage(username,r,g,b){
 // Create a message with data of player
 function dataMessage(){
   var tag = "PD";
-  var id = _player.id;
-  var left = parseInt(_player.left);
-  var top = parseInt(_player.top);
-  var rot = _player.rotate;
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
+  var obj = _player;
+  obj.left = parseInt(obj.left);
+  obj.top = parseInt(obj.top);
+  var res = "tag=" + tag + "&data=" + JSON.stringify(obj);
   return res;
 }

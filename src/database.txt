@@ -1,1 +1,1 @@
-{"players":[],"id":15}
+{"players":[{"id":15,"username":"","color":"rgb(17,238,17)"},{"id":16,"username":"","color":"rgb(17,238,17)"}],"id":17}

@@ -28,12 +28,17 @@
   // PD - PlayerData
 } else if($tag == "PD"){
     // Update the database with new info from player
-    $id = $_GET["id"];
+    $datamessage = $_GET['data'];
+    colsole.log("assas"); 
+    $id = $datamessage->{'id'};
     for($i = 0; $i < count($players); $i++){
       if($players[$i]->{'id'} == $id){
-        $players[$i]->{'left'} = $_GET["left"];
-        $players[$i]->{'top'} = $_GET["top"];
-        $players[$i]->{'rotate'} = $_GET["rotate"];
+        $left = $datamessage->{'left'};
+        $top = $datamessage->{'top'};
+        $rotate = $datamessage->{'rotate'};
+        $players[$i]->{'left'} = $left;
+        $players[$i]->{'top'} = $top;
+        $players[$i]->{'rotate'} = $rotate;
         $found = true;
       }
     }
