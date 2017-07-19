@@ -75,8 +75,8 @@ function checkMyPlayer(p){
 // Use variable keymap
 function startController(){
   onkeydown = onkeyup = function(e) {
-    keymap[e.keyCode % 37] = (e.type == "keydown");
-    //document.getElementById("values").innerHTML = e.keyCode;
+    keymap[e.keyCode] = (e.type == "keydown");
+    document.getElementById("values").innerHTML = e.keyCode;
   }
 }
 
@@ -110,7 +110,7 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  if(keymap[1]) {
+  if(keymap[37]) {
     _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
     throttle(_player,_player.rotate,_player.speed);
@@ -119,8 +119,12 @@ function run(){
     else _player.speed = 0;
     throttle(_player,_player.movementRotate,_player.speed);
   }
-  if(keymap[0]) rotate(_player,-4);
-  if(keymap[2]) rotate(_player,4);
+  if(keymap[38]) rotate(_player,-4);
+  if(keymap[39]) rotate(_player,4);
+  if(keymap[32]) {
+    // Shoot 
+  }
+
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   display(_players);
@@ -134,7 +138,7 @@ function update(answer){
 // Update frame with data from server
 function display(data){
   for( i = 0; i < data.length; i++){
-    if(_player.id != p.id){
+    if(_player.id != data[i].id){
         render(p);
     }
   }
