@@ -6,6 +6,13 @@ var sendInterval;
 var canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
 
+var KEYS = {
+  SPACE: 32,
+  LEFT: 37,
+  UP: 38,
+  RIGHT: 39,
+}
+
 // The points
 var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
 var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
@@ -54,9 +61,7 @@ function createPlayer(idMessage){
   var p = {
     username: idPlayer.username,
     id: idPlayer.id,
-    left: 200,
-    top: 200,
-    rotate: 90,
+    left: 200, top: 200, rotate: 90,
     color: idPlayer.color,
     speed: 2,
     movementRotate: 0,
@@ -111,7 +116,7 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  if(keymap[38]) {
+  if(keymap[KEYS.UP]) {
     _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
     throttle(_player,_player.rotate,_player.speed);
@@ -120,15 +125,15 @@ function run(){
     else _player.speed = 0;
     throttle(_player,_player.movementRotate,_player.speed);
   }
-  if(keymap[37]) rotate(_player,-4);
-  if(keymap[39]) rotate(_player,4);
-  if(keymap[32]) {
+  if(keymap[KEYS.LEFT]) rotate(_player,-4);
+  if(keymap[KEYS.RIGHT]) rotate(_player,4);
+  if(keymap[KEYS.SPACE]) {
     var bullet = {
       rotate: _player.rotate,
       top: parseInt(_player.top),
       left: parseInt(_player.left),
     }
-    _player.bullets.push(bullet);
+    if(_player.bullets.length <= 10) _player.bullets.push(bullet);
   }
 
   display(_players);
