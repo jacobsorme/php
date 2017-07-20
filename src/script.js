@@ -21,12 +21,12 @@ function start(id) {
   }
   createPlayer(id);
   startController();
-  runInterval = setInterval(run,100);
+  runInterval = setInterval(run,25);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
-  }, 1000);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
+  }, 500);
 }
 
 // Send message to server.php, call callback with answer
@@ -56,9 +56,9 @@ function createPlayer(idMessage){
     id: idPlayer.id,
     left: 200,
     top: 200,
-    rotate: 0,
+    rotate: 90,
     color: idPlayer.color,
-    speed: 1,
+    speed: 2,
     movementRotate: 0,
     bullets: [],
   };
@@ -124,7 +124,6 @@ function run(){
   if(keymap[39]) rotate(_player,4);
   if(keymap[32]) {
     var bullet = {
-      player: _player.id,
       rotate: _player.rotate,
       top: parseInt(_player.top),
       left: parseInt(_player.left),
@@ -143,7 +142,7 @@ function update(answer){
 // Update frame with data from server
 function display(data){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for( i = 0; i < data.length; i++){
+  for(var i = 0; i < data.length; i++){
     var p = data[i];
     if(_player.id != p.id){
         render(p);
@@ -152,21 +151,19 @@ function display(data){
 }
 
 function render(p){
-  ctx.restore();
 
-  // ctx.fillStyle = "#000";
-  // var bullets = p.bullets;
-  // for(i = 0; i< bullets.length; i++){
-  //   var b = bullets[i];
-  //   ctx.translate(b.left,b.top);
-  //   ctx.rotate(b.rotate*(Math.PI/180));
-  //   ctx.fillRect(-5,-50,10,100);
-  //
-  //   ctx.rotate(-1*b.rotate*(Math.PI/180));
-  //   ctx.translate(-b.left,-b.top);
-  // }
+  ctx.fillStyle = "#000";
+  var bullets = p.bullets;
+  for(var i = 0;i < bullets.length; i++){
+  //if(bullets.length > 0){
+    var b = bullets[i];
+    ctx.translate(b.left,b.top);
+    ctx.rotate(b.rotate*(Math.PI/180));
+    ctx.fillRect(-5,-50,10,100);
 
-  ctx.restore();
+    ctx.rotate(-1*b.rotate*(Math.PI/180));
+    ctx.translate(-b.left,-b.top);
+  }
 
   ctx.translate(p.left,p.top);
   ctx.rotate(p.rotate*(Math.PI/180));
@@ -197,13 +194,13 @@ function render(p){
 function polygons(objects){
   var object;
   var points;
-  for(i = 0; i < objects.length; i++) {
+  for(var i = 0; i < objects.length; i++) {
     object = objects[i];
     points = object[0];
 
     ctx.beginPath();
     ctx.moveTo(points[0][0],points[0][1]);
-    for(i = 1; i < points.length; i++) {
+    for(var i = 1; i < points.length; i++) {
       ctx.lineTo(points[i][0],points[i][1]);
     }
     ctx.closePath();
