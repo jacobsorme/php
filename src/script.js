@@ -134,6 +134,7 @@ function update(answer){
 // Update frame with data from server
 function display(data){
   for( i = 0; i < data.length; i++){
+    var p = data[i]; 
     if(_player.id != p.id){
         render(p);
     }
