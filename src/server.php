@@ -34,6 +34,7 @@
         $players[$i]->{'left'} = $_GET["left"];
         $players[$i]->{'top'} = $_GET["top"];
         $players[$i]->{'rotate'} = $_GET["rotate"];
+        $players[$i]->{'bullets'} = json_decode($_GET["bullets"]); 
         $found = true;
       }
     }

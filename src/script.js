@@ -21,11 +21,11 @@ function start(id) {
   }
   createPlayer(id);
   startController();
-  runInterval = setInterval(run,25);
+  runInterval = setInterval(run,100);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
   }, 1000);
 }
 
@@ -60,6 +60,7 @@ function createPlayer(idMessage){
     color: idPlayer.color,
     speed: 1,
     movementRotate: 0,
+    bullets: [],
   };
   _player = p;
   checkMyPlayer(p);
@@ -110,7 +111,7 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  if(keymap[37]) {
+  if(keymap[38]) {
     _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
     throttle(_player,_player.rotate,_player.speed);
@@ -119,14 +120,18 @@ function run(){
     else _player.speed = 0;
     throttle(_player,_player.movementRotate,_player.speed);
   }
-  if(keymap[38]) rotate(_player,-4);
+  if(keymap[37]) rotate(_player,-4);
   if(keymap[39]) rotate(_player,4);
   if(keymap[32]) {
-    // Shoot 
+    var bullet = {
+      player: _player.id,
+      rotate: _player.rotate,
+      top: parseInt(_player.top),
+      left: parseInt(_player.left),
+    }
+    _player.bullets.push(bullet);
   }
 
-
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
   display(_players);
   render(_player);
 }
@@ -137,14 +142,32 @@ function update(answer){
 
 // Update frame with data from server
 function display(data){
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   for( i = 0; i < data.length; i++){
-    if(_player.id != data[i].id){
+    var p = data[i];
+    if(_player.id != p.id){
         render(p);
     }
   }
 }
 
 function render(p){
+  ctx.restore();
+
+  // ctx.fillStyle = "#000";
+  // var bullets = p.bullets;
+  // for(i = 0; i< bullets.length; i++){
+  //   var b = bullets[i];
+  //   ctx.translate(b.left,b.top);
+  //   ctx.rotate(b.rotate*(Math.PI/180));
+  //   ctx.fillRect(-5,-50,10,100);
+  //
+  //   ctx.rotate(-1*b.rotate*(Math.PI/180));
+  //   ctx.translate(-b.left,-b.top);
+  // }
+
+  ctx.restore();
+
   ctx.translate(p.left,p.top);
   ctx.rotate(p.rotate*(Math.PI/180));
 
@@ -168,7 +191,6 @@ function render(p){
 
   ctx.rotate(-1*p.rotate*(Math.PI/180));
   ctx.translate(-p.left,-p.top);
-
 }
 
 // Draws polygon accordingly
@@ -206,6 +228,7 @@ function dataMessage(){
   var left = parseInt(_player.left);
   var top = parseInt(_player.top);
   var rot = _player.rotate;
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
+  var bullets = JSON.stringify(_player.bullets);
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets;
   return res;
 }
