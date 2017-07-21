@@ -136,6 +136,10 @@ function run(){
     if(_player.bullets.length <= 10) _player.bullets.push(bullet);
   }
 
+  for(var i = 0; i < _player.bullets.length; i++){
+    throttle(_player.bullets[i],_player.bullets[i].rotate,1);
+  }
+
   display(_players);
   render(_player);
 }
@@ -164,8 +168,9 @@ function render(p){
     var b = bullets[i];
     ctx.translate(b.left,b.top);
     ctx.rotate(b.rotate*(Math.PI/180));
-    ctx.fillRect(-5,-50,10,100);
-
+    ctx.beginPath(); 
+    ctx.arc(0,0,20,0,2*Math.PI);
+    ctx.fill();
     ctx.rotate(-1*b.rotate*(Math.PI/180));
     ctx.translate(-b.left,-b.top);
   }
