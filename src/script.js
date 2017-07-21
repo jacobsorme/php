@@ -1,10 +1,16 @@
-var _player;
-var _players = [] ;
+var _player= {};
+var _players = [];
+
+
 var keymap = [];
+
 var runInterval;
 var sendInterval;
+
 var canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
+
+var shootTime = true;
 
 var KEYS = {
   SPACE: 32,
@@ -116,6 +122,7 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
+  var bts = _player.bullets;
   if(keymap[KEYS.UP]) {
     _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
@@ -127,47 +134,59 @@ function run(){
   }
   if(keymap[KEYS.LEFT]) rotate(_player,-4);
   if(keymap[KEYS.RIGHT]) rotate(_player,4);
-  if(keymap[KEYS.SPACE]) {
+  if(keymap[KEYS.SPACE] && shootTime) {
+    shootTime = false;
+    setTimeout(function() {shootTime = true;},300);
     var bullet = {
       rotate: _player.rotate,
-      top: parseInt(_player.top),
-      left: parseInt(_player.left),
+      top: parseInt(_player.top), left: parseInt(_player.left),
       bounceCount: 0,
     }
-    if(_player.bullets.length <= 10) _player.bullets.push(bullet);
+    if(bts.length < 3) bts.push(bullet);
   }
 
-  for(var i = 0; i < _player.bullets.length; i++){
-    throttle(_player.bullets[i],_player.bullets[i].rotate,10);
-    bordercheck(_player.bullets[i]);
+  for(var i = 0; i < bts.length; i++){
+    throttle(bts[i],bts[i].rotate,10);
+    if(bts[i].bounceCount < 4){
+      bordercheck(bts[i],15);
+    } else {
+      bts.splice(i,1);
+    }
   }
 
   display(_players);
   render(_player);
 }
 
-function bordercheck(object){
-  if(object.top < 0){
+function bordercheck(object,margin){
+  if(object.top < -margin){
+    object.bounceCount += 1;
     object.rotate = (180 - object.rotate)%360;
-    object.top = 0;
+    object.top = -margin;
   }
-  if(object.top > canvas.height){
+  if(object.top > canvas.height+margin){
+    object.bounceCount += 1;
     object.rotate = (180 - object.rotate)%360;
-    object.top = canvas.height;
+    object.top = canvas.height+margin;
   }
-  if(object.left < 0){
+  if(object.left < -margin){
+    object.bounceCount += 1;
     object.rotate = (360 - object.rotate)%360;
-    object.left = 0;
+    object.left = -margin;
   }
-  if(object.left > canvas.width){
+  if(object.left > canvas.width+margin){
+    object.bounceCount += 1;
     object.rotate = (360 - object.rotate)%360;
-    object.left = canvas.width;
+    object.left = canvas.width+margin;
   }
 
 }
 
 function update(answer){
-  _players = JSON.parse(answer);
+  console.log(answer); 
+  if(answer != "same"){
+    _players = JSON.parse(answer);
+  }
 }
 
 // Update frame with data from server
@@ -190,10 +209,10 @@ function render(p){
     var b = bullets[i];
     ctx.translate(b.left,b.top);
     ctx.rotate(b.rotate*(Math.PI/180));
-    //ctx.beginPath();
-    //ctx.arc(0,0,20,0,2*Math.PI);
-    //ctx.fill();
-    ctx.fillRect(-5,-50,10,100);
+    ctx.beginPath();
+    ctx.arc(0,0,15,0,2*Math.PI);
+    ctx.fill();
+    //ctx.fillRect(-5,-50,10,100);
 
     ctx.rotate(-1*b.rotate*(Math.PI/180));
     ctx.translate(-b.left,-b.top);

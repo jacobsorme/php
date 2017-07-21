@@ -6,7 +6,7 @@
   $data = read();
   $json = json_decode($data);
   $players = $json->{'players'};
-  $oldplayers = $players;
+
 
   // ID
   if($tag == "ID"){
@@ -38,9 +38,7 @@
         $players[$i]->{'bullets'} = json_decode($_GET["bullets"]);
       }
     }
-    //if($oldplayers != $players){
-      write('players',$players);
-    //}
+    write('players',$players);
     echo (json_encode($players));
   }
 
