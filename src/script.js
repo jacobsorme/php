@@ -132,16 +132,38 @@ function run(){
       rotate: _player.rotate,
       top: parseInt(_player.top),
       left: parseInt(_player.left),
+      bounceCount: 0,
     }
     if(_player.bullets.length <= 10) _player.bullets.push(bullet);
   }
 
   for(var i = 0; i < _player.bullets.length; i++){
-    throttle(_player.bullets[i],_player.bullets[i].rotate,1);
+    throttle(_player.bullets[i],_player.bullets[i].rotate,10);
+    bordercheck(_player.bullets[i]);
   }
 
   display(_players);
   render(_player);
+}
+
+function bordercheck(object){
+  if(object.top < 0){
+    object.rotate = (180 - object.rotate)%360;
+    object.top = 0;
+  }
+  if(object.top > canvas.height){
+    object.rotate = (180 - object.rotate)%360;
+    object.top = canvas.height;
+  }
+  if(object.left < 0){
+    object.rotate = (360 - object.rotate)%360;
+    object.left = 0;
+  }
+  if(object.left > canvas.width){
+    object.rotate = (360 - object.rotate)%360;
+    object.left = canvas.width;
+  }
+
 }
 
 function update(answer){
@@ -168,9 +190,11 @@ function render(p){
     var b = bullets[i];
     ctx.translate(b.left,b.top);
     ctx.rotate(b.rotate*(Math.PI/180));
-    ctx.beginPath(); 
-    ctx.arc(0,0,20,0,2*Math.PI);
-    ctx.fill();
+    //ctx.beginPath();
+    //ctx.arc(0,0,20,0,2*Math.PI);
+    //ctx.fill();
+    ctx.fillRect(-5,-50,10,100);
+
     ctx.rotate(-1*b.rotate*(Math.PI/180));
     ctx.translate(-b.left,-b.top);
   }
