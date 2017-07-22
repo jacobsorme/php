@@ -7,7 +7,7 @@
 </head>
 <body>
 <h3 id="welcome"></h3>
-
+<a href="index.php"><h3>Home</h3></a>
 <div id="values"></div>
 <!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
 

@@ -1,10 +1,23 @@
-var _player;
-var _players = [] ;
+var _player= {};
+var _players = [];
+
+
 var keymap = [];
+
 var runInterval;
 var sendInterval;
+
 var canvas = document.getElementById("frame");
 var ctx = canvas.getContext("2d");
+
+var shootTime = true;
+
+var KEYS = {
+  SPACE: 32,
+  LEFT: 37,
+  UP: 38,
+  RIGHT: 39,
+}
 
 // The points
 var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
@@ -25,8 +38,8 @@ function start(id) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
-  }, 1000);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
+  }, 500);
 }
 
 // Send message to server.php, call callback with answer
@@ -54,12 +67,11 @@ function createPlayer(idMessage){
   var p = {
     username: idPlayer.username,
     id: idPlayer.id,
-    left: 200,
-    top: 200,
-    rotate: 0,
+    left: 200, top: 200, rotate: 90,
     color: idPlayer.color,
-    speed: 1,
+    speed: 2,
     movementRotate: 0,
+    bullets: [],
   };
   _player = p;
   checkMyPlayer(p);
@@ -75,8 +87,8 @@ function checkMyPlayer(p){
 // Use variable keymap
 function startController(){
   onkeydown = onkeyup = function(e) {
-    keymap[e.keyCode % 37] = (e.type == "keydown");
-    //document.getElementById("values").innerHTML = e.keyCode;
+    keymap[e.keyCode] = (e.type == "keydown");
+    document.getElementById("values").innerHTML = e.keyCode;
   }
 }
 
@@ -110,7 +122,8 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  if(keymap[1]) {
+  var bts = _player.bullets;
+  if(keymap[KEYS.UP]) {
     _player.speed = speedUp(_player.speed);
     _player.movementRotate = _player.rotate;
     throttle(_player,_player.rotate,_player.speed);
@@ -119,22 +132,65 @@ function run(){
     else _player.speed = 0;
     throttle(_player,_player.movementRotate,_player.speed);
   }
-  if(keymap[0]) rotate(_player,-4);
-  if(keymap[2]) rotate(_player,4);
+  if(keymap[KEYS.LEFT]) rotate(_player,-4);
+  if(keymap[KEYS.RIGHT]) rotate(_player,4);
+  if(keymap[KEYS.SPACE] && shootTime) {
+    shootTime = false;
+    setTimeout(function() {shootTime = true;},300);
+    var bullet = {
+      rotate: _player.rotate,
+      top: parseInt(_player.top), left: parseInt(_player.left),
+      bounceCount: 0,
+    }
+    if(bts.length < 3) bts.push(bullet);
+  }
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for(var i = 0; i < bts.length; i++){
+    throttle(bts[i],bts[i].rotate,10);
+    if(bts[i].bounceCount < 4){
+      bordercheck(bts[i],15);
+    } else {
+      bts.splice(i,1);
+    }
+  }
+
   display(_players);
   render(_player);
 }
 
+function bordercheck(object,margin){
+  if(object.top < -margin){
+    object.bounceCount += 1;
+    object.rotate = (180 - object.rotate)%360;
+    object.top = -margin;
+  }
+  if(object.top > canvas.height+margin){
+    object.bounceCount += 1;
+    object.rotate = (180 - object.rotate)%360;
+    object.top = canvas.height+margin;
+  }
+  if(object.left < -margin){
+    object.bounceCount += 1;
+    object.rotate = (360 - object.rotate)%360;
+    object.left = -margin;
+  }
+  if(object.left > canvas.width+margin){
+    object.bounceCount += 1;
+    object.rotate = (360 - object.rotate)%360;
+    object.left = canvas.width+margin;
+  }
+
+}
+
 function update(answer){
-  _players = JSON.parse(answer);
+    _players = JSON.parse(answer);
 }
 
 // Update frame with data from server
 function display(data){
-  for( i = 0; i < data.length; i++){
-    var p = data[i]; 
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  for(var i = 0; i < data.length; i++){
+    var p = data[i];
     if(_player.id != p.id){
         render(p);
     }
@@ -142,6 +198,23 @@ function display(data){
 }
 
 function render(p){
+
+  ctx.fillStyle = "#000";
+  var bullets = p.bullets;
+  for(var i = 0;i < bullets.length; i++){
+  //if(bullets.length > 0){
+    var b = bullets[i];
+    ctx.translate(b.left,b.top);
+    ctx.rotate(b.rotate*(Math.PI/180));
+    ctx.beginPath();
+    ctx.arc(0,0,15,0,2*Math.PI);
+    ctx.fill();
+    //ctx.fillRect(-5,-50,10,100);
+
+    ctx.rotate(-1*b.rotate*(Math.PI/180));
+    ctx.translate(-b.left,-b.top);
+  }
+
   ctx.translate(p.left,p.top);
   ctx.rotate(p.rotate*(Math.PI/180));
 
@@ -165,20 +238,19 @@ function render(p){
 
   ctx.rotate(-1*p.rotate*(Math.PI/180));
   ctx.translate(-p.left,-p.top);
-
 }
 
 // Draws polygon accordingly
 function polygons(objects){
   var object;
   var points;
-  for(i = 0; i < objects.length; i++) {
+  for(var i = 0; i < objects.length; i++) {
     object = objects[i];
     points = object[0];
 
     ctx.beginPath();
     ctx.moveTo(points[0][0],points[0][1]);
-    for(i = 1; i < points.length; i++) {
+    for(var i = 1; i < points.length; i++) {
       ctx.lineTo(points[i][0],points[i][1]);
     }
     ctx.closePath();
@@ -203,6 +275,7 @@ function dataMessage(){
   var left = parseInt(_player.left);
   var top = parseInt(_player.top);
   var rot = _player.rotate;
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot;
+  var bullets = JSON.stringify(_player.bullets);
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets;
   return res;
 }
