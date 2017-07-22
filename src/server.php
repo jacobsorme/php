@@ -1,7 +1,7 @@
 <?php
   $database = "database.txt";
 
-  $tag = $_GET["tag"];
+  $tag = htmlspecialchars($_GET["tag"]);
 
   $data = read();
   $json = json_decode($data);
@@ -15,8 +15,8 @@
 
     $newplayer;
     $newplayer->{'id'} = $id;
-    $newplayer->{'username'} = $username;
-    $newplayer->{'color'} = $color;
+    $newplayer->{'name'} = $username;
+    $newplayer->{'clr'} = $color;
 
     array_push($players,$newplayer);
 
@@ -28,13 +28,13 @@
   // PD - PlayerData
 } else if($tag == "PD"){
     // Update the database with new info from player
-    $id = $_GET["id"];
+    $id = htmlspecialchars($_GET["id"]);
     for($i = 0; $i < count($players); $i++){
       if($players[$i]->{'id'} == $id){
-        $players[$i]->{'left'} = $_GET["left"];
-        $players[$i]->{'top'} = $_GET["top"];
-        $players[$i]->{'rotate'} = $_GET["rotate"];
-        $players[$i]->{'bullets'} = json_decode($_GET["bullets"]);
+        $players[$i]->{'x'} = htmlspecialchars($_GET["left"]);
+        $players[$i]->{'y'} = htmlspecialchars($_GET["top"]);
+        $players[$i]->{'rot'} = htmlspecialchars($_GET["rotate"]);
+        $players[$i]->{'bts'} = json_decode($_GET["bullets"]);
       }
     }
     write('players',$players);

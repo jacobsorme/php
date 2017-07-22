@@ -58,7 +58,6 @@ function communicate(message,callback){
       if(t2 - t1 < 500){
         callback(res);
       }
-      console.log(t2 - t1);
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
@@ -71,14 +70,16 @@ function communicate(message,callback){
 // Callback from communicate()
 function createPlayer(idMessage){
   var idPlayer = JSON.parse(idMessage);
+console.log("idPlayer.clr: " + idPlayer.clr);
   var p = {
-    username: idPlayer.username,
+
+    name: idPlayer.name,
     id: idPlayer.id,
-    left: 200, top: 200, rotate: 90,
-    color: idPlayer.color,
+    x: 200, y: 200, rot: 90,
+    clr: idPlayer.clr,
     speed: 2,
     movementRotate: 0,
-    bullets: [],
+    bts: [],
   };
   _player = p;
   checkMyPlayer(p);
@@ -101,13 +102,13 @@ function startController(){
 
 // Rotate - never more than 360
 function rotate(object, direction) {
-  object.rotate = (object.rotate + direction) % 360;
+  object.rot = (object.rot + direction) % 360;
 }
 
 function throttle(object,rotateVariable, speed) {
 	var rot = (rotateVariable/360)*2*Math.PI;
-	object.top = object.top - (speed*Math.cos(rot));
-	object.left  = object.left + (speed*Math.sin(rot));
+	object.y = parseInt(100*(object.y - (speed*Math.cos(rot))))/100;
+	object.x  = parseInt(100*(object.x + (speed*Math.sin(rot))))/100;
 }
 
 // Controls the slow-down of player
@@ -129,11 +130,11 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  var bts = _player.bullets;
+  var bts = _player.bts;
   if(keymap[KEYS.UP]) {
     _player.speed = speedUp(_player.speed);
-    _player.movementRotate = _player.rotate;
-    throttle(_player,_player.rotate,_player.speed);
+    _player.movementRotate = _player.rot;
+    throttle(_player,_player.rot,_player.speed);
   } else {
     if(_player.speed > 0) _player.speed = speedDown(_player.speed);
     else _player.speed = 0;
@@ -145,15 +146,15 @@ function run(){
     shootTime = false;
     setTimeout(function() {shootTime = true;},300);
     var bullet = {
-      rotate: _player.rotate,
-      top: parseInt(_player.top), left: parseInt(_player.left),
+      rot: _player.rot,
+      y: parseInt(_player.y), x: parseInt(_player.x),
       bounceCount: 0,
     }
     if(bts.length < 3) bts.push(bullet);
   }
 
   for(var i = 0; i < bts.length; i++){
-    throttle(bts[i],bts[i].rotate,10);
+    throttle(bts[i],bts[i].rot,10);
     if(bts[i].bounceCount < 4){
       bordercheck(bts[i],15);
     } else {
@@ -166,25 +167,25 @@ function run(){
 }
 
 function bordercheck(object,margin){
-  if(object.top < -margin){
+  if(object.y < -margin){
     object.bounceCount += 1;
-    object.rotate = (180 - object.rotate)%360;
-    object.top = -margin;
+    object.rot = (180 - object.rot)%360;
+    object.y = -margin;
   }
-  if(object.top > canvas.height+margin){
+  if(object.y > canvas.height+margin){
     object.bounceCount += 1;
-    object.rotate = (180 - object.rotate)%360;
-    object.top = canvas.height+margin;
+    object.rot = (180 - object.rot)%360;
+    object.y = canvas.height+margin;
   }
-  if(object.left < -margin){
+  if(object.x < -margin){
     object.bounceCount += 1;
-    object.rotate = (360 - object.rotate)%360;
-    object.left = -margin;
+    object.rot = (360 - object.rot)%360;
+    object.x = -margin;
   }
-  if(object.left > canvas.width+margin){
+  if(object.x > canvas.width+margin){
     object.bounceCount += 1;
-    object.rotate = (360 - object.rotate)%360;
-    object.left = canvas.width+margin;
+    object.rot = (360 - object.rot)%360;
+    object.x = canvas.width+margin;
   }
 
 }
@@ -207,25 +208,27 @@ function display(data){
 function render(p){
 
   ctx.fillStyle = "#000";
-  var bullets = p.bullets;
+  var bullets = p.bts;
+  //console.log(bullets);
   for(var i = 0;i < bullets.length; i++){
   //if(bullets.length > 0){
     var b = bullets[i];
-    ctx.translate(b.left,b.top);
-    ctx.rotate(b.rotate*(Math.PI/180));
+    ctx.translate(b.x,b.y);
+    ctx.rotate(b.rot*(Math.PI/180));
     ctx.beginPath();
     ctx.arc(0,0,15,0,2*Math.PI);
     ctx.fill();
     //ctx.fillRect(-5,-50,10,100);
 
-    ctx.rotate(-1*b.rotate*(Math.PI/180));
-    ctx.translate(-b.left,-b.top);
+    ctx.rotate(-1*b.rot*(Math.PI/180));
+    ctx.translate(-b.x,-b.y);
   }
 
-  ctx.translate(p.left,p.top);
-  ctx.rotate(p.rotate*(Math.PI/180));
+  ctx.translate(p.x,p.y);
+  ctx.rotate(p.rot*(Math.PI/180));
 
-  ctx.fillStyle = p.color;
+  ctx.fillStyle = "#" + p.clr;
+  console.log(p.clr);
   ctx.beginPath();
   ctx.moveTo(0,20);
   ctx.lineTo(-50,50);
@@ -243,8 +246,8 @@ function render(p){
   ctx.closePath();
   ctx.fill();
 
-  ctx.rotate(-1*p.rotate*(Math.PI/180));
-  ctx.translate(-p.left,-p.top);
+  ctx.rotate(-1*p.rot*(Math.PI/180));
+  ctx.translate(-p.x,-p.y);
 }
 
 // Draws polygon accordingly
@@ -269,20 +272,33 @@ function polygons(objects){
   }
 }
 
+function rgbToHex(r,g,b){
+  var rgb = b | (g << 8) | (r << 16);
+  var hex =  (0x1000000 | rgb).toString(16).substring(1);
+  return hex;
+}
+
 // Create a message with ID-request
 function idMessage(username,r,g,b){
   var tag = "ID";
-  return "tag=" + tag + "&username=" + username + "&color=rgb(" + r + "," + g + "," + b + ")";
+  var color = rgbToHex(r,g,b);
+  //console.log(color);
+  return "tag=" + tag + "&username=" + username + "&color=" + color;
 }
 
 // Create a message with data of player
 function dataMessage(){
   var tag = "PD";
   var id = _player.id;
-  var left = parseInt(_player.left);
-  var top = parseInt(_player.top);
-  var rot = _player.rotate;
-  var bullets = JSON.stringify(_player.bullets);
+  var left = parseInt(_player.x);
+  var top = parseInt(_player.y);
+  var rot = _player.rot;
+  var bullets = JSON.parse(JSON.stringify(_player.bts));
+  for(var i = 0; i < bullets.length; i++){
+    delete bullets[i].bounceCount;
+  }
+  bullets = JSON.stringify(bullets);
+  //console.log(bullets);
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets;
   return res;
 }
