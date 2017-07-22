@@ -38,7 +38,7 @@ function start(id) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),50);
+    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
   }, 500);
 }
 
@@ -183,10 +183,7 @@ function bordercheck(object,margin){
 }
 
 function update(answer){
-  console.log(answer); 
-  if(answer != "same"){
     _players = JSON.parse(answer);
-  }
 }
 
 // Update frame with data from server

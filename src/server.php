@@ -7,7 +7,6 @@
   $json = json_decode($data);
   $players = $json->{'players'};
 
-
   // ID
   if($tag == "ID"){
     $username = $_GET["username"];
