@@ -48,16 +48,23 @@ function communicate(message,callback){
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
   }
+  var d1 = new Date();
+  var t1;
   xmlhttp.onreadystatechange= function() {
     if (this.readyState==4 && this.status==200) {
       var res = this.responseText;
-      callback(res);
-      //console.log(res);
+      var d2 = new Date();
+      t2 = d2.getTime();
+      if(t2 - t1 < 500){
+        callback(res);
+      }
+      console.log(t2 - t1);
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
   xmlhttp.open("GET","server.php?"+message,true);
   xmlhttp.send();
+  t1 = d1.getTime();
 }
 
 // Create a player - the variable _palyer is assigned
