@@ -1,7 +1,7 @@
 <?php
   $database = "database.txt";
 
-  $tag = $_GET["tag"];
+  $tag = htmlspecialchars($_GET["tag"]);
 
   $data = read();
   $json = json_decode($data);
@@ -28,12 +28,12 @@
   // PD - PlayerData
 } else if($tag == "PD"){
     // Update the database with new info from player
-    $id = $_GET["id"];
+    $id = htmlspecialchars($_GET["id"]);
     for($i = 0; $i < count($players); $i++){
       if($players[$i]->{'id'} == $id){
-        $players[$i]->{'x'} = $_GET["left"];
-        $players[$i]->{'y'} = $_GET["top"];
-        $players[$i]->{'rot'} = $_GET["rotate"];
+        $players[$i]->{'x'} = htmlspecialchars($_GET["left"]);
+        $players[$i]->{'y'} = htmlspecialchars($_GET["top"]);
+        $players[$i]->{'rot'} = htmlspecialchars($_GET["rotate"]);
         $players[$i]->{'bts'} = json_decode($_GET["bullets"]);
       }
     }

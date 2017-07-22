@@ -70,7 +70,9 @@ function communicate(message,callback){
 // Callback from communicate()
 function createPlayer(idMessage){
   var idPlayer = JSON.parse(idMessage);
+console.log("idPlayer.clr: " + idPlayer.clr);
   var p = {
+
     name: idPlayer.name,
     id: idPlayer.id,
     x: 200, y: 200, rot: 90,
@@ -207,6 +209,7 @@ function render(p){
 
   ctx.fillStyle = "#000";
   var bullets = p.bts;
+  //console.log(bullets);
   for(var i = 0;i < bullets.length; i++){
   //if(bullets.length > 0){
     var b = bullets[i];
@@ -224,7 +227,8 @@ function render(p){
   ctx.translate(p.x,p.y);
   ctx.rotate(p.rot*(Math.PI/180));
 
-  ctx.fillStyle = p.clr;
+  ctx.fillStyle = "#" + p.clr;
+  console.log(p.clr);
   ctx.beginPath();
   ctx.moveTo(0,20);
   ctx.lineTo(-50,50);
@@ -271,14 +275,14 @@ function polygons(objects){
 function rgbToHex(r,g,b){
   var rgb = b | (g << 8) | (r << 16);
   var hex =  (0x1000000 | rgb).toString(16).substring(1);
-  return ("#" + hex);
+  return hex;
 }
 
 // Create a message with ID-request
 function idMessage(username,r,g,b){
   var tag = "ID";
   var color = rgbToHex(r,g,b);
-  console.log(color);
+  //console.log(color);
   return "tag=" + tag + "&username=" + username + "&color=" + color;
 }
 
@@ -294,7 +298,7 @@ function dataMessage(){
     delete bullets[i].bounceCount;
   }
   bullets = JSON.stringify(bullets);
-  console.log(bullets);
+  //console.log(bullets);
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets;
   return res;
 }
