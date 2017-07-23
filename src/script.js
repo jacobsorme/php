@@ -55,7 +55,7 @@ function communicate(message,callback){
       var res = this.responseText;
       var d2 = new Date();
       t2 = d2.getTime();
-      if(t2 - t1 < 500){
+      if(t2 - t1 < 1000){
         callback(res);
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
@@ -206,70 +206,62 @@ function display(data){
 }
 
 function render(p){
-
   ctx.fillStyle = "#000";
   var bullets = p.bts;
   //console.log(bullets);
   for(var i = 0;i < bullets.length; i++){
-  //if(bullets.length > 0){
     var b = bullets[i];
     ctx.translate(b.x,b.y);
     ctx.rotate(b.rot*(Math.PI/180));
     ctx.beginPath();
     ctx.arc(0,0,15,0,2*Math.PI);
     ctx.fill();
-    //ctx.fillRect(-5,-50,10,100);
-
     ctx.rotate(-1*b.rot*(Math.PI/180));
     ctx.translate(-b.x,-b.y);
   }
+  polygons(p.x,p.y,p.rot,planeBody,"#" + p.clr);
+  polygons(p.x,p.y,p.rot,planeWing,"#888");
+  polygons(p.x,p.y,p.rot,planeWindow,"#3FF");
 
-  ctx.translate(p.x,p.y);
-  ctx.rotate(p.rot*(Math.PI/180));
+  var margin = 50;
+  if((p.x+margin) > canvas.width){
+    if(p.x > canvas.width+margin){
+      p.x = p.x-canvas.width;
+    } else {
+      polygons(p.x-canvas.width,p.y,p.rot,planeBody,"#" + p.clr);
+      polygons(p.x-canvas.width,p.y,p.rot,planeWing,"#888");
+      polygons(p.x-canvas.width,p.y,p.rot,planeWindow,"#3FF");
+    }
+  }
+  if((p.x-margin) < 0){
+    if(p.x < -margin){
+      p.x = canvas.width+p.x;
+    } else {
+      polygons(canvas.width+p.x,p.y,p.rot,planeBody,"#" + p.clr);
+      polygons(canvas.width+p.x,p.y,p.rot,planeWing,"#888");
+      polygons(canvas.width+p.x,p.y,p.rot,planeWindow,"#3FF");
+    }
+  }
 
-  ctx.fillStyle = "#" + p.clr;
-  console.log(p.clr);
-  ctx.beginPath();
-  ctx.moveTo(0,20);
-  ctx.lineTo(-50,50);
-  ctx.lineTo(0,-50);
-  ctx.lineTo(50,50);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.fillStyle = "#000";
-  ctx.beginPath();
-  ctx.moveTo(0,20);
-  ctx.lineTo(-20,0);
-  ctx.lineTo(0,-20);
-  ctx.lineTo(20,0);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.rotate(-1*p.rot*(Math.PI/180));
-  ctx.translate(-p.x,-p.y);
 }
 
 // Draws polygon accordingly
-function polygons(objects){
-  var object;
-  var points;
-  for(var i = 0; i < objects.length; i++) {
-    object = objects[i];
-    points = object[0];
-
-    ctx.beginPath();
-    ctx.moveTo(points[0][0],points[0][1]);
-    for(var i = 1; i < points.length; i++) {
-      ctx.lineTo(points[i][0],points[i][1]);
-    }
-    ctx.closePath();
-    ctx.fillStyle = object[1];
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 4;
-    ctx.fill();
-    ctx.stroke();
+function polygons(x,y,rot,points,color){
+  ctx.translate(x,y);
+  ctx.rotate(rot*(Math.PI/180));
+  ctx.beginPath();
+  ctx.moveTo(points[0][0],points[0][1]);
+  for(var i = 1; i < points.length; i++) {
+    ctx.lineTo(points[i][0],points[i][1]);
   }
+  ctx.closePath();
+  ctx.fillStyle = color;
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 4;
+  ctx.fill();
+  ctx.stroke();
+  ctx.rotate(-1*rot*(Math.PI/180));
+  ctx.translate(-x,-y);
 }
 
 function rgbToHex(r,g,b){
