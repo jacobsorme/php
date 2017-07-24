@@ -55,7 +55,7 @@ function communicate(message,callback){
       var res = this.responseText;
       var d2 = new Date();
       t2 = d2.getTime();
-      if(t2 - t1 < 1000){
+      if(t2 - t1 < 5000){
         callback(res);
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
@@ -70,12 +70,10 @@ function communicate(message,callback){
 // Callback from communicate()
 function createPlayer(idMessage){
   var idPlayer = JSON.parse(idMessage);
-console.log("idPlayer.clr: " + idPlayer.clr);
   var p = {
-
     name: idPlayer.name,
     id: idPlayer.id,
-    x: 200, y: 200, rot: 90,
+    x: 500, y: 500, rot: 90,
     clr: idPlayer.clr,
     speed: 2,
     movementRotate: 0,
@@ -161,9 +159,9 @@ function run(){
       bts.splice(i,1);
     }
   }
-
   display(_players);
   render(_player);
+
 }
 
 function bordercheck(object,margin){
@@ -223,41 +221,43 @@ function render(p){
   polygons(p.x,p.y,p.rot,planeWing,"#888");
   polygons(p.x,p.y,p.rot,planeWindow,"#3FF");
 
-  var margin = 50;
-  if((p.x+margin) > canvas.width){
-    if(p.x > canvas.width+margin){
-      p.x = p.x-canvas.width;
-    } else {
-      polygons(p.x-canvas.width,p.y,p.rot,planeBody,"#" + p.clr);
-      polygons(p.x-canvas.width,p.y,p.rot,planeWing,"#888");
-      polygons(p.x-canvas.width,p.y,p.rot,planeWindow,"#3FF");
-    }
-  }
-  if((p.x-margin) < 0){
-    if(p.x < -margin){
-      p.x = canvas.width+p.x;
-    } else {
-      polygons(canvas.width+p.x,p.y,p.rot,planeBody,"#" + p.clr);
-      polygons(canvas.width+p.x,p.y,p.rot,planeWing,"#888");
-      polygons(canvas.width+p.x,p.y,p.rot,planeWindow,"#3FF");
-    }
-  }
+  var margin = 100;
+  var offset = 20;
+  var width = canvas.width;
+  var left = parseInt(p.x);
 
+  if(left+margin > width){
+    if(left > (width+margin)){
+      p.x = (left-width);
+    } else {
+      polygons(left-width,p.y,p.rot,planeBody,"#" + p.clr);
+      polygons(left-width,p.y,p.rot,planeWing,"#888");
+      polygons(left-width,p.y,p.rot,planeWindow,"#3FF");
+    }
+  } else if((left-margin) < 0){
+    if(left < eval(-1*margin)){
+      p.x = (width+left);
+    } else {
+      polygons(width+left,p.y,p.rot,planeBody,"#" + p.clr);
+      polygons(width+left,p.y,p.rot,planeWing,"#888");
+      polygons(width+left,p.y,p.rot,planeWindow,"#3FF");
+    }
+  }
 }
 
 // Draws polygon accordingly
 function polygons(x,y,rot,points,color){
   ctx.translate(x,y);
   ctx.rotate(rot*(Math.PI/180));
-  ctx.beginPath();
-  ctx.moveTo(points[0][0],points[0][1]);
-  for(var i = 1; i < points.length; i++) {
-    ctx.lineTo(points[i][0],points[i][1]);
-  }
-  ctx.closePath();
   ctx.fillStyle = color;
   ctx.strokeStyle = "#000";
   ctx.lineWidth = 4;
+  ctx.beginPath();
+  //ctx.moveTo(points[0][0],points[0][1]);
+  for(var i = 0; i < points.length; i++) {
+    ctx.lineTo(points[i][0],points[i][1]);
+  }
+  ctx.closePath();
   ctx.fill();
   ctx.stroke();
   ctx.rotate(-1*rot*(Math.PI/180));
