@@ -142,7 +142,7 @@ function run(){
   if(keymap[KEYS.RIGHT]) rotate(_player,4);
   if(keymap[KEYS.SPACE] && shootTime) {
     shootTime = false;
-    setTimeout(function() {shootTime = true;},300);
+    setTimeout(function() {shootTime = true;},400);
     var bullet = {
       rot: _player.rot,
       y: parseInt(_player.y), x: parseInt(_player.x),
@@ -217,49 +217,63 @@ function render(p){
     ctx.rotate(-1*b.rot*(Math.PI/180));
     ctx.translate(-b.x,-b.y);
   }
-  polygons(p.x,p.y,p.rot,planeBody,"#" + p.clr);
-  polygons(p.x,p.y,p.rot,planeWing,"#888");
-  polygons(p.x,p.y,p.rot,planeWindow,"#3FF");
+  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
 
-  var margin = 100;
-  var offset = 20;
+  var margin = 50;
+  var offset = 50;
   var width = canvas.width;
-  var left = parseInt(p.x);
+  var height = canvas.height;
+  var x = parseInt(p.x);
+  var y = parseInt(p.y);
 
-  if(left+margin > width){
-    if(left > (width+margin)){
-      p.x = (left-width);
+  if(x+margin > width){
+    if(x > (width+margin)){
+      p.x = (x-width-offset);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
     } else {
-      polygons(left-width,p.y,p.rot,planeBody,"#" + p.clr);
-      polygons(left-width,p.y,p.rot,planeWing,"#888");
-      polygons(left-width,p.y,p.rot,planeWindow,"#3FF");
+      polygons(x-width-offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
     }
-  } else if((left-margin) < 0){
-    if(left < eval(-1*margin)){
-      p.x = (width+left);
+  }if((x-margin) < 0){
+    if(x < -1*margin){
+      p.x = (width+x+offset);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
     } else {
-      polygons(width+left,p.y,p.rot,planeBody,"#" + p.clr);
-      polygons(width+left,p.y,p.rot,planeWing,"#888");
-      polygons(width+left,p.y,p.rot,planeWindow,"#3FF");
+      polygons(width+x+offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+    }
+  }if((y+margin) > height){
+    if(y > (height+margin)){
+      p.y = y-height-offset;
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+    } else {
+      polygons(p.x,y-height-offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+    }
+  }if((y-margin) < 0 ){
+    if(y < -1*margin){
+      p.y = height+y+offset;
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+    } else {
+      polygons(p.x,height+y+offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
     }
   }
 }
 
 // Draws polygon accordingly
-function polygons(x,y,rot,points,color){
+function polygons(x,y,rot,pointsList,colorList){
   ctx.translate(x,y);
   ctx.rotate(rot*(Math.PI/180));
-  ctx.fillStyle = color;
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 4;
-  ctx.beginPath();
-  //ctx.moveTo(points[0][0],points[0][1]);
-  for(var i = 0; i < points.length; i++) {
-    ctx.lineTo(points[i][0],points[i][1]);
+  for(var i = 0; i< pointsList.length;i++){
+    ctx.fillStyle = colorList[i];
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    var points = pointsList[i];
+    for(var j = 0; j < points.length; j++) {
+      ctx.lineTo(points[j][0],points[j][1]);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
   }
-  ctx.closePath();
-  ctx.fill();
-  ctx.stroke();
   ctx.rotate(-1*rot*(Math.PI/180));
   ctx.translate(-x,-y);
 }
@@ -288,6 +302,7 @@ function dataMessage(){
   var bullets = JSON.parse(JSON.stringify(_player.bts));
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounceCount;
+    delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
   //console.log(bullets);
