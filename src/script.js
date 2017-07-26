@@ -203,12 +203,15 @@ function display(data){
   }
 }
 
+
+// Rendering 
 function render(p){
   bulletRender(p);
   polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
   portalRender(p);
 }
 
+// Render portals
 function portalRender(p){
   var margin = 50;
   var offset = 50;
@@ -248,6 +251,7 @@ function portalRender(p){
   }
 }
 
+// Render bullets
 function bulletRender(p){
   ctx.fillStyle = "#000";
   var bullets = p.bts;
