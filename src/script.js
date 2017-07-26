@@ -38,7 +38,7 @@ function start(id) {
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
     sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
-  }, 500);
+  }, 1000);
 }
 
 // Send message to server.php, call callback with answer
@@ -54,7 +54,7 @@ function communicate(message,callback){
       var res = this.responseText;
       var d2 = new Date();
       t2 = d2.getTime();
-      if(t2 - t1 < 5000){
+      if(t2 - t1 < 2000){
         callback(res);
       }
     }
@@ -101,6 +101,7 @@ function rotate(object, direction) {
   object.rot = (object.rot + direction) % 360;
 }
 
+// Move a object along it's rotation variable.
 function throttle(object,rotateVariable, speed) {
 	var rot = (rotateVariable/360)*2*Math.PI;
 	object.y = parseInt(100*(object.y - (speed*Math.cos(rot))))/100;
@@ -149,6 +150,7 @@ function run(){
     if(bts.length < 3) bts.push(bullet);
   }
 
+  // Throttle for the bullets - check their bouncing
   for(var i = 0; i < bts.length; i++){
     throttle(bts[i],bts[i].rot,10);
     if(bts[i].bounceCount < 4){
@@ -200,13 +202,12 @@ function display(data){
         render(p);
     }
   }
-}
 
 // Rendering
 function render(p){
-  bulletsRender(p);
-  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-  portalRender(p);
+  bulletsRender(p); // The bullets
+  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]); // The plane
+  portalRender(p); // The portals-thingy
 }
 
 // Handles the rendering of planes when it comes to portals & edges
@@ -215,6 +216,7 @@ function portalRender(p){
   var offset = 50;
   var width = canvas.width;
   var height = canvas.height;
+  // For some BS reason the p.x etc is said to be a string?!
   var x = parseInt(p.x);
   var y = parseInt(p.y);
 
@@ -242,7 +244,6 @@ function portalRender(p){
 function bulletsRender(p){
   ctx.fillStyle = "#000";
   var bullets = p.bts;
-  //console.log(bullets);
   for(var i = 0;i < bullets.length; i++){
     var b = bullets[i];
     ctx.translate(b.x,b.y);
