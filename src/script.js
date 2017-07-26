@@ -1,7 +1,6 @@
 var _player= {};
 var _players = [];
 
-
 var keymap = [];
 
 var runInterval;
@@ -39,7 +38,7 @@ function start(id) {
   // Start interval of function communicate() with paremeter update()
   setTimeout(function () {
     sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
-  }, 500);
+  }, 1000);
 }
 
 // Send message to server.php, call callback with answer
@@ -55,10 +54,9 @@ function communicate(message,callback){
       var res = this.responseText;
       var d2 = new Date();
       t2 = d2.getTime();
-      if(t2 - t1 < 5000){
+      if(t2 - t1 < 2000){
         callback(res);
       }
-      //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
   xmlhttp.open("GET","server.php?"+message,true);
@@ -103,6 +101,7 @@ function rotate(object, direction) {
   object.rot = (object.rot + direction) % 360;
 }
 
+// Move a object along it's rotation variable.
 function throttle(object,rotateVariable, speed) {
 	var rot = (rotateVariable/360)*2*Math.PI;
 	object.y = parseInt(100*(object.y - (speed*Math.cos(rot))))/100;
@@ -151,6 +150,7 @@ function run(){
     if(bts.length < 3) bts.push(bullet);
   }
 
+  // Throttle for the bullets - check their bouncing
   for(var i = 0; i < bts.length; i++){
     throttle(bts[i],bts[i].rot,10);
     if(bts[i].bounceCount < 4){
@@ -159,11 +159,12 @@ function run(){
       bts.splice(i,1);
     }
   }
+
   display(_players);
   render(_player);
-
 }
 
+// Checks borders for bullets, could be shortened etc.
 function bordercheck(object,margin){
   if(object.y < -margin){
     object.bounceCount += 1;
@@ -189,7 +190,7 @@ function bordercheck(object,margin){
 }
 
 function update(answer){
-    _players = JSON.parse(answer);
+  _players = JSON.parse(answer);
 }
 
 // Update frame with data from server
@@ -201,8 +202,8 @@ function display(data){
         render(p);
     }
   }
-}
 
+// Rendering
 function render(p){
   bulletRender(p);
   polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
@@ -214,39 +215,30 @@ function portalRender(p){
   var offset = 50;
   var width = canvas.width;
   var height = canvas.height;
+  // For some BS reason the p.x etc is said to be a string?!
   var x = parseInt(p.x);
   var y = parseInt(p.y);
 
-  if(x+margin > width){
-    if(x > (width+margin)){
-      p.x = (x-width-offset);
+  /* edgeComparisons
+      - if the plane (and a margin) is larger than width; if the plane is far outside the right edge
+      - if the plane (and a margin) is less than 0; if the plane is far outside the left edge
+      - if the plane (and a margin) is larger than height; if the plane is far outside the bottom edge
+      - if the plane (and a margin) is less than 0; if the plane is far outside the top edge
+  */
+  var edgeComparisons = [[x+margin > width, x > width+margin],[(x-margin) < 0, x < -margin],[(y+margin) > height,y > (height+margin)],[(y-margin) < 0,y < -margin]];
+  var mirrorValues = [[(x-width-offset),y],[width+x+offset,y],[x,y-height-offset],[x,height+y+offset]];
+
+  for(var i = 0; i < edgeComparisons.length; i++){
+    if(edgeComparisons[i][0]){
+      p.x = mirrorValues[i][0];
+      p.y = mirrorValues[i][1];
       polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
     } else {
-      polygons(x-width-offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-    }
-  }if((x-margin) < 0){
-    if(x < -1*margin){
-      p.x = (width+x+offset);
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-    } else {
-      polygons(width+x+offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-    }
-  }if((y+margin) > height){
-    if(y > (height+margin)){
-      p.y = y-height-offset;
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-    } else {
-      polygons(p.x,y-height-offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-    }
-  }if((y-margin) < 0 ){
-    if(y < -1*margin){
-      p.y = height+y+offset;
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
-    } else {
-      polygons(p.x,height+y+offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(mirrorValues[i][0],mirrorValues[i][1],p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
     }
   }
 }
+
 
 function bulletRender(p){
   ctx.fillStyle = "#000";
@@ -262,7 +254,6 @@ function bulletRender(p){
     ctx.translate(-b.x,-b.y);
   }
 }
-
 
 // Draws polygon accordingly
 function polygons(x,y,rot,pointsList,colorList){
@@ -285,6 +276,7 @@ function polygons(x,y,rot,pointsList,colorList){
   ctx.translate(-x,-y);
 }
 
+// Converts rgb(x,y,z) to #abcdef
 function rgbToHex(r,g,b){
   var rgb = b | (g << 8) | (r << 16);
   var hex =  (0x1000000 | rgb).toString(16).substring(1);
