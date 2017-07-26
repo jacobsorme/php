@@ -204,21 +204,12 @@ function display(data){
 }
 
 function render(p){
-  ctx.fillStyle = "#000";
-  var bullets = p.bts;
-  //console.log(bullets);
-  for(var i = 0;i < bullets.length; i++){
-    var b = bullets[i];
-    ctx.translate(b.x,b.y);
-    ctx.rotate(b.rot*(Math.PI/180));
-    ctx.beginPath();
-    ctx.arc(0,0,15,0,2*Math.PI);
-    ctx.fill();
-    ctx.rotate(-1*b.rot*(Math.PI/180));
-    ctx.translate(-b.x,-b.y);
-  }
+  bulletRender(p);
   polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+  portalRender(p);
+}
 
+function portalRender(p){
   var margin = 50;
   var offset = 50;
   var width = canvas.width;
@@ -256,6 +247,22 @@ function render(p){
     }
   }
 }
+
+function bulletRender(p){
+  ctx.fillStyle = "#000";
+  var bullets = p.bts;
+  for(var i = 0;i < bullets.length; i++){
+    var b = bullets[i];
+    ctx.translate(b.x,b.y);
+    ctx.rotate(b.rot*(Math.PI/180));
+    ctx.beginPath();
+    ctx.arc(0,0,15,0,2*Math.PI);
+    ctx.fill();
+    ctx.rotate(-1*b.rot*(Math.PI/180));
+    ctx.translate(-b.x,-b.y);
+  }
+}
+
 
 // Draws polygon accordingly
 function polygons(x,y,rot,pointsList,colorList){
