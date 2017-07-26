@@ -1,6 +1,37 @@
 var _player= {};
 var _players = [];
 
+function Game(){
+  this.canvas = null;
+}
+
+/*
+  PREPARING FOR OBJECT ORIENTATION
+*/
+function Player(){
+  this.name = null;
+  this.id = null;
+  this.x = 300;
+  this.y = 300;
+  this.rot = 90;
+  this.glideRot = 45;
+  this.color = null;
+  this.speed = 2;
+  this.bullets = null;
+  this.shootTime = true;
+}
+
+Player.prototype = {
+  setName: function(name){
+    this.name = name;
+  },
+  setId: function(id){
+    this.id = id;
+  },
+  setColor: function(color){
+    this.color = color;
+  }
+}
 
 var keymap = [];
 
@@ -78,6 +109,10 @@ function createPlayer(idMessage){
     speed: 2,
     movementRotate: 0,
     bts: [],
+    collision: {
+      count:0,
+      bulletsInside:[],
+    },
   };
   _player = p;
   checkMyPlayer(p);
@@ -161,8 +196,29 @@ function run(){
   }
   display(_players);
   render(_player);
-
+  collision();
 }
+
+
+
+function collision(){
+  for(var i = 0; i < _players.length; i++){
+    if(_players[i].id != _player.id){
+      var p = _players[i];
+      for(var j = 0; j < p.bts.length; j++){
+        var b = p.bts[j];
+        if(_player.x-50 < b.x && _player.x+50 > b.x && _player.y-50 <b.y && _player.y+50 > b.y){
+          _player.coll += 1;
+        }
+      }
+    }
+  }
+}
+
+
+
+
+
 
 function bordercheck(object,margin){
   if(object.y < -margin){
@@ -204,8 +260,9 @@ function display(data){
 }
 
 
-// Rendering 
+// Rendering
 function render(p){
+  document.getElementById("values").innerHTML = JSON.stringify(_players);
   bulletRender(p);
   polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
   portalRender(p);
@@ -317,6 +374,6 @@ function dataMessage(){
   }
   bullets = JSON.stringify(bullets);
   //console.log(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + _player.coll;
   return res;
 }
