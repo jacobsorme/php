@@ -34,7 +34,7 @@
         $players[$i]->{'x'} = htmlspecialchars($_GET["left"]);
         $players[$i]->{'y'} = htmlspecialchars($_GET["top"]);
         $players[$i]->{'rot'} = htmlspecialchars($_GET["rotate"]);
-        //$players[$i]->{'bts'} = json_decode($_GET["bullets"]);
+        $players[$i]->{'bts'} = json_decode($_GET["bullets"]);
         //$players[$i]->{'coll'} = $_GET["collision"];
       }
     }

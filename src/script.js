@@ -38,7 +38,7 @@ Game.prototype = {
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
       var p1 = data[i];
-      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,null);
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts);
       this.globalPlayers.push(p2);
     }
   }
@@ -53,7 +53,7 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
   this.color = color;
   this.speed = speed;
   this.glideRot = glideRot;
-  this.bullets = [];
+  this.bullets = bullets;
   this.shootTime = null;
   this.components = null;
 }
@@ -113,7 +113,7 @@ function start(idMessage) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
-    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendInterval);
+    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendTime);
   }, 1000);
 }
 
@@ -132,16 +132,16 @@ function communicate(message,callback){
       t2 = d2.getTime();
       if(t2 - t1 < 5000){
         callback(res);
-        console.log("\tIncoming message: ");
-        console.log("\t"+message);
-        console.log("\t\n");
+        // console.log("\tIncoming message: ");
+        // console.log("\t"+message);
+        // console.log("\t\n");
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
-  console.log("Outgoing message: ");
-  console.log(message);
-  console.log("\n");
+  // console.log("Outgoing message: ");
+  // console.log(message);
+  // console.log("\n");
   xmlhttp.open("GET","server.php?"+message,true);
   xmlhttp.send();
   t1 = d1.getTime();
@@ -151,7 +151,7 @@ function communicate(message,callback){
 // Callback from communicate()
 function createPlayer(idMessage){
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[]);
   p.shootTime = true;
   game.setPlayer(p);
 }
@@ -214,14 +214,14 @@ function run(){
     if(bullets.length < 3) bullets.push(bullet);
   }
 
-  // for(var i = 0; i < bullets.length; i++){
-  //   throttle(bullets[i],bullets[i].rot,10);
-  //   if(bullets[i].bounce < 4){
-  //     bordercheck(bullets[i],15);
-  //   } else {
-  //     bullets.splice(i,1);
-  //   }
-  // }
+  for(var i = 0; i < bullets.length; i++){
+    throttle(bullets[i],bullets[i].rot,10);
+    if(bullets[i].bounce < 4){
+      bordercheck(bullets[i],15);
+    } else {
+      bullets.splice(i,1);
+    }
+  }
   display(game.globalPlayers);
   render(game.localPlayer);
   //collision();
@@ -273,7 +273,7 @@ function bordercheck(object,margin){
 }
 
 function update(answer){
-    document.getElementById("values").innerHTML = "<br>" + answer;
+    //document.getElementById("values").innerHTML = "<br>" + answer;
     game.setglobalPlayers(JSON.parse(answer));
 }
 
@@ -291,7 +291,7 @@ function display(data){
 
 // Rendering
 function render(p){
-  //bulletRender(p);
+  bulletRender(p);
   polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
   portalRender(p);
 }
@@ -405,9 +405,8 @@ function dataMessage(){
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  //console.log(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot
-  // + "&bullets=" + bullets
+  console.log(bullets);
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets
   // + "&collision=" + _player.coll;
   return res;
 }
