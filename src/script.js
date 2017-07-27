@@ -1,54 +1,89 @@
-var _player= {};
-var _players = [];
+// var _player= {};
+// var _players = [];
+
+//ass
 
 function Game(){
   this.canvas = null;
+  this.ctx = null;
+  this.localPlayer = null;
+  this.globalPlayers = null;
+  this.runInterval = null;
+  this.runTime = null;
+  this.sendInterval = null;
+  this.sendTime = null;
+  this.keys = null;
+  this.keymap = null;
 }
 
-/*
-  PREPARING FOR OBJECT ORIENTATION
-*/
-function Player(){
-  this.name = null;
-  this.id = null;
-  this.x = 300;
-  this.y = 300;
-  this.rot = 90;
-  this.glideRot = 45;
-  this.color = null;
-  this.speed = 2;
-  this.bullets = null;
-  this.shootTime = true;
-}
-
-Player.prototype = {
-  setName: function(name){
-    this.name = name;
+Game.prototype = {
+  setPlayer: function(p){
+    this.localPlayer = p;
   },
-  setId: function(id){
-    this.id = id;
+  getPlayer: function(){
+    return this.localPlayer;
   },
-  setColor: function(color){
-    this.color = color;
+  setCanvas: function(canvas){
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+  },
+  getWidth: function(){
+    return this.canvas.width;
+  },
+  getHeight: function(){
+    return this.canvas.height;
+  },
+  // Converts a server player to a client-like player.
+  setglobalPlayers: function(data){
+    this.globalPlayers = [];
+    for(var i = 0; i < data.length; i++){
+      var p1 = data[i];
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,null);
+      this.globalPlayers.push(p2);
+    }
   }
 }
 
-var keymap = [];
-
-var runInterval;
-var sendInterval;
-
-var canvas = document.getElementById("frame");
-var ctx = canvas.getContext("2d");
-
-var shootTime = true;
-
-var KEYS = {
-  SPACE: 32,
-  LEFT: 37,
-  UP: 38,
-  RIGHT: 39,
+function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
+  this.name = name;
+  this.id = id;
+  this.x = x;
+  this. y = y;
+  this.rot = rot;
+  this.color = color;
+  this.speed = speed;
+  this.glideRot = glideRot;
+  this.bullets = [];
+  this.shootTime = null;
+  this.components = null;
 }
+
+function Bullet(id,x,y,rot){
+  this.id = id;
+  this.x = x;
+  this.y = y;
+  this.rot = rot;
+  this.bounce = 0;
+}
+
+
+
+// var keymap = [];
+//
+// var runInterval;
+// var sendInterval;
+
+// var canvas = document.getElementById("frame");
+// var ctx = canvas.getContext("2d");
+
+// var shootTime = true;
+//
+// var KEYS = {
+//   SPACE: 32,
+//   LEFT: 37,
+//   UP: 38,
+//   RIGHT: 39,
+// }
 
 // The points
 var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
@@ -56,21 +91,30 @@ var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
 // 40,30 35,90 46,90 50,60 54,90 65,90 60,30 50,0
 var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-50]];
 
+
+ var game;
 // Start function, used by button
 // Starts the operation
-function start(id) {
-  if (runInterval != undefined){
-    clearInterval(runInterval);
-    clearInterval(sendInterval);
-  }
-  createPlayer(id);
+function start(idMessage) {
+  game = new Game();
+  game.runTime = 100;
+  game.sendTime = 500;
+  game.setCanvas(document.getElementById("frame"));
+  game.keys = {
+    SPACE: 32,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+  };
+  game.keymap = [];
+  game.runInterval = setInterval(run,game.runTime);
+  createPlayer(idMessage);
   startController();
-  runInterval = setInterval(run,25);
 
   // Start interval of function communicate() with paremeter update()
-  setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
-  }, 500);
+  setTimeout(function() {
+    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendInterval);
+  }, 1000);
 }
 
 // Send message to server.php, call callback with answer
@@ -88,10 +132,16 @@ function communicate(message,callback){
       t2 = d2.getTime();
       if(t2 - t1 < 5000){
         callback(res);
+        console.log("\tIncoming message: ");
+        console.log("\t"+message);
+        console.log("\t\n");
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
+  console.log("Outgoing message: ");
+  console.log(message);
+  console.log("\n");
   xmlhttp.open("GET","server.php?"+message,true);
   xmlhttp.send();
   t1 = d1.getTime();
@@ -100,36 +150,17 @@ function communicate(message,callback){
 // Create a player - the variable _palyer is assigned
 // Callback from communicate()
 function createPlayer(idMessage){
-  var idPlayer = JSON.parse(idMessage);
-  var p = {
-    name: idPlayer.name,
-    id: idPlayer.id,
-    x: 500, y: 500, rot: 90,
-    clr: idPlayer.clr,
-    speed: 2,
-    movementRotate: 0,
-    bts: [],
-    collision: {
-      count:0,
-      bulletsInside:[],
-    },
-  };
-  _player = p;
-  checkMyPlayer(p);
-}
-
-function checkMyPlayer(p){
-  if(_player == undefined) {
-    _player = p;
-  }
+  var idObj = JSON.parse(idMessage);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0);
+  p.shootTime = true;
+  game.setPlayer(p);
 }
 
 // Start the controlling of keys
-// Use variable keymap
 function startController(){
   onkeydown = onkeyup = function(e) {
-    keymap[e.keyCode] = (e.type == "keydown");
-    document.getElementById("values").innerHTML = e.keyCode;
+    game.keymap[e.keyCode] = (e.type == "keydown");
+    //document.getElementById("values").innerHTML = e.keyCode;
   }
 }
 
@@ -163,57 +194,54 @@ function speedUp(current){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  var bts = _player.bts;
-  if(keymap[KEYS.UP]) {
-    _player.speed = speedUp(_player.speed);
-    _player.movementRotate = _player.rot;
-    throttle(_player,_player.rot,_player.speed);
+  var p = game.localPlayer;
+  var bullets = p.bullets;
+  if(game.keymap[game.keys.UP]) {
+    p.speed = speedUp(p.speed);
+    p.glideRot = p.rot;
+    throttle(p,p.rot,p.speed);
   } else {
-    if(_player.speed > 0) _player.speed = speedDown(_player.speed);
-    else _player.speed = 0;
-    throttle(_player,_player.movementRotate,_player.speed);
+    if(p.speed > 0) p.speed = speedDown(p.speed);
+    else p.speed = 0;
+    throttle(p,p.glideRot,p.speed);
   }
-  if(keymap[KEYS.LEFT]) rotate(_player,-4);
-  if(keymap[KEYS.RIGHT]) rotate(_player,4);
-  if(keymap[KEYS.SPACE] && shootTime) {
-    shootTime = false;
-    setTimeout(function() {shootTime = true;},400);
-    var bullet = {
-      rot: _player.rot,
-      y: parseInt(_player.y), x: parseInt(_player.x),
-      bounceCount: 0,
-    }
-    if(bts.length < 3) bts.push(bullet);
+  if(game.keymap[game.keys.LEFT]) rotate(p,-4);
+  if(game.keymap[game.keys.RIGHT]) rotate(p,4);
+  if(game.keymap[game.keys.SPACE] && p.shootTime) {
+    p.shootTime = false;
+    setTimeout(function() {p.shootTime = true;},400);
+    var bullet = new Bullet(1,round(p.x),round(p.y),p.rot);
+    if(bullets.length < 3) bullets.push(bullet);
   }
 
-  for(var i = 0; i < bts.length; i++){
-    throttle(bts[i],bts[i].rot,10);
-    if(bts[i].bounceCount < 4){
-      bordercheck(bts[i],15);
-    } else {
-      bts.splice(i,1);
-    }
-  }
-  display(_players);
-  render(_player);
-  collision();
+  // for(var i = 0; i < bullets.length; i++){
+  //   throttle(bullets[i],bullets[i].rot,10);
+  //   if(bullets[i].bounce < 4){
+  //     bordercheck(bullets[i],15);
+  //   } else {
+  //     bullets.splice(i,1);
+  //   }
+  // }
+  display(game.globalPlayers);
+  render(game.localPlayer);
+  //collision();
 }
 
 
 
-function collision(){
-  for(var i = 0; i < _players.length; i++){
-    if(_players[i].id != _player.id){
-      var p = _players[i];
-      for(var j = 0; j < p.bts.length; j++){
-        var b = p.bts[j];
-        if(_player.x-50 < b.x && _player.x+50 > b.x && _player.y-50 <b.y && _player.y+50 > b.y){
-          _player.coll += 1;
-        }
-      }
-    }
-  }
-}
+// function collision(){
+//   for(var i = 0; i < _players.length; i++){
+//     if(_players[i].id != _player.id){
+//       var p = _players[i];
+//       for(var j = 0; j < p.bts.length; j++){
+//         var b = p.bts[j];
+//         if(_player.x-50 < b.x && _player.x+50 > b.x && _player.y-50 <b.y && _player.y+50 > b.y){
+//           _player.coll += 1;
+//         }
+//       }
+//     }
+//   }
+// }
 
 
 
@@ -222,38 +250,39 @@ function collision(){
 
 function bordercheck(object,margin){
   if(object.y < -margin){
-    object.bounceCount += 1;
+    object.bounce += 1;
     object.rot = (180 - object.rot)%360;
     object.y = -margin;
   }
-  if(object.y > canvas.height+margin){
-    object.bounceCount += 1;
+  if(object.y > game.getHeight()+margin){
+    object.bounce += 1;
     object.rot = (180 - object.rot)%360;
-    object.y = canvas.height+margin;
+    object.y = game.getHeight()+margin;
   }
   if(object.x < -margin){
-    object.bounceCount += 1;
+    object.bounce += 1;
     object.rot = (360 - object.rot)%360;
     object.x = -margin;
   }
-  if(object.x > canvas.width+margin){
-    object.bounceCount += 1;
+  if(object.x > game.getWidth()+margin){
+    object.bounce += 1;
     object.rot = (360 - object.rot)%360;
-    object.x = canvas.width+margin;
+    object.x = game.getWidth()+margin;
   }
 
 }
 
 function update(answer){
-    _players = JSON.parse(answer);
+    document.getElementById("values").innerHTML = "<br>" + answer;
+    game.setglobalPlayers(JSON.parse(answer));
 }
 
 // Update frame with data from server
 function display(data){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  game.ctx.clearRect(0, 0, game.getWidth(), game.getHeight());
   for(var i = 0; i < data.length; i++){
     var p = data[i];
-    if(_player.id != p.id){
+    if(game.localPlayer.id != p.id){
         render(p);
     }
   }
@@ -262,9 +291,8 @@ function display(data){
 
 // Rendering
 function render(p){
-  document.getElementById("values").innerHTML = JSON.stringify(_players);
-  bulletRender(p);
-  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+  //bulletRender(p);
+  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
   portalRender(p);
 }
 
@@ -272,78 +300,78 @@ function render(p){
 function portalRender(p){
   var margin = 50;
   var offset = 50;
-  var width = canvas.width;
-  var height = canvas.height;
-  var x = parseInt(p.x);
-  var y = parseInt(p.y);
+  var width = game.getWidth();
+  var height = game.getHeight();
+  var x = round(p.x);
+  var y = round(p.y);
 
   if(x+margin > width){
     if(x > (width+margin)){
       p.x = (x-width-offset);
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(x-width-offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(x-width-offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }if((x-margin) < 0){
     if(x < -1*margin){
       p.x = (width+x+offset);
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(width+x+offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(width+x+offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }if((y+margin) > height){
     if(y > (height+margin)){
       p.y = y-height-offset;
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,y-height-offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,y-height-offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }if((y-margin) < 0 ){
     if(y < -1*margin){
       p.y = height+y+offset;
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,height+y+offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,height+y+offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }
 }
 
 // Render bullets
 function bulletRender(p){
-  ctx.fillStyle = "#000";
-  var bullets = p.bts;
+  game.ctx.fillStyle = "#000";
+  var bullets = p.bullets;
   for(var i = 0;i < bullets.length; i++){
     var b = bullets[i];
-    ctx.translate(b.x,b.y);
-    ctx.rotate(b.rot*(Math.PI/180));
-    ctx.beginPath();
-    ctx.arc(0,0,15,0,2*Math.PI);
-    ctx.fill();
-    ctx.rotate(-1*b.rot*(Math.PI/180));
-    ctx.translate(-b.x,-b.y);
+    game.ctx.translate(b.x,b.y);
+    game.ctx.rotate(b.rot*(Math.PI/180));
+    game.ctx.beginPath();
+    game.ctx.arc(0,0,15,0,2*Math.PI);
+    game.ctx.fill();
+    game.ctx.rotate(-1*b.rot*(Math.PI/180));
+    game.ctx.translate(-b.x,-b.y);
   }
 }
 
 
 // Draws polygon accordingly
 function polygons(x,y,rot,pointsList,colorList){
-  ctx.translate(x,y);
-  ctx.rotate(rot*(Math.PI/180));
+  game.ctx.translate(x,y);
+  game.ctx.rotate(rot*(Math.PI/180));
   for(var i = 0; i< pointsList.length;i++){
-    ctx.fillStyle = colorList[i];
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
+    game.ctx.fillStyle = colorList[i];
+    game.ctx.strokeStyle = "#000";
+    game.ctx.lineWidth = 4;
+    game.ctx.beginPath();
     var points = pointsList[i];
     for(var j = 0; j < points.length; j++) {
-      ctx.lineTo(points[j][0],points[j][1]);
+      game.ctx.lineTo(points[j][0],points[j][1]);
     }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    game.ctx.closePath();
+    game.ctx.fill();
+    game.ctx.stroke();
   }
-  ctx.rotate(-1*rot*(Math.PI/180));
-  ctx.translate(-x,-y);
+  game.ctx.rotate(-1*rot*(Math.PI/180));
+  game.ctx.translate(-x,-y);
 }
 
 function rgbToHex(r,g,b){
@@ -360,20 +388,26 @@ function idMessage(username,r,g,b){
   return "tag=" + tag + "&username=" + username + "&color=" + color;
 }
 
+function round(val){
+  return parseInt(val*100)/100;
+}
+
 // Create a message with data of player
 function dataMessage(){
   var tag = "PD";
-  var id = _player.id;
-  var left = parseInt(_player.x);
-  var top = parseInt(_player.y);
-  var rot = _player.rot;
-  var bullets = JSON.parse(JSON.stringify(_player.bts));
+  var id = game.localPlayer.id;
+  var left = parseInt(game.localPlayer.x);
+  var top = parseInt(game.localPlayer.y);
+  var rot = game.localPlayer.rot;
+  var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   for(var i = 0; i < bullets.length; i++){
-    delete bullets[i].bounceCount;
+    delete bullets[i].bounce;
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
   //console.log(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + _player.coll;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot
+  // + "&bullets=" + bullets
+  // + "&collision=" + _player.coll;
   return res;
 }
