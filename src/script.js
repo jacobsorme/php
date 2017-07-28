@@ -53,9 +53,12 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
   this.bullets = bullets;
   this.shootTime = null;
   this.components = null;
+  this.collisionCount = 0;
+  this.penetration = [];
 }
 
-function Bullet(id,x,y,rot){
+function Bullet(playerId,id,x,y,rot){
+  this.playerId = playerId;
   this.id = id;
   this.x = x;
   this.y = y;
@@ -76,7 +79,7 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 function start(idMessage) {
   game = new Game();
   game.runTime = 25;
-  game.sendTime = 100;
+  game.sendTime = 50;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -87,14 +90,16 @@ function start(idMessage) {
   game.keymap = [];
   createPlayer(idMessage);
   startController();
+  game.runInterval = setInterval(run,game.runTime);
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
     game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendTime);
-  }, 1000);
+  }, 2000);
   console.log("Send:" + game.sendTime);
   console.log("Run:" + game.runTime);
-  game.runInterval = setInterval(run,game.runTime);
+
+  setInterval(displayData,500);
 }
 
 // Send message to server.php, call callback with answer
@@ -183,9 +188,11 @@ function run(){
   if(game.keymap[game.keys.RIGHT]) rotate(p,4);
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
+    if(bullets.length < 3){
+      var bullet = new Bullet(p.id,bullets.length,round(p.x),round(p.y),p.rot);
+      bullets.push(bullet);
+    }
     setTimeout(function() {p.shootTime = true;},400);
-    var bullet = new Bullet(1,round(p.x),round(p.y),p.rot);
-    if(bullets.length < 3) bullets.push(bullet);
   }
 
   for(var i = 0; i < bullets.length; i++){
@@ -198,24 +205,42 @@ function run(){
   }
   display(game.globalPlayers);
   render(game.localPlayer);
-  //collision();
+  collision();
 }
 
 
 
-// function collision(){
-//   for(var i = 0; i < _players.length; i++){
-//     if(_players[i].id != _player.id){
-//       var p = _players[i];
-//       for(var j = 0; j < p.bts.length; j++){
-//         var b = p.bts[j];
-//         if(_player.x-50 < b.x && _player.x+50 > b.x && _player.y-50 <b.y && _player.y+50 > b.y){
-//           _player.coll += 1;
-//         }
-//       }
-//     }
-//   }
-// }
+function collision(){
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      var pG = game.globalPlayers[i];
+      for(var j = 0; j < pG.bullets.length; j++){
+        var b = pG.bullets[j];
+        var pL = game.localPlayer;
+        // If it is inside the hitbox
+        if(pL.x-50 < b.x && pL.x+50 > b.x && pL.y-50 <b.y && pL.y+50 > b.y){
+          // Checking if it is already inside the hitbox
+          var found = false;
+          for(var k = 0; k < pL.penetration.length; k++){
+            if(pL.penetration[k].id == b.id && pL.penetration[k].playerId == b.playerId){
+              found = true;
+            }
+          }
+          if(!found){
+            pL.collisionCount += 1;
+            pL.penetration.push(b);
+          }
+        } else { // If the bullet is outside we shall remove it from penetration
+          for(var l = 0; l < pL.penetration.length; l++){
+            if(pL.penetration[l].id == b.id && pL.penetration[l].playerId == b.playerId){
+              pL.penetration.splice(l,1);
+            }
+          }
+        }
+      }
+    }
+  }
+}
 
 function bordercheck(object,margin){
   if(object.y < -margin){
@@ -264,6 +289,37 @@ function render(p){
   polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
   portalRender(p);
 }
+
+
+function displayData(){
+  var html = "<tr><td>";
+  html += game.localPlayer.name;
+  html += "</td>";
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      html += "<td>"+ game.globalPlayers[i].name + "</td>";
+    }
+  }
+  html += "</tr><tr><td>";
+  html += game.localPlayer.collisionCount;
+  html += "</td>";
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      html += "<td>"+ game.globalPlayers[i].collisionCount + "</td>";
+    }
+  }
+  html += "</tr><tr><td>";
+  html += JSON.stringify(game.localPlayer.penetration);
+  html += "</td>";
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      html += "<td>"+ JSON.stringify(game.globalPlayers[i].penetration) + "</td>";
+    }
+  }
+  html += "</tr>";
+  document.getElementById("data").innerHTML = html;
+}
+
 
 // Render portals
 function portalRender(p){
