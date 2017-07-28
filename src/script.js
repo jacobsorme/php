@@ -1,7 +1,3 @@
-// var _player= {};
-// var _players = [];
-
-//ass
 
 function Game(){
   this.canvas = null;
@@ -44,6 +40,7 @@ Game.prototype = {
   }
 }
 
+// Class Player
 function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
   this.name = name;
   this.id = id;
@@ -66,25 +63,6 @@ function Bullet(id,x,y,rot){
   this.bounce = 0;
 }
 
-
-
-// var keymap = [];
-//
-// var runInterval;
-// var sendInterval;
-
-// var canvas = document.getElementById("frame");
-// var ctx = canvas.getContext("2d");
-
-// var shootTime = true;
-//
-// var KEYS = {
-//   SPACE: 32,
-//   LEFT: 37,
-//   UP: 38,
-//   RIGHT: 39,
-// }
-
 // The points
 var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
 var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
@@ -93,12 +71,12 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 
 
  var game;
-// Start function, used by button
+// Start function, used by button swag
 // Starts the operation
 function start(idMessage) {
   game = new Game();
-  game.runTime = 100;
-  game.sendTime = 500;
+  game.runTime = 25;
+  game.sendTime = 100;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -107,7 +85,6 @@ function start(idMessage) {
     RIGHT: 39,
   };
   game.keymap = [];
-  game.runInterval = setInterval(run,game.runTime);
   createPlayer(idMessage);
   startController();
 
@@ -115,6 +92,9 @@ function start(idMessage) {
   setTimeout(function() {
     game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendTime);
   }, 1000);
+  console.log("Send:" + game.sendTime);
+  console.log("Run:" + game.runTime);
+  game.runInterval = setInterval(run,game.runTime);
 }
 
 // Send message to server.php, call callback with answer
@@ -132,16 +112,10 @@ function communicate(message,callback){
       t2 = d2.getTime();
       if(t2 - t1 < 5000){
         callback(res);
-        // console.log("\tIncoming message: ");
-        // console.log("\t"+message);
-        // console.log("\t\n");
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
-  // console.log("Outgoing message: ");
-  // console.log(message);
-  // console.log("\n");
   xmlhttp.open("GET","server.php?"+message,true);
   xmlhttp.send();
   t1 = d1.getTime();
@@ -242,11 +216,6 @@ function run(){
 //     }
 //   }
 // }
-
-
-
-
-
 
 function bordercheck(object,margin){
   if(object.y < -margin){
@@ -405,7 +374,6 @@ function dataMessage(){
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  console.log(bullets);
   var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets
   // + "&collision=" + _player.coll;
   return res;
