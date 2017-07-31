@@ -78,8 +78,8 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 // Starts the operation
 function start(idMessage) {
   game = new Game();
-  game.runTime = 25;
-  game.sendTime = 50;
+  game.runTime = 50;
+  game.sendTime =100;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -99,7 +99,7 @@ function start(idMessage) {
   console.log("Send:" + game.sendTime);
   console.log("Run:" + game.runTime);
 
-  setInterval(displayData,500);
+  setInterval(displayData,300);
 }
 
 // Send message to server.php, call callback with answer
@@ -164,7 +164,7 @@ function speedDown(current){
 }
 
 function speedUp(current){
-  if(current + 0.5 > 6) {
+  if(current + 0.5 > 9) {
     return 6;
   } else {
     return current + 0.5;
@@ -172,6 +172,8 @@ function speedUp(current){
 }
 
 function run(){
+  collision();
+  //console.log(JSON.stringify(game.localPlayer.penetration));
   // To check the real rotation and the rotation/direction of movement
   var p = game.localPlayer;
   var bullets = p.bullets;
@@ -196,21 +198,24 @@ function run(){
   }
 
   for(var i = 0; i < bullets.length; i++){
-    throttle(bullets[i],bullets[i].rot,10);
-    if(bullets[i].bounce < 4){
+    throttle(bullets[i],bullets[i].rot,1);
+    if(bullets[i].bounce < 1){
       bordercheck(bullets[i],15);
     } else {
+      //removePenetration(bullets[i]);
       bullets.splice(i,1);
     }
   }
   display(game.globalPlayers);
   render(game.localPlayer);
-  collision();
+
 }
 
 
 
 function collision(){
+
+  // If a bullet dissapear
   for(var i = 0; i < game.globalPlayers.length; i++){
     if(game.globalPlayers[i].id != game.localPlayer.id){
       var pG = game.globalPlayers[i];
@@ -292,12 +297,12 @@ function render(p){
 
 
 function displayData(){
-  var html = "<tr><td>";
+  var html = "<tr><th>";
   html += game.localPlayer.name;
-  html += "</td>";
+  html += "</th>";
   for(var i = 0; i < game.globalPlayers.length; i++){
     if(game.globalPlayers[i].id != game.localPlayer.id){
-      html += "<td>"+ game.globalPlayers[i].name + "</td>";
+      html += "<th>"+ game.globalPlayers[i].name + "</th>";
     }
   }
   html += "</tr><tr><td>";

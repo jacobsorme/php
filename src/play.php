@@ -11,10 +11,12 @@
 <div id="values"></div><p><br>
 <!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
 
-<canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas>
-
 <table id="data">
 </table>
+
+<canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas>
+
+
 
 
 <!-- <table id="connections">
