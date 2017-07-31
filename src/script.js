@@ -51,6 +51,7 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
   this.speed = speed;
   this.glideRot = glideRot;
   this.bullets = bullets;
+  this.bulletId = 0;
   this.shootTime = null;
   this.components = null;
   this.collisionCount = 0;
@@ -90,16 +91,19 @@ function start(idMessage) {
   game.keymap = [];
   createPlayer(idMessage);
   startController();
-  game.runInterval = setInterval(run,game.runTime);
+
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
     game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendTime);
-  }, 2000);
+  }, 1000);
   console.log("Send:" + game.sendTime);
   console.log("Run:" + game.runTime);
-
+  game.runInterval = setInterval(run,game.runTime);
   setInterval(displayData,300);
+  setTimeout(function() {
+    setInterval(collision,200);
+  }, 1000);
 }
 
 // Send message to server.php, call callback with answer
@@ -172,7 +176,6 @@ function speedUp(current){
 }
 
 function run(){
-  collision();
   //console.log(JSON.stringify(game.localPlayer.penetration));
   // To check the real rotation and the rotation/direction of movement
   var p = game.localPlayer;
@@ -191,15 +194,16 @@ function run(){
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
     if(bullets.length < 3){
-      var bullet = new Bullet(p.id,bullets.length,round(p.x),round(p.y),p.rot);
+      var bullet = new Bullet(p.id,p.bulletId,round(p.x),round(p.y),p.rot);
+      p.bulletId += 1;
       bullets.push(bullet);
     }
     setTimeout(function() {p.shootTime = true;},400);
   }
 
   for(var i = 0; i < bullets.length; i++){
-    throttle(bullets[i],bullets[i].rot,1);
-    if(bullets[i].bounce < 1){
+    throttle(bullets[i],bullets[i].rot,10);
+    if(bullets[i].bounce < 4){
       bordercheck(bullets[i],15);
     } else {
       //removePenetration(bullets[i]);
@@ -214,29 +218,48 @@ function run(){
 
 
 function collision(){
+  // var found = false;
+  // var pL = game.localPlayer;
+  // for(var i in pL.penetration){
+  //   var bp = pL.penetration[i];
+  //   for(var j in game.globalPlayers){
+  //     var pG = game.globalPlayers[j];
+  //     if(pG.id != pL.id){
+  //       for(var k in pG.bullets){
+  //         var b = pG.bullets[k];
+  //         if(b.id == bp.id && b.playerId == bp.playerId){
+  //           found = true;
+  //         }
+  //       }
+  //     }
+  //   }
+  //   if(!found){
+  //     pL.penetration.splice(i,1);
+  //   }
+  // }
 
   // If a bullet dissapear
-  for(var i = 0; i < game.globalPlayers.length; i++){
+  for(var i in game.globalPlayers){
     if(game.globalPlayers[i].id != game.localPlayer.id){
       var pG = game.globalPlayers[i];
-      for(var j = 0; j < pG.bullets.length; j++){
+      for(var j in pG.bullets){
         var b = pG.bullets[j];
         var pL = game.localPlayer;
         // If it is inside the hitbox
         if(pL.x-50 < b.x && pL.x+50 > b.x && pL.y-50 <b.y && pL.y+50 > b.y){
           // Checking if it is already inside the hitbox
-          var found = false;
-          for(var k = 0; k < pL.penetration.length; k++){
+          var alreadyInside = false;
+          for(var k in pL.penetration){
             if(pL.penetration[k].id == b.id && pL.penetration[k].playerId == b.playerId){
-              found = true;
+              alreadyInside = true;
             }
           }
-          if(!found){
+          if(!alreadyInside){
             pL.collisionCount += 1;
             pL.penetration.push(b);
           }
         } else { // If the bullet is outside we shall remove it from penetration
-          for(var l = 0; l < pL.penetration.length; l++){
+          for(var l in pL.penetration){
             if(pL.penetration[l].id == b.id && pL.penetration[l].playerId == b.playerId){
               pL.penetration.splice(l,1);
             }
