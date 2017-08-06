@@ -1,22 +1,70 @@
-var _player= {};
-var _players = [];
 
+function Game(){
+  this.canvas = null;
+  this.ctx = null;
+  this.localPlayer = null;
+  this.globalPlayers = null;
+  this.runInterval = null;
+  this.runTime = null;
+  this.sendInterval = null;
+  this.sendTime = null;
+  this.keys = null;
+  this.keymap = null;
+}
 
-var keymap = [];
+Game.prototype = {
+  setPlayer: function(p){
+    this.localPlayer = p;
+  },
+  getPlayer: function(){
+    return this.localPlayer;
+  },
+  setCanvas: function(canvas){
+    this.canvas = canvas;
+    this.ctx = canvas.getContext("2d");
+  },
+  getWidth: function(){
+    return this.canvas.width;
+  },
+  getHeight: function(){
+    return this.canvas.height;
+  },
+  // Converts a server player to a client-like player.
+  setglobalPlayers: function(data){
+    this.globalPlayers = [];
+    for(var i = 0; i < data.length; i++){
+      var p1 = data[i];
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts);
+      this.globalPlayers.push(p2);
+    }
+  }
+}
 
-var runInterval;
-var sendInterval;
+// Class Player
+function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
+  this.name = name;
+  this.id = id;
+  this.x = x;
+  this. y = y;
+  this.rot = rot;
+  this.color = color;
+  this.speed = speed;
+  this.glideRot = glideRot;
+  this.bullets = bullets;
+  this.bulletId = 0;
+  this.shootTime = null;
+  this.components = null;
+  this.collisionCount = 0;
+  this.penetration = [];
+}
 
-var canvas = document.getElementById("frame");
-var ctx = canvas.getContext("2d");
-
-var shootTime = true;
-
-var KEYS = {
-  SPACE: 32,
-  LEFT: 37,
-  UP: 38,
-  RIGHT: 39,
+function Bullet(playerId,id,x,y,rot){
+  this.playerId = playerId;
+  this.id = id;
+  this.x = x;
+  this.y = y;
+  this.rot = rot;
+  this.bounce = 0;
 }
 
 // The points
@@ -25,21 +73,40 @@ var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
 // 40,30 35,90 46,90 50,60 54,90 65,90 60,30 50,0
 var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-50]];
 
-// Start function, used by button
+
+ var game;
+// Start function, used by button swag
 // Starts the operation
-function start(id) {
-  if (runInterval != undefined){
-    clearInterval(runInterval);
-    clearInterval(sendInterval);
-  }
-  createPlayer(id);
+function start(idMessage) {
+  setTimeout(function() {
+    //window.location = "http://duckduckgo.com";
+  },10000);
+  game = new Game();
+  game.runTime = 50;
+  game.sendTime =100;
+  game.setCanvas(document.getElementById("frame"));
+  game.keys = {
+    SPACE: 32,
+    LEFT: 37,
+    UP: 38,
+    RIGHT: 39,
+  };
+  game.keymap = [];
+  createPlayer(idMessage);
   startController();
-  runInterval = setInterval(run,25);
+
 
   // Start interval of function communicate() with paremeter update()
-  setTimeout(function () {
-    sendInterval = setInterval(communicate.bind(null,dataMessage,update),100);
-  }, 500);
+  setTimeout(function() {
+    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendTime);
+  }, 1000);
+  console.log("Send:" + game.sendTime);
+  console.log("Run:" + game.runTime);
+  game.runInterval = setInterval(run,game.runTime);
+  setInterval(displayData,300);
+  setTimeout(function() {
+    setInterval(collision,200);
+  }, 1000);
 }
 
 // Send message to server.php, call callback with answer
@@ -69,32 +136,17 @@ function communicate(message,callback){
 // Create a player - the variable _palyer is assigned
 // Callback from communicate()
 function createPlayer(idMessage){
-  var idPlayer = JSON.parse(idMessage);
-  var p = {
-    name: idPlayer.name,
-    id: idPlayer.id,
-    x: 500, y: 500, rot: 90,
-    clr: idPlayer.clr,
-    speed: 2,
-    movementRotate: 0,
-    bts: [],
-  };
-  _player = p;
-  checkMyPlayer(p);
-}
-
-function checkMyPlayer(p){
-  if(_player == undefined) {
-    _player = p;
-  }
+  var idObj = JSON.parse(idMessage);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[]);
+  p.shootTime = true;
+  game.setPlayer(p);
 }
 
 // Start the controlling of keys
-// Use variable keymap
 function startController(){
   onkeydown = onkeyup = function(e) {
-    keymap[e.keyCode] = (e.type == "keydown");
-    document.getElementById("values").innerHTML = e.keyCode;
+    game.keymap[e.keyCode] = (e.type == "keydown");
+    //document.getElementById("values").innerHTML = e.keyCode;
   }
 }
 
@@ -119,7 +171,7 @@ function speedDown(current){
 }
 
 function speedUp(current){
-  if(current + 0.5 > 6) {
+  if(current + 0.5 > 9) {
     return 6;
   } else {
     return current + 0.5;
@@ -127,166 +179,288 @@ function speedUp(current){
 }
 
 function run(){
+  //console.log(JSON.stringify(game.localPlayer.penetration));
   // To check the real rotation and the rotation/direction of movement
-  var bts = _player.bts;
-  if(keymap[KEYS.UP]) {
-    _player.speed = speedUp(_player.speed);
-    _player.movementRotate = _player.rot;
-    throttle(_player,_player.rot,_player.speed);
+  var p = game.localPlayer;
+  var bullets = p.bullets;
+  if(game.keymap[game.keys.UP]) {
+    p.speed = speedUp(p.speed);
+    p.glideRot = p.rot;
+    throttle(p,p.rot,p.speed);
   } else {
-    if(_player.speed > 0) _player.speed = speedDown(_player.speed);
-    else _player.speed = 0;
-    throttle(_player,_player.movementRotate,_player.speed);
+    if(p.speed > 0) p.speed = speedDown(p.speed);
+    else p.speed = 0;
+    throttle(p,p.glideRot,p.speed);
   }
-  if(keymap[KEYS.LEFT]) rotate(_player,-4);
-  if(keymap[KEYS.RIGHT]) rotate(_player,4);
-  if(keymap[KEYS.SPACE] && shootTime) {
-    shootTime = false;
-    setTimeout(function() {shootTime = true;},400);
-    var bullet = {
-      rot: _player.rot,
-      y: parseInt(_player.y), x: parseInt(_player.x),
-      bounceCount: 0,
+  if(game.keymap[game.keys.LEFT]) rotate(p,-4);
+  if(game.keymap[game.keys.RIGHT]) rotate(p,4);
+  if(game.keymap[game.keys.SPACE] && p.shootTime) {
+    p.shootTime = false;
+    if(bullets.length < 3){
+      var bullet = new Bullet(p.id,p.bulletId,round(p.x),round(p.y),p.rot);
+      p.bulletId += 1;
+      bullets.push(bullet);
     }
-    if(bts.length < 3) bts.push(bullet);
+    setTimeout(function() {p.shootTime = true;},400);
   }
 
-  for(var i = 0; i < bts.length; i++){
-    throttle(bts[i],bts[i].rot,10);
-    if(bts[i].bounceCount < 4){
-      bordercheck(bts[i],15);
+  for(var i = 0; i < bullets.length; i++){
+    throttle(bullets[i],bullets[i].rot,7);
+    if(bullets[i].bounce < 4){
+      bordercheck(bullets[i],15);
     } else {
-      bts.splice(i,1);
+      //removePenetration(bullets[i]);
+      bullets.splice(i,1);
     }
   }
-  display(_players);
-  render(_player);
+  display(game.globalPlayers);
+  render(game.localPlayer);
 
+}
+
+function collisionBool(player,bullet){
+  return (player.x-50 < bullet.x && player.x+50 > bullet.x && player.y-50 <bullet.y && player.y+50 > bullet.y);
+}
+
+function collision(){
+  // Double checking penetrating bullets - if database have them gone so shall we!
+  // Be careful with your own bullets here!
+  var found = false;
+  var pL = game.localPlayer;
+  for(var i in pL.penetration){
+    var bp = pL.penetration[i];
+    for(var j in game.globalPlayers){
+      var pG = game.globalPlayers[j];
+      if(pG.id != pL.id){
+        for(var k in pG.bullets){
+          var b = pG.bullets[k];
+          if(b.id == bp.id && b.playerId == bp.playerId){
+            found = true;
+          }
+        }
+      }
+    }
+    if(!found){
+      // Taking care of the problem with the own bullets
+      if(pL.penetration[i].playerId != pL.id){
+        pL.penetration.splice(i,1);
+      }
+    }
+  }
+
+  // Local checking
+  var p = game.localPlayer
+  for(var i in p.bullets){
+    var b = p.bullets[i];
+    if(p.x-50 < b.x && p.x+50 > b.x && p.y-50 <b.y && p.y+50 > b.y){
+      // Checking if it is already inside the hitbox
+      var alreadyInside = false;
+      for(var j in p.penetration){
+        if(p.penetration[j].id == b.id && p.penetration[j].playerId == b.playerId){
+          alreadyInside = true;
+        }
+      }
+      if(!alreadyInside){
+        p.collisionCount += 1;
+        p.penetration.push(b);
+      }
+    } else { // If the bullet is outside we shall remove it from penetration
+      for(var k in p.penetration){
+        if(p.penetration[k].id == b.id && p.penetration[k].playerId == b.playerId){
+          p.penetration.splice(k,1);
+        }
+      }
+    }
+  }
+
+
+  for(var i in game.globalPlayers){
+    // We don't want to make checks on the local player based on what database says
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      var pG = game.globalPlayers[i];
+      for(var j in pG.bullets){
+        var b = pG.bullets[j];
+        var pL = game.localPlayer;
+        // If it is inside the hitbox
+        if(pL.x-50 < b.x && pL.x+50 > b.x && pL.y-50 <b.y && pL.y+50 > b.y){
+          // Checking if it is already inside the hitbox
+          var alreadyInside = false;
+          for(var k in pL.penetration){
+            if(pL.penetration[k].id == b.id && pL.penetration[k].playerId == b.playerId){
+              alreadyInside = true;
+            }
+          }
+          if(!alreadyInside){
+            pL.collisionCount += 1;
+            pL.penetration.push(b);
+          }
+        } else { // If the bullet is outside we shall remove it from penetration
+          for(var l in pL.penetration){
+            if(pL.penetration[l].id == b.id && pL.penetration[l].playerId == b.playerId){
+              pL.penetration.splice(l,1);
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 function bordercheck(object,margin){
   if(object.y < -margin){
-    object.bounceCount += 1;
+    object.bounce += 1;
     object.rot = (180 - object.rot)%360;
     object.y = -margin;
   }
-  if(object.y > canvas.height+margin){
-    object.bounceCount += 1;
+  if(object.y > game.getHeight()+margin){
+    object.bounce += 1;
     object.rot = (180 - object.rot)%360;
-    object.y = canvas.height+margin;
+    object.y = game.getHeight()+margin;
   }
   if(object.x < -margin){
-    object.bounceCount += 1;
+    object.bounce += 1;
     object.rot = (360 - object.rot)%360;
     object.x = -margin;
   }
-  if(object.x > canvas.width+margin){
-    object.bounceCount += 1;
+  if(object.x > game.getWidth()+margin){
+    object.bounce += 1;
     object.rot = (360 - object.rot)%360;
-    object.x = canvas.width+margin;
+    object.x = game.getWidth()+margin;
   }
 
 }
 
 function update(answer){
-    _players = JSON.parse(answer);
+    //document.getElementById("values").innerHTML = "<br>" + answer;
+    game.setglobalPlayers(JSON.parse(answer));
 }
 
 // Update frame with data from server
 function display(data){
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  game.ctx.clearRect(0, 0, game.getWidth(), game.getHeight());
   for(var i = 0; i < data.length; i++){
     var p = data[i];
-    if(_player.id != p.id){
+    if(game.localPlayer.id != p.id){
         render(p);
     }
   }
 }
 
 
-// Rendering 
+// Rendering
 function render(p){
   bulletRender(p);
-  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
   portalRender(p);
 }
+
+
+function displayData(){
+  var html = "<tr><th>";
+  html += game.localPlayer.name;
+  html += "</th>";
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      html += "<th>"+ game.globalPlayers[i].name + "</th>";
+    }
+  }
+  html += "</tr><tr><td>";
+  html += game.localPlayer.collisionCount;
+  html += "</td>";
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      html += "<td>"+ game.globalPlayers[i].collisionCount + "</td>";
+    }
+  }
+  html += "</tr><tr><td>";
+  html += JSON.stringify(game.localPlayer.penetration);
+  html += "</td>";
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    if(game.globalPlayers[i].id != game.localPlayer.id){
+      html += "<td>"+ JSON.stringify(game.globalPlayers[i].penetration) + "</td>";
+    }
+  }
+  html += "</tr>";
+  document.getElementById("data").innerHTML = html;
+}
+
 
 // Render portals
 function portalRender(p){
   var margin = 50;
   var offset = 50;
-  var width = canvas.width;
-  var height = canvas.height;
-  var x = parseInt(p.x);
-  var y = parseInt(p.y);
+  var width = game.getWidth();
+  var height = game.getHeight();
+  var x = round(p.x);
+  var y = round(p.y);
 
   if(x+margin > width){
     if(x > (width+margin)){
       p.x = (x-width-offset);
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(x-width-offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(x-width-offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }if((x-margin) < 0){
     if(x < -1*margin){
       p.x = (width+x+offset);
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(width+x+offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(width+x+offset,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }if((y+margin) > height){
     if(y > (height+margin)){
       p.y = y-height-offset;
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,y-height-offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,y-height-offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }if((y-margin) < 0 ){
     if(y < -1*margin){
       p.y = height+y+offset;
-      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,height+y+offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.clr,"#888","#3FF"]);
+      polygons(p.x,height+y+offset,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
     }
   }
 }
 
 // Render bullets
 function bulletRender(p){
-  ctx.fillStyle = "#000";
-  var bullets = p.bts;
+  game.ctx.fillStyle = "#000";
+  var bullets = p.bullets;
   for(var i = 0;i < bullets.length; i++){
     var b = bullets[i];
-    ctx.translate(b.x,b.y);
-    ctx.rotate(b.rot*(Math.PI/180));
-    ctx.beginPath();
-    ctx.arc(0,0,15,0,2*Math.PI);
-    ctx.fill();
-    ctx.rotate(-1*b.rot*(Math.PI/180));
-    ctx.translate(-b.x,-b.y);
+    game.ctx.translate(b.x,b.y);
+    game.ctx.rotate(b.rot*(Math.PI/180));
+    game.ctx.beginPath();
+    game.ctx.arc(0,0,15,0,2*Math.PI);
+    game.ctx.fill();
+    game.ctx.rotate(-1*b.rot*(Math.PI/180));
+    game.ctx.translate(-b.x,-b.y);
   }
 }
 
 
 // Draws polygon accordingly
 function polygons(x,y,rot,pointsList,colorList){
-  ctx.translate(x,y);
-  ctx.rotate(rot*(Math.PI/180));
+  game.ctx.translate(x,y);
+  game.ctx.rotate(rot*(Math.PI/180));
   for(var i = 0; i< pointsList.length;i++){
-    ctx.fillStyle = colorList[i];
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 4;
-    ctx.beginPath();
+    game.ctx.fillStyle = colorList[i];
+    game.ctx.strokeStyle = "#000";
+    game.ctx.lineWidth = 4;
+    game.ctx.beginPath();
     var points = pointsList[i];
     for(var j = 0; j < points.length; j++) {
-      ctx.lineTo(points[j][0],points[j][1]);
+      game.ctx.lineTo(points[j][0],points[j][1]);
     }
-    ctx.closePath();
-    ctx.fill();
-    ctx.stroke();
+    game.ctx.closePath();
+    game.ctx.fill();
+    game.ctx.stroke();
   }
-  ctx.rotate(-1*rot*(Math.PI/180));
-  ctx.translate(-x,-y);
+  game.ctx.rotate(-1*rot*(Math.PI/180));
+  game.ctx.translate(-x,-y);
 }
 
 function rgbToHex(r,g,b){
@@ -303,20 +477,24 @@ function idMessage(username,r,g,b){
   return "tag=" + tag + "&username=" + username + "&color=" + color;
 }
 
+function round(val){
+  return parseInt(val*100)/100;
+}
+
 // Create a message with data of player
 function dataMessage(){
   var tag = "PD";
-  var id = _player.id;
-  var left = parseInt(_player.x);
-  var top = parseInt(_player.y);
-  var rot = _player.rot;
-  var bullets = JSON.parse(JSON.stringify(_player.bts));
+  var id = game.localPlayer.id;
+  var left = parseInt(game.localPlayer.x);
+  var top = parseInt(game.localPlayer.y);
+  var rot = game.localPlayer.rot;
+  var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   for(var i = 0; i < bullets.length; i++){
-    delete bullets[i].bounceCount;
+    delete bullets[i].bounce;
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  //console.log(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets
+  // + "&collision=" + _player.coll;
   return res;
 }

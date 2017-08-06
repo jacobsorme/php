@@ -5,13 +5,19 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
 </head>
-<body>
+<body scroll="false">
 <h3 id="welcome"></h3>
 <a href="index.php"><h3>Home</h3></a>
-<div id="values"></div>
+<div id="values"></div><p><br>
 <!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
 
+<table id="data">
+</table>
+
 <canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas>
+
+
+
 
 <!-- <table id="connections">
   <tr>
@@ -20,9 +26,8 @@
   </tr>
 </table> -->
 
-<script type="text/javascript" src="script.js">
+<script type="text/javascript" src="script.js"></script>
 
-</script>
 <script>
   var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
   var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
