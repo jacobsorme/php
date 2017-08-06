@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
 </head>
-<body>
+<body scroll="false">
 <h3 id="welcome"></h3>
 <a href="index.php"><h3>Home</h3></a>
 <div id="values"></div><p><br>
@@ -26,9 +26,8 @@
   </tr>
 </table> -->
 
-<script type="text/javascript" src="script.js">
+<script type="text/javascript" src="script.js"></script>
 
-</script>
 <script>
   var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
   var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
