@@ -250,26 +250,24 @@ function collision(){
 
   // Local checking
   var p = game.localPlayer
-  for(var c in p.bullets){
-    var b = p.bullets[c];
+  for(var i in p.bullets){
+    var b = p.bullets[i];
     if(p.x-50 < b.x && p.x+50 > b.x && p.y-50 <b.y && p.y+50 > b.y){
       // Checking if it is already inside the hitbox
-      var alreadyInside1 = false;
-      for(var d in p.penetration){
-        if(p.penetration[d].id == b.id && p.penetration[d].playerId == b.playerId){
-          console.log("I have found the bullet in penetration");
-          alreadyInside1 = true;
+      var alreadyInside = false;
+      for(var j in p.penetration){
+        if(p.penetration[j].id == b.id && p.penetration[j].playerId == b.playerId){
+          alreadyInside = true;
         }
       }
-      if(!alreadyInside1){
-        console.log("alreadyInside is false: I am in that if");
+      if(!alreadyInside){
         p.collisionCount += 1;
         p.penetration.push(b);
       }
     } else { // If the bullet is outside we shall remove it from penetration
-      for(var e in p.penetration){
-        if(p.penetration[e].id == b.id && p.penetration[e].playerId == b.playerId){
-          p.penetration.splice(e,1);
+      for(var k in p.penetration){
+        if(p.penetration[k].id == b.id && p.penetration[k].playerId == b.playerId){
+          p.penetration.splice(k,1);
         }
       }
     }
