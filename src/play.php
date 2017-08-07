@@ -25,20 +25,28 @@
     <th>receive</th>
   </tr>
 </table> -->
-
-<script type="text/javascript" src="script.js"></script>
+<script src="script/math.js"></script>
+<script src="script/communicate.js"></script>
+<script src="script/collision.js"></script>
+<script src="script/render.js"></script>
+<script src="script/physics.js"></script>
+<script src="script/script.js"></script>
 
 <script>
-  var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
-  var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
-  var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
-  var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
+  window.onload = function(){
+    var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
+    var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
+    var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
+    var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
 
-  function setup() {
-    communicate(idMessage.bind(null,username,r,g,b),start);
+    function setup() {
+      communicate(idMessage.bind(null,username,r,g,b),start);
+    }
+
+    setup();
   }
 
-  setup();
+
 
 </script>
 </body>
