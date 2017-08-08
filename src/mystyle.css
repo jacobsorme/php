@@ -7,6 +7,11 @@
   font-family: monospace;
   margin: 30px;
   padding: 30px;
+  white-space: nowrap;
+  width: 100px;
+  overflow: hidden;
+  text-align: left;
+  text-overflow: clip;
 }
 
 

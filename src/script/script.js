@@ -34,14 +34,14 @@ Game.prototype = {
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
       var p1 = data[i];
-      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts);
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts,p1.col);
       this.globalPlayers.push(p2);
     }
   }
 }
 
 // Class Player
-function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
+function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount){
   this.name = name;
   this.id = id;
   this.x = x;
@@ -51,10 +51,10 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets){
   this.speed = speed;
   this.glideRot = glideRot;
   this.bullets = bullets;
+  this.collisionCount = collisionCount;
   this.bulletId = 0;
   this.shootTime = null;
   this.components = null;
-  this.collisionCount = 0;
   this.penetration = [];
 }
 
@@ -114,7 +114,7 @@ function start(idMessage) {
 // Callback from communicate()
 function createPlayer(idMessage){
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[]);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0);
   p.shootTime = true;
   game.setPlayer(p);
 }

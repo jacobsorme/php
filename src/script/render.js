@@ -1,10 +1,10 @@
 function displayData(){
-  var html = "<tr><th>";
+  var html = "<tr><th style=\"width:100px\">";
   html += game.localPlayer.name;
   html += "</th>";
   for(var i = 0; i < game.globalPlayers.length; i++){
     if(game.globalPlayers[i].id != game.localPlayer.id){
-      html += "<th>"+ game.globalPlayers[i].name + "</th>";
+      html += "<th style=\"width:100px\">"+ game.globalPlayers[i].name + "</th>";
     }
   }
   html += "</tr><tr><td>";
@@ -15,15 +15,7 @@ function displayData(){
       html += "<td>"+ game.globalPlayers[i].collisionCount + "</td>";
     }
   }
-  html += "</tr><tr><td>";
-  html += JSON.stringify(game.localPlayer.penetration);
-  html += "</td>";
-  for(var i = 0; i < game.globalPlayers.length; i++){
-    if(game.globalPlayers[i].id != game.localPlayer.id){
-      html += "<td>"+ JSON.stringify(game.globalPlayers[i].penetration) + "</td>";
-    }
-  }
-  html += "</tr>";
+  html += '</tr>'
   document.getElementById("data").innerHTML = html;
 }
 

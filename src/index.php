@@ -11,7 +11,7 @@
 <center>
   <h1 id="title">JetLag</h1>
   <form method="get" action="play.php" autocomplete="off">
-  <input type="text" id="username" name="username" placeholder="username"><p>
+  <input type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
   <b style="color:red;">R:</b>
   <input type="range" id="r" name="r" value="24" min="17" max="238" step="17" onmousemove="color()"><br>
   <b style="color:green;">G:</b>

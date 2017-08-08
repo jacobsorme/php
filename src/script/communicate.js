@@ -40,12 +40,12 @@ function dataMessage(){
   var top = parseInt(game.localPlayer.y);
   var rot = game.localPlayer.rot;
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
+  var coll = game.localPlayer.collisionCount;
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounce;
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets
-  // + "&collision=" + _player.coll;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll;
   return res;
 }
