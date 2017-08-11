@@ -38,6 +38,9 @@
     var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
     var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
     var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
+    var test = "<?php echo $_GET["room"] ?>";
+
+    console.log(test);
 
     function setup() {
       communicate(idMessage.bind(null,username,r,g,b),start,"php/server.php");
