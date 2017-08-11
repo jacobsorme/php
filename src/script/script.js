@@ -10,6 +10,7 @@ function Game(){
   this.sendTime = null;
   this.keys = null;
   this.keymap = null;
+  this.server = null;
 }
 
 Game.prototype = {
@@ -83,6 +84,7 @@ function start(idMessage) {
     //window.location = "http://duckduckgo.com";
   },10000);
   game = new Game();
+  game.server = "php/server.php";
   game.runTime = 50;
   game.sendTime =100;
   game.setCanvas(document.getElementById("frame"));
@@ -99,7 +101,7 @@ function start(idMessage) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
-    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update),game.sendTime);
+    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update,game.server),game.sendTime);
   }, 1000);
   console.log("Send:" + game.sendTime);
   console.log("Run:" + game.runTime);

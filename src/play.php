@@ -40,7 +40,7 @@
     var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
 
     function setup() {
-      communicate(idMessage.bind(null,username,r,g,b),start);
+      communicate(idMessage.bind(null,username,r,g,b),start,"php/server.php");
     }
 
     setup();

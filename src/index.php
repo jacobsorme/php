@@ -13,17 +13,31 @@
   <form method="get" action="play.php" autocomplete="off">
   <input type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
   <b style="color:red;">R:</b>
-  <input type="range" id="r" name="r" value="24" min="17" max="238" step="17" onmousemove="color()"><br>
+  <input type="range" id="r" name="r" value="24" min="17" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
   <b style="color:green;">G:</b>
-  <input type="range" id="g" name="g" value="24" min="17" max="238" step="17" onmousemove="color()"><br>
+  <input type="range" id="g" name="g" value="24" min="17" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
   <b style="color:blue;">B:</b>
-  <input type="range" id="b" name="b" value="24" min="17" max="238" step="17" onmousemove="color()"><p>
+  <input type="range" id="b" name="b" value="24" min="17" max="238" step="17" onkeydown="color()" onmousemove="color()"><p>
   <input type="submit" value="Play">
 </center>
 
 </form>
 </div>
 
+<div id="rooms" style="border-style:solid;border-color:#000; border-width:2px;">
+Hej
+</div>
+<script src="script/communicate.js">
+function rooms(answer){
+  document.getElementById("rooms").innerHTML = answer;
+}
+function message(){
+  return "";
+}
+
+communicate(message,rooms,"php/roomserver.php");
+
+</script>
 <script>
 function color(){
   var r = document.getElementById("r").value;

@@ -1,5 +1,5 @@
 // Send message to server.php, call callback with answer
-function communicate(message,callback){
+function communicate(message,callback,serverSource){
   var message = message();
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
@@ -17,7 +17,7 @@ function communicate(message,callback){
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
-  xmlhttp.open("GET","server.php?"+message,true);
+  xmlhttp.open("GET",serverSource+"?"+message,true);
   xmlhttp.send();
   t1 = d1.getTime();
 }
