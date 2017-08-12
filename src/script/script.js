@@ -115,6 +115,7 @@ function start(idMessage) {
 // Create a player - the variable _palyer is assigned
 // Callback from communicate()
 function createPlayer(idMessage){
+  console.log(idMessage);
   var idObj = JSON.parse(idMessage);
   var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0);
   p.shootTime = true;

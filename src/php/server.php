@@ -1,9 +1,11 @@
 <?php
+  include 'readwrite.php';
+
   $database = "database.txt";
 
   $tag = htmlspecialchars($_GET["tag"]);
 
-  $data = read();
+  $data = read($database);
   $json = json_decode($data);
   $players = $json->{'players'};
 
@@ -13,6 +15,7 @@
     $color = $_GET["color"];
     $id = $json->{'id'};
 
+
     $newplayer;
     $newplayer->{'id'} = $id;
     $newplayer->{'name'} = $username;
@@ -20,8 +23,8 @@
 
     array_push($players,$newplayer);
 
-    write('players',$players);
-    write('id',($id+1));
+    write('players',$players,$database);
+    write('id',($id+1),$database);
 
     echo (json_encode($newplayer));
 
@@ -38,38 +41,9 @@
         $players[$i]->{'col'} = $_GET["collision"];
       }
     }
-    write('players',$players);
+    write('players',$players,$database);
     echo (json_encode($players));
   }
 
-  // Read one line from databese. The JSON
-  function read(){
-    $myfile = fopen("database.txt", "c+b") or die("Unable to open file!");
-    if(flock($myfile, LOCK_EX)) {
-      $content = fgets($myfile);
 
-      fflush($myfile);
-      flock($myfile, LOCK_UN);
-      fclose($myfile);
-      return $content;
-    }
-    //return file_get_contents("database.txt", LOCK_EX);
-  }
-
-  // Write $val to $obj in JSON
-  function write($obj,$val){
-    $content = read();
-    $json = json_decode($content);
-    $json->{$obj} = $val;
-    $myfile = fopen("database.txt", "cb") or die("Unable to open file!");
-
-    if(flock($myfile, LOCK_EX)) {
-      ftruncate($myfile,0);
-      fwrite($myfile,json_encode($json));
-    }
-
-    fflush($myfile);
-    flock($myfile, LOCK_UN);
-    fclose($myfile);
-  }
 ?>
