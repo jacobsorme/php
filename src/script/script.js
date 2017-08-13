@@ -10,7 +10,8 @@ function Game(){
   this.sendTime = null;
   this.keys = null;
   this.keymap = null;
-  this.server = null;
+  this.database = null;
+  this.server = null; 
 }
 
 Game.prototype = {
@@ -80,11 +81,14 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 // Starts the operation
 
 function start(idMessage) {
+  console.log(idMessage);
+  var idObj = JSON.parse(idMessage);
   setTimeout(function() {
     //window.location = "http://duckduckgo.com";
   },10000);
   game = new Game();
-  game.server = "php/server.php";
+  game.database = idObj.room;
+  game.server = "php/server.php"
   game.runTime = 50;
   game.sendTime =100;
   game.setCanvas(document.getElementById("frame"));

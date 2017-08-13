@@ -1,7 +1,7 @@
 <?php
   include 'readwrite.php';
 
-  $database = "database.txt";
+  $database = "rooms/room".$_GET["database"].".txt";
 
   $tag = htmlspecialchars($_GET["tag"]);
 
@@ -10,26 +10,26 @@
   $players = $json->{'players'};
 
   // ID
-  if($tag == "ID"){
-    $username = $_GET["username"];
-    $color = $_GET["color"];
-    $id = $json->{'id'};
-
-
-    $newplayer;
-    $newplayer->{'id'} = $id;
-    $newplayer->{'name'} = $username;
-    $newplayer->{'clr'} = $color;
-
-    array_push($players,$newplayer);
-
-    write('players',$players,$database);
-    write('id',($id+1),$database);
-
-    echo (json_encode($newplayer));
+  // if($tag == "ID"){
+  //   $username = $_GET["username"];
+  //   $color = $_GET["color"];
+  //   $id = $json->{'id'};
+  //
+  //
+  //   $newplayer;
+  //   $newplayer->{'id'} = $id;
+  //   $newplayer->{'name'} = $username;
+  //   $newplayer->{'clr'} = $color;
+  //
+  //   array_push($players,$newplayer);
+  //
+  //   write('players',$players,$database);
+  //   write('id',($id+1),$database);
+  //
+  //   echo (json_encode($newplayer));
 
   // PD - PlayerData
-} else if($tag == "PD"){
+if($tag == "PD"){
     // Update the database with new info from player
     $id = htmlspecialchars($_GET["id"]);
     for($i = 0; $i < count($players); $i++){

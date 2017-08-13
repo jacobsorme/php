@@ -19,7 +19,7 @@
     <input type="range" id="g" name="g" value="68" min="68" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
     <b style="color:blue;">B:</b>
     <input type="range" id="b" name="b" value="68" min="68" max="238" step="17" onkeydown="color()" onmousemove="color()"><p>
-    
+    Choose a room: <br>
     </center>
 
 </form>

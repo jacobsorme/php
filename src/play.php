@@ -5,7 +5,7 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
 </head>
-<body scroll="false">
+<body style="overflow:hidden">
 <h3 id="welcome"></h3>
 <a href="index.php"><h3>Home</h3></a>
 <div id="values"></div><p><br>
@@ -38,12 +38,12 @@
     var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
     var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
     var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
-    var test = "<?php echo $_GET["room"] ?>";
+    var roomId = "<?php echo htmlspecialchars($_GET["room"]) ?>";
 
-    console.log(test);
+    console.log(roomId);
 
     function setup() {
-      communicate(idMessage.bind(null,username,r,g,b),start,"php/server.php");
+      communicate(idMessage.bind(null,username,r,g,b,roomId),start,"php/initserver.php");
     }
 
     setup();

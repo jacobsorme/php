@@ -31,4 +31,8 @@ function write($obj,$val,$filename){
   fclose($myfile);
 }
 
+function create($path){
+  $myfile = fopen($path,"w");
+}
+
  ?>

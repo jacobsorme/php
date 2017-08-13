@@ -23,11 +23,11 @@ function communicate(message,callback,serverSource){
 }
 
 // Create a message with ID-request
-function idMessage(username,r,g,b){
+function idMessage(username,r,g,b,roomId){
   var tag = "ID";
   var color = rgbToHex(r,g,b);
   //console.log(color);
-  return "tag=" + tag + "&username=" + username + "&color=" + color;
+  return "tag=" + tag + "&username=" + username + "&color=" + color + "&room=" + roomId;
 }
 
 
@@ -41,11 +41,12 @@ function dataMessage(){
   var rot = game.localPlayer.rot;
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   var coll = game.localPlayer.collisionCount;
+  var database = game.database;
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounce;
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll + "&database=" + database;
   return res;
 }
