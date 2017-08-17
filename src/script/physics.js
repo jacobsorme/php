@@ -20,7 +20,7 @@ function speedDown(current){
 
 function speedUp(current){
   if(current + 0.5 > 9) {
-    return 6;
+    return 9;
   } else {
     return current + 0.5;
   }

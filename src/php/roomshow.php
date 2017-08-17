@@ -9,5 +9,5 @@
   for($i = 0; $i < count($rooms); $i++){
     echo "<input type=\"radio\" name=\"room\" value=\"". $rooms[$i]->{"id"} ."\">". $rooms[$i]->{"name"} . "<br>";
   }
-  echo "<input type=\"submit\" value=\"Play\">";
+  echo "<center><p><input type=\"submit\" value=\"Play\"></center>";
 ?>

@@ -32,30 +32,30 @@ function portalRender(p){
   if(x+margin > width){
     if(x > (width+margin)){
       p.x = (x-width-offset);
-      polygons(p.x,p.y,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+        polygons(p.x,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(x-width-offset,p.y,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(x-width-offset,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     }
   }if((x-margin) < 0){
     if(x < -1*margin){
       p.x = (width+x+offset);
-      polygons(p.x,p.y,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(width+x+offset,p.y,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(width+x+offset,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     }
   }if((y+margin) > height){
     if(y > (height+margin)){
       p.y = y-height-offset;
-      polygons(p.x,p.y,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,y-height-offset,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(p.x,y-height-offset,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     }
   }if((y-margin) < 0 ){
     if(y < -1*margin){
       p.y = height+y+offset;
-      polygons(p.x,p.y,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,height+y+offset,p.rot,p.gas,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+      polygons(p.x,height+y+offset,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["f60","#" + p.color,"#888","#3FF"]);
     }
   }
 }

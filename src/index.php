@@ -14,17 +14,20 @@
     <td>
       <div id="login">
         <center><h1 id="title">JetLag</h1></center>
-<form method="get" id="form" action="play.php" autocomplete="off">
+        <form method="get" id="form" action="play.php" autocomplete="off">
           <center>
             <input type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
             <b style="color:red;">R:</b>
-            <input type="range" id="r" name="r" value="68" min="68" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
+            <input type="range" id="r" name="r" value="102" min="102" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
             <b style="color:green;">G:</b>
-            <input type="range" id="g" name="g" value="68" min="68" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
+            <input type="range" id="g" name="g" value="102" min="102" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
             <b style="color:blue;">B:</b>
-            <input type="range" id="b" name="b" value="68" min="68" max="238" step="17" onkeydown="color()" onmousemove="color()"><p>
-            <h3>Choose a room:</h3> <br>
-          </center>
+            <input type="range" id="b" name="b" value="102" min="102" max="238" step="17" onkeydown="color()" onmousemove="color()"><p><br>
+            <hr><p><br>
+            Choose a room:<input type="button" style="margin-left:50px;" onclick="callForRooms()" value="Update">
+            </center>
+            <div id="roomsFromServer"></div>
+
           </form>
       </div>
     </td>
@@ -36,15 +39,16 @@
 
 <script>
 function rooms(answer){
-  document.getElementById("form").innerHTML += answer;
+  document.getElementById("roomsFromServer").innerHTML = answer;
 }
 function message(){
   return "";
 }
-
-window.onload = function() {
+function callForRooms(){
   communicate(message,rooms,"php/roomshow.php");
-};
+}
+
+window.onload = callForRooms();
 
 </script>
 <script>

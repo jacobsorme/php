@@ -152,8 +152,8 @@ function run(){
     else p.speed = 0;
     throttle(p,p.glideRot,p.speed);
   }
-  if(game.keymap[game.keys.LEFT]) rotate(p,-4);
-  if(game.keymap[game.keys.RIGHT]) rotate(p,4);
+  if(game.keymap[game.keys.LEFT]) rotate(p,-5);
+  if(game.keymap[game.keys.RIGHT]) rotate(p,5);
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
     if(bullets.length < 3){
@@ -166,9 +166,9 @@ function run(){
   }
 
   for(var i = 0; i < bullets.length; i++){
-    throttle(bullets[i],bullets[i].rot,12);
+    throttle(bullets[i],bullets[i].rot,20);
     if(bullets[i].bounce < 4){
-      bordercheck(bullets[i],15);
+      bordercheck(bullets[i],10);
     } else {
       //removePenetration(bullets[i]);
       bullets.splice(i,1);
