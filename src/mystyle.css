@@ -1,3 +1,7 @@
+body {
+  font-family: 'Titan One';
+}
+
 #frame > * {
 
 }
@@ -19,6 +23,8 @@
     border: 1px solid black;
 }*/
 
+
+
 #login {
   position:absolute;
   top:50px;
@@ -34,6 +40,19 @@
 }
 
 #title {
-  font-size: 25px;
-  font-family: monospace;
+  font-size: 50px;
+}
+#username:focus{
+  font-size:20px;
+  border:3px solid #555;
+
+}
+#username{
+  font-family: 'Titan One';
+  font-size: 15px;
+  width:200px;
+  height:25px;
+  border:3px solid #ccc;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }

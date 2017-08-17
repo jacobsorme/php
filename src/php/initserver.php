@@ -35,9 +35,10 @@
     write('id',($id+1),"rooms/room".$newroomId.".txt");
 
     // Write the new room to room database
+    // Here is where the name of the room gets set
     $rooms = $roomsobj->{'rooms'};
     $newroom->{'id'} = $newroomId;
-    $newroom->{'name'} = $username;
+    $newroom->{'name'} = $username."'s Room";
     array_push($rooms,$newroom);
     write('rooms',$rooms,"rooms.txt");
 

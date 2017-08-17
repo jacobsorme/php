@@ -42,11 +42,12 @@ function dataMessage(){
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   var coll = game.localPlayer.collisionCount;
   var database = game.database;
+  var gas = game.localPlayer.gas; 
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounce;
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll + "&database=" + database;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll + "&gas=" + gas + "&database=" + database;
   return res;
 }

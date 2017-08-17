@@ -11,7 +11,7 @@ function Game(){
   this.keys = null;
   this.keymap = null;
   this.database = null;
-  this.server = null; 
+  this.server = null;
 }
 
 Game.prototype = {
@@ -36,14 +36,14 @@ Game.prototype = {
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
       var p1 = data[i];
-      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts,p1.col);
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts,p1.col,p1.gas);
       this.globalPlayers.push(p2);
     }
   }
 }
 
 // Class Player
-function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount){
+function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas){
   this.name = name;
   this.id = id;
   this.x = x;
@@ -58,6 +58,7 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount){
   this.shootTime = null;
   this.components = null;
   this.penetration = [];
+  this.gas = gas;
 }
 
 function Bullet(playerId,id,x,y,rot){
@@ -73,6 +74,7 @@ function Bullet(playerId,id,x,y,rot){
 var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
 var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
 // 40,30 35,90 46,90 50,60 54,90 65,90 60,30 50,0
+var planeFlame = [[-5,50],[0,65],[5,50],[0,40]];
 var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-50]];
 
 
@@ -121,7 +123,7 @@ function start(idMessage) {
 function createPlayer(idMessage){
   console.log(idMessage);
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0,0);
   p.shootTime = true;
   game.setPlayer(p);
 }
@@ -140,10 +142,12 @@ function run(){
   var p = game.localPlayer;
   var bullets = p.bullets;
   if(game.keymap[game.keys.UP]) {
+    p.gas = 1;
     p.speed = speedUp(p.speed);
     p.glideRot = p.rot;
     throttle(p,p.rot,p.speed);
   } else {
+    p.gas = 0;
     if(p.speed > 0) p.speed = speedDown(p.speed);
     else p.speed = 0;
     throttle(p,p.glideRot,p.speed);
@@ -156,6 +160,7 @@ function run(){
       var bullet = new Bullet(p.id,p.bulletId,round(p.x),round(p.y),p.rot);
       p.bulletId += 1;
       bullets.push(bullet);
+      p.penetration.push(bullet);
     }
     setTimeout(function() {p.shootTime = true;},400);
   }
@@ -192,6 +197,6 @@ function display(data){
 // Rendering
 function render(p){
   bulletRender(p);
-  polygons(p.x,p.y,p.rot,[planeBody,planeWing,planeWindow],["#" + p.color,"#888","#3FF"]);
+  polygons(p.x,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["#F60","#" + p.color,"#888","#3FF"]);
   portalRender(p);
 }

@@ -39,6 +39,7 @@ if($tag == "PD"){
         $players[$i]->{'rot'} = htmlspecialchars($_GET["rotate"]);
         $players[$i]->{'bts'} = json_decode($_GET["bullets"]);
         $players[$i]->{'col'} = $_GET["collision"];
+        $players[$i]->{'gas'} = $_GET["gas"];
       }
     }
     write('players',$players,$database);

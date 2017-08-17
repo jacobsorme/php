@@ -35,6 +35,9 @@
 <script>
   window.onload = function(){
     var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
+    if(username == ""){
+      username = "xX_NoName_Xx";
+    }
     var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
     var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
     var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
