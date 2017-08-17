@@ -8,8 +8,7 @@
 </head>
 <body>
 
-<table style="border-style:solid; border-width:1px;">
-
+<table>
   <tr>
     <td>
       <div id="login">

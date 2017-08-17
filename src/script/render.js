@@ -15,7 +15,7 @@ function displayData(){
       html += "<td>"+ game.globalPlayers[i].collisionCount + "</td>";
     }
   }
-  html += '</tr>'
+  html += '</tr>';
   document.getElementById("data").innerHTML = html;
 }
 
