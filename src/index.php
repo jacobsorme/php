@@ -5,8 +5,27 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <link href='https://fonts.googleapis.com/css?family=Titan One' rel='stylesheet'>
 <title>JetLag</title>
+
+<script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+<script>
+  (adsbygoogle = window.adsbygoogle || []).push({
+    google_ad_client: "ca-pub-4262822256653950",
+    enable_page_level_ads: true
+  });
+</script>
+
 </head>
 <body>
+
+  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+  <!-- jetlag001 -->
+  <ins class="adsbygoogle"
+       style="display:inline-block;width:300px;height:600px"
+       data-ad-client="ca-pub-4262822256653950"
+       data-ad-slot="4750147238"></ins>
+  <script>
+  (adsbygoogle = window.adsbygoogle || []).push({});
+  </script>
 
 <table>
   <tr>

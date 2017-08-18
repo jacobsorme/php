@@ -42,7 +42,7 @@ function dataMessage(){
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   var coll = game.localPlayer.collisionCount;
   var database = game.database;
-  var gas = game.localPlayer.gas; 
+  var gas = game.localPlayer.gas;
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounce;
     delete bullets[i].rot;

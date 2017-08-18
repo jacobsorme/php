@@ -3,7 +3,7 @@
 
   $database = "rooms/room".$_GET["database"].".txt";
 
-  $tag = htmlspecialchars($_GET["tag"]);
+  //$tag = htmlspecialchars($_GET["tag"]);
 
   $data = read($database);
   $json = json_decode($data);
@@ -29,7 +29,7 @@
   //   echo (json_encode($newplayer));
 
   // PD - PlayerData
-if($tag == "PD"){
+//if($tag == "PD"){
     // Update the database with new info from player
     $id = htmlspecialchars($_GET["id"]);
     for($i = 0; $i < count($players); $i++){
@@ -44,7 +44,7 @@ if($tag == "PD"){
     }
     write('players',$players,$database);
     echo (json_encode($players));
-  }
+  //}
 
 
 ?>
