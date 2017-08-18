@@ -1,5 +1,5 @@
 // Send message to server.php, call callback with answer
-function communicate(message,callback){
+function communicate(message,callback,serverSource){
   var message = message();
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
@@ -17,17 +17,17 @@ function communicate(message,callback){
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
-  xmlhttp.open("GET","server.php?"+message,true);
+  xmlhttp.open("GET",serverSource+"?"+message,true);
   xmlhttp.send();
   t1 = d1.getTime();
 }
 
 // Create a message with ID-request
-function idMessage(username,r,g,b){
+function idMessage(username,r,g,b,roomId){
   var tag = "ID";
   var color = rgbToHex(r,g,b);
   //console.log(color);
-  return "tag=" + tag + "&username=" + username + "&color=" + color;
+  return "tag=" + tag + "&username=" + username + "&color=" + color + "&room=" + roomId;
 }
 
 
@@ -41,11 +41,13 @@ function dataMessage(){
   var rot = game.localPlayer.rot;
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   var coll = game.localPlayer.collisionCount;
+  var database = game.database;
+  var gas = game.localPlayer.gas;
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounce;
     delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll;
+  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll + "&gas=" + gas + "&database=" + database;
   return res;
 }

@@ -1,3 +1,15 @@
+body {
+  font-family: 'Titan One';
+}
+
+hr {
+  height:3px;
+  color:#000;
+  border-style:solid;
+  border-width:2px;
+  border-radius:2px;
+}
+
 #frame > * {
 
 }
@@ -19,21 +31,37 @@
     border: 1px solid black;
 }*/
 
+
+
 #login {
   position:absolute;
   top:50px;
   left:50%;
   transform:translate(-50%,0);
   border-radius:15px;
-  margin:15px;
-  padding:15px;
-  background-color: rgb(24,24,24);
+  margin:0px;
+  padding:45px;
+  background-color: rgb(102,102,102);
   border-width: 6px;
   border-color: #000;
   border-style: solid;
 }
 
 #title {
-  font-size: 25px;
-  font-family: monospace;
+  font-size: 50px;
+}
+#username:focus{
+  font-size:20px;
+  border:3px solid #555;
+
+}
+#username{
+  font-family: 'Titan One';
+  font-weight: lighter;
+  font-size: 15px;
+  width:200px;
+  height:25px;
+  border:3px solid #ccc;
+  -webkit-border-radius: 5px;
+  border-radius: 5px;
 }
