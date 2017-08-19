@@ -3,7 +3,7 @@ function Game(){
   this.canvas = null;
   this.ctx = null;
   this.localPlayer = null;
-  this.globalPlayers = null;
+  this.globalPlayers = [];
   this.runInterval = null;
   this.runTime = null;
   this.sendInterval = null;
@@ -12,6 +12,7 @@ function Game(){
   this.keymap = null;
   this.database = null;
   this.server = null;
+  this.bulletSpeed = 0;
 }
 
 Game.prototype = {
@@ -33,21 +34,39 @@ Game.prototype = {
   },
   // Converts a server player to a client-like player.
   setglobalPlayers: function(data){
+    var oldGlobalPlayers = this.globalPlayers;
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
       var p1 = data[i];
-      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,null,null,p1.bts,p1.col,p1.gas);
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,p1.spd,p1.grot,p1.bts,p1.col,p1.gas,p1.rotSpd);
+      for(var j = 0; j < oldGlobalPlayers.length; j++){
+        // Here we do checks if this new data seems fair
+        if(oldGlobalPlayers[j].id == p2.id){
+          var oldP = oldGlobalPlayers[j];
+          // If the player has speed - but have not moved. Checks that it does not travel vertically/horizontally
+          //console.log(proximity(oldP.x,p2.x,5));
+          if(proximity(oldP.x,p2.x,20) && ((p2.rot > 10 && p2.rot < 170) || (p2.rot < 350 && p2.rot > 190))) {
+            throttle(p2,p2.glideRot,p2.speed);
+            console.log("Here in the X");
+          }
+          //console.log(proximity(oldP.y,p2.y,5));
+          if(proximity(oldP.y,p2.y,20) && ((p2.rot > 100 && p2.rot < 260) || (p2.rot < 80 || p2.rot > 280))) {
+            throttle(p2,p2.glideRot,p2.speed);
+            console.log("Here in the Y");
+          }
+        }
+      }
       this.globalPlayers.push(p2);
     }
   }
 }
 
 // Class Player
-function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas){
+function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,rotSpeed){
   this.name = name;
   this.id = id;
   this.x = x;
-  this. y = y;
+  this.y = y;
   this.rot = rot;
   this.color = color;
   this.speed = speed;
@@ -59,6 +78,7 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas)
   this.components = null;
   this.penetration = [];
   this.gas = gas;
+  this.rotSpeed = rotSpeed;
 }
 
 function Bullet(playerId,id,x,y,rot){
@@ -85,14 +105,15 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 function start(idMessage) {
   console.log(idMessage);
   var idObj = JSON.parse(idMessage);
-  setTimeout(function() {
-    //window.location = "http://duckduckgo.com";
-  },10000);
+  // setTimeout(function() {
+  //   window.location = "http://duckduckgo.com";
+  // },1000000);
   game = new Game();
+  game.bulletSpeed = 20;
   game.database = idObj.room;
   game.server = "php/server.php"
   game.runTime = 50;
-  game.sendTime =100;
+  game.sendTime = 200;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -123,7 +144,7 @@ function start(idMessage) {
 function createPlayer(idMessage){
   console.log(idMessage);
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0,0);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0,0,0);
   p.shootTime = true;
   game.setPlayer(p);
 }
@@ -137,7 +158,6 @@ function startController(){
 }
 
 function run(){
-  //console.log(JSON.stringify(game.localPlayer.penetration));
   // To check the real rotation and the rotation/direction of movement
   var p = game.localPlayer;
   var bullets = p.bullets;
@@ -152,8 +172,16 @@ function run(){
     else p.speed = 0;
     throttle(p,p.glideRot,p.speed);
   }
-  if(game.keymap[game.keys.LEFT]) rotate(p,-5);
-  if(game.keymap[game.keys.RIGHT]) rotate(p,5);
+  // Rot speed slow down here?
+  p.rotSpeed = 0;
+  if(game.keymap[game.keys.LEFT]){
+    p.rotSpeed = -5;
+    rotate(p,p.rotSpeed);
+  }
+  if(game.keymap[game.keys.RIGHT]){
+    p.rotSpeed = 5;
+    rotate(p,p.rotSpeed);
+  }
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
     if(bullets.length < 3){
@@ -166,7 +194,7 @@ function run(){
   }
 
   for(var i = 0; i < bullets.length; i++){
-    throttle(bullets[i],bullets[i].rot,20);
+    throttle(bullets[i],bullets[i].rot,game.bulletSpeed);
     if(bullets[i].bounce < 4){
       bordercheck(bullets[i],10);
     } else {
@@ -174,6 +202,7 @@ function run(){
       bullets.splice(i,1);
     }
   }
+  localupdate();
   display(game.globalPlayers);
   render(game.localPlayer);
 }
@@ -181,6 +210,22 @@ function run(){
 function update(answer){
     //document.getElementById("values").innerHTML = "<br>" + answer;
     game.setglobalPlayers(JSON.parse(answer));
+}
+
+function localupdate(){
+  for(var i = 0; i < game.globalPlayers.length; i++){
+    var p = game.globalPlayers[i];
+    if(p.id != game.localPlayer.id){
+      var softRot = p.rotSpeed;
+      if(softRot < 0) softRot = 0;
+      rotate(p,softRot);
+      throttle(p,p.glideRot,p.speed);
+    }
+    for(var j = 0; j < p.bullets.length; j++){
+      var b = p.bullets[j];
+      throttle(b,b.rot,game.bulletSpeed);
+    }
+  }
 }
 
 // Update frame with data from server

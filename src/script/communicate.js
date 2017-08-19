@@ -11,7 +11,7 @@ function communicate(message,callback,serverSource){
       var res = this.responseText;
       var d2 = new Date();
       t2 = d2.getTime();
-      if(t2 - t1 < 5000){
+      if(t2 - t1 < 500){
         callback(res);
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
@@ -34,20 +34,22 @@ function idMessage(username,r,g,b,roomId){
 
 // Create a message with data of player
 function dataMessage(){
-  var tag = "PD";
-  var id = game.localPlayer.id;
-  var left = parseInt(game.localPlayer.x);
-  var top = parseInt(game.localPlayer.y);
-  var rot = game.localPlayer.rot;
+  var msg = "id=" + game.localPlayer.id;
+  msg += "&x=" + parseInt(game.localPlayer.x);
+  msg += "&y=" + parseInt(game.localPlayer.y);
+  msg += "&rot=" + game.localPlayer.rot;
+  msg += "&grot=" + game.localPlayer.glideRot;
+  msg += "&spd=" + game.localPlayer.speed;
+  msg += "&col=" + game.localPlayer.collisionCount;
+  msg += "&gas=" + game.localPlayer.gas;
+  msg += "&db=" + game.database;
+  msg += "&rotSpd=" + game.localPlayer.rotSpeed;  
+
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
-  var coll = game.localPlayer.collisionCount;
-  var database = game.database;
-  var gas = game.localPlayer.gas;
   for(var i = 0; i < bullets.length; i++){
     delete bullets[i].bounce;
-    delete bullets[i].rot;
   }
   bullets = JSON.stringify(bullets);
-  var res = "tag=" + tag + "&id=" + id + "&left=" + left + "&top=" + top + "&rotate=" + rot + "&bullets=" + bullets + "&collision=" + coll + "&gas=" + gas + "&database=" + database;
-  return res;
+  msg += "&bts=" + bullets;
+  return msg;
 }

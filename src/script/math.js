@@ -7,3 +7,11 @@ function rgbToHex(r,g,b){
   var hex =  (0x1000000 | rgb).toString(16).substring(1);
   return hex;
 }
+
+function proximity(val1, val2, margin){
+  if( Math.abs(val1 - val2) <= margin){
+    return true;
+  } else {
+    return false; 
+  }
+}
