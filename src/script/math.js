@@ -12,6 +12,16 @@ function proximity(val1, val2, margin){
   if( Math.abs(val1 - val2) <= margin){
     return true;
   } else {
-    return false; 
+    return false;
   }
+}
+
+function findSameId(list,id){
+  for(var i in list){
+    var p = list[i];
+    if(p.id == id){
+      return p;
+    }
+  }
+  return false; 
 }

@@ -1,4 +1,4 @@
-// Rotate - never more than 360
+// Rotate - never more than 360 or less than 0
 function rotate(object, direction) {
   object.rot = (object.rot + direction) % 360;
 }

@@ -1,6 +1,6 @@
 // Send message to server.php, call callback with answer
 function communicate(message,callback,serverSource){
-  var message = message();
+  var msg = message();
   if (window.XMLHttpRequest) {
     var xmlhttp=new XMLHttpRequest();
   }
@@ -11,13 +11,14 @@ function communicate(message,callback,serverSource){
       var res = this.responseText;
       var d2 = new Date();
       t2 = d2.getTime();
-      if(t2 - t1 < 500){
+      // If the answer delay is long - then fuck it. However not the case with idMessage/setup
+      if( (Math.abs(t2 - t1) < 1000) && message.name != "idMessage"){
         callback(res);
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
     }
   }
-  xmlhttp.open("GET",serverSource+"?"+message,true);
+  xmlhttp.open("GET",serverSource+"?"+msg,true);
   xmlhttp.send();
   t1 = d1.getTime();
 }
@@ -43,7 +44,7 @@ function dataMessage(){
   msg += "&col=" + game.localPlayer.collisionCount;
   msg += "&gas=" + game.localPlayer.gas;
   msg += "&db=" + game.database;
-  msg += "&rotSpd=" + game.localPlayer.rotSpeed;  
+  msg += "&rotSpd=" + game.localPlayer.rotSpeed;
 
   var bullets = JSON.parse(JSON.stringify(game.localPlayer.bullets));
   for(var i = 0; i < bullets.length; i++){

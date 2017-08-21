@@ -27,6 +27,7 @@
     $newplayer->{'name'} = $username;
     $newplayer->{'clr'} = $color;
     $newplayer->{'room'} = $newroomId;
+    $newplayer->{'bts'} = [];
 
     $players = $newroomobj->{'players'};
     array_push($players,$newplayer);
@@ -55,6 +56,7 @@
     $newplayer->{'name'} = $username;
     $newplayer->{'clr'} = $color;
     $newplayer->{'room'} = $roomId;
+    $newplayer->{'bts'} = []; 
 
     $players = $thisroomobj->{'players'};
     array_push($players,$newplayer);

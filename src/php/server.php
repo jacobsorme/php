@@ -7,10 +7,12 @@
   $data = read($database);
   $json = json_decode($data);
   $players = $json->{'players'};
-
+  $oldplayer;
+  $newplayer;
   $id = htmlspecialchars($_GET["id"]);
   for($i = 0; $i < count($players); $i++){
     if($players[$i]->{'id'} == $id){
+      $oldplayer = clone $players[$i];
       $players[$i]->{'x'} = (int) htmlspecialchars($_GET["x"]);
       $players[$i]->{'y'} = (int) htmlspecialchars($_GET["y"]);
       $players[$i]->{'rot'} = (int) htmlspecialchars($_GET["rot"]);   // rotation
@@ -20,9 +22,11 @@
       $players[$i]->{'col'} = $_GET["col"];                     // collisioncount
       $players[$i]->{'gas'} = $_GET["gas"];
       $players[$i]->{'rotSpd'} = (int) htmlspecialchars($_GET["rotSpd"]);
+      $newplayer = $players[$i];
     }
   }
-  write('players',$players,$database);
+  if($oldplayer != $newplayer){
+      write('players',$players,$database);
+  }
   echo (json_encode($players));
-
 ?>

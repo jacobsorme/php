@@ -69,7 +69,7 @@ function bulletRender(p){
     game.ctx.translate(b.x,b.y);
     game.ctx.rotate(b.rot*(Math.PI/180));
     game.ctx.beginPath();
-    game.ctx.arc(0,0,15,0,2*Math.PI);
+    game.ctx.arc(0,0,10,0,2*Math.PI);
     game.ctx.fill();
     game.ctx.rotate(-1*b.rot*(Math.PI/180));
     game.ctx.translate(-b.x,-b.y);

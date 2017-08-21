@@ -13,8 +13,8 @@
 
 <table id="data">
 </table>
-
-<canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas>
+<div id="content"></div>
+<!-- <canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas> -->
 
 
 
