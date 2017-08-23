@@ -5,16 +5,15 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
 </head>
-<body style="overflow:hidden">
+<body style="overflow:hidden; background-color:#aaa">
 <!-- <h3 id="welcome"></h3> -->
 <a href="index.php"><h3>Home</h3></a>
 <!-- <div id="values"></div><p><br> -->
 <!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
 
-<table id="data">
-</table>
-
-<canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas>
+<div style="position:fixed;left:0.5%;" id="data"></div>
+<div style="position:fixed;left:20%;top:1%" id="content"></div>
+<!-- <canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas> -->
 
 
 

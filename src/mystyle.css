@@ -10,28 +10,22 @@ hr {
   border-radius:2px;
 }
 
-#frame > * {
-
+#data {
+  font-size: 22px;
+  font-family: "Arial";
 }
 
-#data > * {
-  font-size: 20px;
-  font-family: monospace;
-  margin: 30px;
-  padding: 30px;
-  white-space: nowrap;
-  width: 100px;
-  overflow: hidden;
-  text-align: left;
-  text-overflow: clip;
+#data br {
+  text-indent: 5em;
 }
 
-
-/*table, th, td {
-    border: 1px solid black;
-}*/
-
-
+#content canvas {
+  background: red; /* For browsers that do not support gradients */
+  background: -webkit-linear-gradient(left top, #fff, #eee); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(bottom right, #fff, #eee); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(bottom right, #fff, #eee); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(to bottom right, #fff, #eee); /* Standard syntax */
+}
 
 #login {
   position:absolute;
@@ -40,7 +34,7 @@ hr {
   transform:translate(-50%,0);
   border-radius:15px;
   margin:0px;
-  padding:45px;
+  padding:10px;
   background-color: rgb(102,102,102);
   border-width: 6px;
   border-color: #000;
@@ -48,7 +42,7 @@ hr {
 }
 
 #title {
-  font-size: 50px;
+  font-size: 40px;
 }
 #username:focus{
   font-size:20px;
@@ -59,8 +53,8 @@ hr {
   font-family: 'Titan One';
   font-weight: lighter;
   font-size: 15px;
-  width:200px;
-  height:25px;
+  width:150px;
+  height:20px;
   border:3px solid #ccc;
   -webkit-border-radius: 5px;
   border-radius: 5px;

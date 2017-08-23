@@ -1,21 +1,14 @@
 function displayData(){
-  var html = "<tr><th style=\"width:100px\">";
-  html += game.localPlayer.name;
-  html += "</th>";
-  for(var i = 0; i < game.globalPlayers.length; i++){
-    if(game.globalPlayers[i].id != game.localPlayer.id){
-      html += "<th style=\"width:100px\">"+ game.globalPlayers[i].name + "</th>";
-    }
-  }
-  html += "</tr><tr><td>";
+  var html = "<b>";
+  html += game.localPlayer.name + ":</b>"
   html += game.localPlayer.collisionCount;
-  html += "</td>";
+  html += "</br>";
   for(var i = 0; i < game.globalPlayers.length; i++){
     if(game.globalPlayers[i].id != game.localPlayer.id){
-      html += "<td>"+ game.globalPlayers[i].collisionCount + "</td>";
+      html += "<b>"+ game.globalPlayers[i].name + ":</b>";
+      html += game.globalPlayers[i].collisionCount + "<br>";
     }
   }
-  html += '</tr>';
   document.getElementById("data").innerHTML = html;
 }
 
@@ -69,7 +62,7 @@ function bulletRender(p){
     game.ctx.translate(b.x,b.y);
     game.ctx.rotate(b.rot*(Math.PI/180));
     game.ctx.beginPath();
-    game.ctx.arc(0,0,15,0,2*Math.PI);
+    game.ctx.arc(0,0,10,0,2*Math.PI);
     game.ctx.fill();
     game.ctx.rotate(-1*b.rot*(Math.PI/180));
     game.ctx.translate(-b.x,-b.y);
