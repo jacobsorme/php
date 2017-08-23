@@ -12,7 +12,7 @@ function communicate(message,callback,serverSource){
       var d2 = new Date();
       t2 = d2.getTime();
       // If the answer delay is long - then fuck it. However not the case with idMessage/setup
-      if( (Math.abs(t2 - t1) < 1000) && message.name != "idMessage"){
+      if( (Math.abs(t2 - t1) < 1000) || message.name == "idMessage"){
         callback(res);
       }
       //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );

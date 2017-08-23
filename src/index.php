@@ -17,30 +17,33 @@
 </head>
 <body>
 
-  <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-  <!-- jetlag001 -->
-  <ins class="adsbygoogle"
-       style="display:inline-block;width:300px;height:600px"
-       data-ad-client="ca-pub-4262822256653950"
-       data-ad-slot="4750147238"></ins>
-  <script>
-  (adsbygoogle = window.adsbygoogle || []).push({});
-  </script>
-
-<table>
+<div style="position:absolute;background-color:#000;width:100%;margin:0;padding:0;left:0px;top:0px;">
+<table cellpadding="20px" style="margin:0px">
   <tr>
     <td>
+      <a href="index.php" style="color:#fff;  font-size:30px">Home</a>
+    </td>
+    <td>
+      <a href="about.php" style="color:#fff; font-size:30px">About</a>
+    </td>
+    <td>
+      <a href="partners.php" style="color:#fff; font-size:30px">Partners</a>
+    </td>
+  </tr>
+</div>
+
+</table>
       <div id="login">
         <center><h1 id="title">JetLag</h1></center>
         <form method="get" id="form" action="play.php" autocomplete="off">
           <center>
             <input type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
             <b style="color:red;">R:</b>
-            <input type="range" id="r" name="r" value="102" min="102" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
+            <input type="range" id="r" name="r" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><br>
             <b style="color:green;">G:</b>
-            <input type="range" id="g" name="g" value="102" min="102" max="238" step="17" onkeydown="color()" onmousemove="color()"><br>
+            <input type="range" id="g" name="g" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><br>
             <b style="color:blue;">B:</b>
-            <input type="range" id="b" name="b" value="102" min="102" max="238" step="17" onkeydown="color()" onmousemove="color()"><p><br>
+            <input type="range" id="b" name="b" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><p><br>
             <hr><p><br>
             Choose a room:<input type="button" style="margin-left:50px;" onclick="callForRooms()" value="Update">
             </center>
@@ -48,10 +51,7 @@
 
           </form>
       </div>
-    </td>
-  </tr>
 
-</table>
 
 <script src="script/communicate.js"></script>
 

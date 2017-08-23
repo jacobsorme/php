@@ -15,7 +15,7 @@
     $roomsobj = json_decode(read("rooms.txt"));
     $newroomId = $roomsobj->{'id'};
     $file = fopen("rooms/room".$newroomId.".txt","w");
-    fwrite($file,"{\"players\":[],\"id\":0}");
+    fwrite($file,"{\"players\":[],\"id\":0,\"time\":0}");
     fclose($file);
     write('id',($newroomId+1),"rooms.txt");
 
@@ -27,7 +27,6 @@
     $newplayer->{'name'} = $username;
     $newplayer->{'clr'} = $color;
     $newplayer->{'room'} = $newroomId;
-    $newplayer->{'bts'} = [];
 
     $players = $newroomobj->{'players'};
     array_push($players,$newplayer);
@@ -43,6 +42,7 @@
     array_push($rooms,$newroom);
     write('rooms',$rooms,"rooms.txt");
 
+    //$newplayer->{'status'} = 1;
     echo (json_encode($newplayer));
 
   // If the player chose to join a existing room
@@ -50,21 +50,34 @@
   // and then have some max number of players.
   } else {
     $thisroomobj = json_decode(read("rooms/room".$roomId.".txt"));
-    $id = $thisroomobj->{'id'};
-    $newplayer;
-    $newplayer->{'id'} = $id;
-    $newplayer->{'name'} = $username;
-    $newplayer->{'clr'} = $color;
-    $newplayer->{'room'} = $roomId;
-    $newplayer->{'bts'} = []; 
-
     $players = $thisroomobj->{'players'};
-    array_push($players,$newplayer);
+    if(count($players) <= 2){
+      $id = $thisroomobj->{'id'};
+      if($id == null){
+        $msg->{'status'} = 0;
+        $msg->{'msg'} = "There was a problem when giving player ID";
+        echo("nibba");
+        echo json_encode($msg);
+        return;
+      }
+      $newplayer;
+      $newplayer->{'id'} = $id;
+      $newplayer->{'name'} = $username;
+      $newplayer->{'clr'} = $color;
+      $newplayer->{'room'} = $roomId;
 
-    write('players',$players,"rooms/room".$roomId.".txt");
-    write('id',($id+1),"rooms/room".$roomId.".txt");
+      array_push($players,$newplayer);
 
-    echo (json_encode($newplayer));
+      write('players',$players,"rooms/room".$roomId.".txt");
+      write('id',($id+1),"rooms/room".$roomId.".txt");
+
+      $newplayer->{'status'} = 1;
+      echo (json_encode($newplayer));
+    } else {
+      $msg->{'status'} = 0;
+      $msg->{'msg'} = "The room is full";
+      echo json_encode($msg);
+    }
   }
 
   ?>

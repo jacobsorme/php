@@ -2,7 +2,7 @@
 
 // Read one line from databese. The JSON
 function read($filename){
-  $myfile = fopen($filename, "rb") or die("Error");
+  $myfile = fopen($filename, "rb") or die("{\"status\":404,\"msg\":\"Unable to read source file\"}");
   if(flock($myfile, LOCK_EX)) {
     $content = fgets($myfile);
 
@@ -19,7 +19,7 @@ function write($obj,$val,$filename){
   $content = read($filename);
   $json = json_decode($content);
   $json->{$obj} = $val;
-  $myfile = fopen($filename, "cb") or die("Error");
+  $myfile = fopen($filename, "cb") or die("{\"status\":404,\"msg\":\"Unable to write source file\"}");
 
   if(flock($myfile, LOCK_EX)) {
     ftruncate($myfile,0);
