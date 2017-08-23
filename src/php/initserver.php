@@ -51,7 +51,7 @@
   } else {
     $thisroomobj = json_decode(read("rooms/room".$roomId.".txt"));
     $players = $thisroomobj->{'players'};
-    if(count($players) <= 2){
+    if(count($players) <= 10){
       $id = $thisroomobj->{'id'};
       if($id == null){
         $msg->{'status'} = 0;

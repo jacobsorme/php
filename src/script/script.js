@@ -151,7 +151,8 @@ function start(idMessage) {
   var canvas = document.createElement("CANVAS");
   canvas.width = 1080;
   canvas.height = 720;
-  canvas.style.border = "1px solid #000";
+  canvas.style.border = "4px solid #000";
+  canvas.style.backgroundColor = "#ddd";
   canvas.id = "frame";
   document.getElementById("content").appendChild(canvas);
   game = new Game();
@@ -176,8 +177,6 @@ function start(idMessage) {
   setTimeout(function() {
     game.sendInterval = setInterval(communicate.bind(null,dataMessage,update,game.server),game.sendTime);
   }, 1000);
-  console.log("Send:" + game.sendTime);
-  console.log("Run:" + game.runTime);
   game.runInterval = setInterval(run,game.runTime);
   setInterval(displayData,300);
   // setTimeout(function() {
@@ -188,7 +187,6 @@ function start(idMessage) {
 // Create a player - the variable _palyer is assigned
 // Callback from communicate()
 function createPlayer(idMessage){
-  console.log(idMessage);
   var idObj = JSON.parse(idMessage);
   var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0,0,0);
   p.shootTime = true;
