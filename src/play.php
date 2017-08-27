@@ -5,25 +5,12 @@
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <title>play</title>
 </head>
-<body style="overflow:hidden; background-color:#aaa">
-<!-- <h3 id="welcome"></h3> -->
+<body style="overflow:hidden; background-color:#999">
 <a href="index.php"><h3>Home</h3></a>
-<!-- <div id="values"></div><p><br> -->
-<!-- <div id="frame" style="position:absolute;left:0px;top:100px;width:800px;height:500px;"></div> -->
 
 <div style="position:fixed;left:0.5%;" id="data"></div>
 <div style="position:fixed;left:20%;top:1%" id="content"></div>
-<!-- <canvas id="frame" width="1080" height="720" style="border:1px solid #000"></canvas> -->
 
-
-
-
-<!-- <table id="connections">
-  <tr>
-    <th>sendage</th>
-    <th>receive</th>
-  </tr>
-</table> -->
 <script src="script/math.js"></script>
 <script src="script/communicate.js"></script>
 <script src="script/collision.js"></script>
@@ -50,9 +37,6 @@
 
     setup();
   }
-
-
-
 </script>
 </body>
 </html>

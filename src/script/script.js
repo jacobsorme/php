@@ -51,47 +51,47 @@ Game.prototype = {
 
       // Going through the older data to see if the new data is relevant
       // Comparing the old data with the new Player() p2 created from the new data
-      // for(var j in this.archivedData){
-      //   var oldD = this.archivedData[j];
-      //   if(oldD.id == p2.id){
-      //     // Check the X values - The speed of the player will be compared
-      //     // This will happen every 200 ms, while the run() goes 50ms. A player should have moved ca. 4*speed since last check.
-      //     if(proximity(oldD.x,p2.x,10) && p2.speed > 3 && ((p2.rot > 10 && p2.rot < 170) || (p2.rot < 350 && p2.rot > 190))) {
-      //       var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
-      //       if(oldP != false){
-      //         p2.x = oldP.x;
-      //         p2.y = oldP.y;
-      //         throttle(p2,p2.glideRot,p2.speed*0.8);
-      //       }
-      //     }
-      //     // Check the Y values
-      //     if(proximity(oldD.y,p2.y,10) && p2.speed > 3 && ((p2.rot > 100 && p2.rot < 260) || (p2.rot < 80 || p2.rot > 280))) {
-      //       var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
-      //       if(oldP != false){
-      //         p2.x = oldP.x;
-      //         p2.y = oldP.y;
-      //         throttle(p2,p2.glideRot,p2.speed*0.8);
-      //       }
-      //     }
-      //     if(JSON.stringify(p2.bullets) == JSON.stringify(oldD.bts)){
-      //
-      //       for(i in p2.bullets){
-      //         var b = p2.bullets[i];
-      //         var bOld = findSameId(oldD.bts,b.id);
-      //         if(bOld != false){
-      //           b.x = bOld.x;
-      //           b.y = bOld.y;
-      //           console.log("Yeet");
-      //           throttle(b,b.rot,game.bulletSpeed);
-      //         }
-      //
-      //       }
-      //     }
-      //   }
-      // }
+      for(var j in this.archivedData){
+        var oldD = this.archivedData[j];
+        if(oldD.id == p2.id){
+          // Check the X values - The speed of the player will be compared
+          // This will happen every 200 ms, while the run() goes 50ms. A player should have moved ca. 4*speed since last check.
+          if(proximity(oldD.x,p2.x,10) && p2.speed > 3 && ((p2.rot > 10 && p2.rot < 170) || (p2.rot < 350 && p2.rot > 190))) {
+            var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
+            if(oldP != false){
+              p2.x = oldP.x;
+              p2.y = oldP.y;
+              throttle(p2,p2.glideRot,p2.speed*0.8);
+            }
+          }
+          // Check the Y values
+          if(proximity(oldD.y,p2.y,10) && p2.speed > 3 && ((p2.rot > 100 && p2.rot < 260) || (p2.rot < 80 || p2.rot > 280))) {
+            var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
+            if(oldP != false){
+              p2.x = oldP.x;
+              p2.y = oldP.y;
+              throttle(p2,p2.glideRot,p2.speed*0.8);
+            }
+          }
+          if(JSON.stringify(p2.bullets) == JSON.stringify(oldD.bts)){
+
+            for(i in p2.bullets){
+              var b = p2.bullets[i];
+              var bOld = findSameId(oldD.bts,b.id);
+              if(bOld != false){
+                b.x = bOld.x;
+                b.y = bOld.y;
+                console.log("Yeet");
+                throttle(b,b.rot,game.bulletSpeed);
+              }
+
+            }
+          }
+        }
+      }
       this.globalPlayers.push(p2);
     }
-    //this.archivedData = data;
+    this.archivedData = data;
   }
 }
 
@@ -152,7 +152,6 @@ function start(idMessage) {
   canvas.width = 1080;
   canvas.height = 720;
   canvas.style.border = "4px solid #000";
-  canvas.style.backgroundColor = "#ddd";
   canvas.id = "frame";
   document.getElementById("content").appendChild(canvas);
   game = new Game();
@@ -263,6 +262,8 @@ function update(answer){
       if(ans.status == 404){
         document.getElementById("content").innerHTML = ans.msg;
         game.destroy();
+      } else if(ans.status == 100){
+        alert(ans.msg);
       }
     } else {
       game.setglobalPlayers(ans);
@@ -282,10 +283,8 @@ function localupdate(){
     }
 
     for(var j = 0; j < p.bullets.length; j++){
-      if(Math.random() < 0.7){
-        var b = p.bullets[j];
-        throttle(b,b.rot,game.bulletSpeed);
-      }
+      var b = p.bullets[j];
+      throttle(b,b.rot,game.bulletSpeed);
     }
   }
 }

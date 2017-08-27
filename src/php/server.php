@@ -21,8 +21,8 @@
       $players[$i]->{'grot'} = (int) htmlspecialchars($_GET["grot"]);
       $players[$i]->{'spd'} = (int) htmlspecialchars($_GET["spd"]);   // speed
       $players[$i]->{'bts'} = json_decode($_GET["bts"]);        // bullets
-      $players[$i]->{'col'} = $_GET["col"];                     // collisioncount
-      $players[$i]->{'gas'} = $_GET["gas"];
+      $players[$i]->{'col'} = (int) htmlspecialchars($_GET["col"]);                     // collisioncount
+      $players[$i]->{'gas'} = (int) htmlspecialchars($_GET["gas"]);
       $players[$i]->{'rotSpd'} = (int) htmlspecialchars($_GET["rotSpd"]);
       $players[$i]->{'time'} = $time;
       $newplayer = $players[$i];
@@ -34,18 +34,16 @@
 
   // Check if there are players to remove -
   $random = rand(0,100);
-  if($random < 5){
+  if($random < 3){
     for($i = 0; $i < count($players); $i++){
       $ptime = $players[$i]->{'time'};
       // Check so that the player isn't new - with time 0
       if($ptime != 0){
-        if(abs($time - $ptime) > 45){
+        if(abs($time - $ptime) > 30){
           array_splice($players,$i,1);
           write('players',$players,$database);
         }
       }
     }
   }
-
-
 ?>
