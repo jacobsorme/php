@@ -1,26 +1,49 @@
+var iosocket = io.connect();
+
+function Communicate(){
+  this.iosocket = io.connect();
+}
+
+Communicate.prototype = {
+  setResponse: function(func,tag){
+    this.iosocket.on(tag,function(message){
+      func(message);
+    });
+  },
+  send: function(content,tag){
+    this.iosocket.emit(tag,content);
+  }
+}
+
+iosocket.on('connect', function () {
+
 // Send message to server.php, call callback with answer
-function communicate(message,callback,serverSource){
-  var msg = message();
-  if (window.XMLHttpRequest) {
-    var xmlhttp=new XMLHttpRequest();
-  }
-  var d1 = new Date();
-  var t1;
-  xmlhttp.onreadystatechange= function() {
-    if (this.readyState==4 && this.status==200) {
-      var res = this.responseText;
-      var d2 = new Date();
-      t2 = d2.getTime();
-      // If the answer delay is long - then fuck it. However not the case with idMessage/setup
-      if( (Math.abs(t2 - t1) < 1000) || message.name == "idMessage"){
-        callback(res);
+function send(content,tag){
+
+}
+
+
+
+
+      function send(){
+          var msg = document.getElementById("input").value;
+          document.getElementById("content").innerHTML += msg + "<br>";
+          document.getElementById("input").value = "";
+
       }
-      //document.getElementById("connections").innerHTML += ("<tr><td>" + message + "</td><td>" + res + "</td></tr>" );
-    }
-  }
-  xmlhttp.open("GET",serverSource+"?"+msg,true);
-  xmlhttp.send();
-  t1 = d1.getTime();
+
+
+      $(function(){
+          iosocket.on('connect', function () {
+              connected();
+              iosocket.on('message', function(message) {
+                  interpretMessage(message);
+              });
+              iosocket.on('disconnect', function() {
+                  disconnected();
+              });
+          });
+      });
 }
 
 // Create a message with ID-request

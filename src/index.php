@@ -32,7 +32,8 @@
     <div id="roomsFromServer"></div>
   </form>
 </div>
-
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
 <script src="script/communicate.js"></script>
 
 <script>

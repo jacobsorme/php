@@ -11,10 +11,14 @@ var server = http.createServer(function (req, res) {
 
 socketio.listen(server).on('connection', function (socket) {
 
-    socket.on('message', function (msg) {
+    socket.on('chat', function (msg) {
 
         console.log('Got a msg: ', msg);
-        socket.broadcast.emit('message',msg);
+        socket.broadcast.emit('message',msg+"- Regards / server");
 
+    });
+    socket.on('console', function (msg) {
+
+        console.log(msg);
     });
 });
