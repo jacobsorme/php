@@ -37,14 +37,14 @@
 <script src="script/communicate.js"></script>
 
 <script>
-  function rooms(answer){
+  var comms = new Communication();
+  comms.setResponse('rooms',updateRooms)
+
+  function updateRooms(answer){
     document.getElementById("roomsFromServer").innerHTML = answer;
   }
-  function message(){
-    return "";
-  }
   function callForRooms(){
-    communicate(message,rooms,"php/roomshow.php");
+    comms.send('rooms');
   }
 
   window.onload = callForRooms();

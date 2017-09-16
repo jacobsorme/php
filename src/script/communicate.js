@@ -1,49 +1,18 @@
 var iosocket = io.connect();
 
-function Communicate(){
+function Communication(){
   this.iosocket = io.connect();
 }
 
-Communicate.prototype = {
-  setResponse: function(func,tag){
+Communication.prototype = {
+  setResponse: function(tag,func){
     this.iosocket.on(tag,function(message){
       func(message);
     });
   },
-  send: function(content,tag){
+  send: function(tag,content){
     this.iosocket.emit(tag,content);
   }
-}
-
-iosocket.on('connect', function () {
-
-// Send message to server.php, call callback with answer
-function send(content,tag){
-
-}
-
-
-
-
-      function send(){
-          var msg = document.getElementById("input").value;
-          document.getElementById("content").innerHTML += msg + "<br>";
-          document.getElementById("input").value = "";
-
-      }
-
-
-      $(function(){
-          iosocket.on('connect', function () {
-              connected();
-              iosocket.on('message', function(message) {
-                  interpretMessage(message);
-              });
-              iosocket.on('disconnect', function() {
-                  disconnected();
-              });
-          });
-      });
 }
 
 // Create a message with ID-request
