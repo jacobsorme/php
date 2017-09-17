@@ -6,55 +6,14 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript">
 
-        var iosocket = io.connect();
-        iosocket.on('connect', function() {
-          connected();
-        });
-        iosocket.on('message', function(message) {
-          interpretMessage(message);
-        });
-        iosocket.on('disconnect', function() {
-            disconnected();
-        });
 
-        function send(){
-            var msg = document.getElementById("input").value;
-            document.getElementById("content").innerHTML += msg + "<br>";
-            document.getElementById("input").value = "";
-            iosocket.emit('chat',msg);
-        }
-
-        function console(){
-          iosocket.emit('console');
-        }
-
-        function connected(){
-          document.getElementById("content").innerHTML += "Connected<br>";
-        }
-
-        function disconnected(){
-          document.getElementById("content").innerHTML += "Disconnected<br>";
-        }
-
-        function interpretMessage(message){
-          document.getElementById("content").innerHTML += message + "<br>";
-        }
-
-        function joinRoom(room){
-          iosocket.emit('room',"room"+room); 
-        }
-
-</script>
 
 </head>
 
 <body>
   <h1>chat</h1>
-  <script src="script.js">
-    myFunc();
-  </script>
+
 <div id="content"></div>
 <input type="text" id="input">
 <input type="button" value="Send" onclick="send()">
@@ -62,5 +21,13 @@
 <input type="button" value="Room1" onclick="joinRoom(1)">
 <input type="button" value="Room2" onclick="joinRoom(2)">
 
+
+<script src="script.js" type="text/javascript"></script>
+<script src="iosocket.js" type="text/javascript"></script>
+
+<script>
+  var test = ass();
+  alert(test);
+</script>
 </body>
 </html>

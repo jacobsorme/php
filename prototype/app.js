@@ -7,33 +7,26 @@ var fs = require('fs')
 var server = http.createServer(function (req, res) {
   console.log(req.url);
   if(req.url == '/'){
-      fs.readFile('index.html', function(err, page) {
-          res.writeHead(200, {'Content-Type': 'text/html'});
-          res.write(page);
-          res.end();
-      });
+    res.writeHead(200, {'Content-Type': 'text/html'});
+    fs.createReadStream("./index.html").pipe(res);
     }
-    else if(req.url == '/style.css'){
-      fs.readFile('style.css', function(err, data) {
-        if (err) console.log(err);
-        res.writeHead(200, {'Content-Type': 'text/css'});
-        res.write(data);
-        res.end();
-       });
+  else if(req.url == '/style.css'){
+    res.writeHead(200, {'Content-Type': 'text/css'});
+    fs.createReadStream("./style.css").pipe(res);
      }
-     else if(req.url == '/script.css'){
-       fs.readFile('style.css', function(err, data) {
-         if (err) console.log(err);
-         res.writeHead(200, {'Content-Type': 'text/css'});
-         res.write(data);
-         res.end();
-        });
+     else if(req.url == '/script.js'){
+       res.writeHead(200, {'Content-Type': 'text/javascript'});
+       fs.createReadStream("./script.js").pipe(res);
       }
+      else if(req.url == '/iosocket.js'){
+        res.writeHead(200, {'Content-Type': 'text/javascript'});
+        fs.createReadStream("./iosocket.js").pipe(res);
+       }
      else {
       res.write('nibbo');
       res.end();
     }
-  }).listen(3000, function () {
+  }).listen(3000, function (err) {
     console.log('Running');
   });
 
