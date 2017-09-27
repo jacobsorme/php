@@ -15,9 +15,10 @@
     <a href="partners.php" style="color:#fff; font-size:20px">Partners</a>
   </div>
 </div>
+<div id="setup">
 <div id="login">
   <center><h1 id="title">JetLag</h1></center>
-  <form method="get" id="form" action="play.php" autocomplete="off">
+  <form id="form" autocomplete="off">
     <center>
       <input type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
       <b style="color:red;">R:</b>
@@ -27,30 +28,37 @@
       <b style="color:blue;">B:</b>
       <input type="range" id="b" name="b" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><p>
       <hr><p>
-      Choose a room:<input type="button" style="margin-left:50px;" onclick="callForRooms()" value="Update">
+      Choose a room:
     </center>
-    <div id="roomsFromServer"></div>
+    <center><p><input type="button" value="Play" onclick="setup()"></center>
   </form>
 </div>
-<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+</div>
+
 <script src="/socket.io/socket.io.js"></script>
+<script src="script/math.js"></script>
 <script src="script/communicate.js"></script>
+<script src="script/collision.js"></script>
+<script src="script/render.js"></script>
+<script src="script/physics.js"></script>
+<script src="script/script.js"></script>
+
+
+<div id="values"> AKJSH S</div>
+<div style="position:fixed;left:0.5%;" id="data"></div>
+<div style="position:fixed;left:20%;top:1%" id="content"></div>
+
+
 
 <script>
-  var comms = new Communication();
-  comms.setResponse('rooms',updateRooms)
+function setup() {
+  var username = document.getElementById("username").value;
+  var r = document.getElementById("r").value;
+  var g = document.getElementById("g").value;
+  var b = document.getElementById("b").value;
+  send("id",idMessage(username,r,g,b));
+}
 
-  function updateRooms(answer){
-    document.getElementById("roomsFromServer").innerHTML = answer;
-  }
-  function callForRooms(){
-    comms.send('rooms');
-  }
-
-  window.onload = callForRooms();
-</script>
-
-<script>
 function color(){
   var r = document.getElementById("r").value;
   var g = document.getElementById("g").value;

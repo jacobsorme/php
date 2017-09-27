@@ -10,6 +10,10 @@ var server = http.createServer(function (req, res) {
     res.writeHead(200, {'Content-Type': 'text/html'});
     fs.createReadStream("./index.html").pipe(res);
     }
+    else if(req.url == '/chat.html'){
+      res.writeHead(200, {'Content-Type': 'text/html'});
+      fs.createReadStream("./chat.html").pipe(res);
+      }
   else if(req.url == '/style.css'){
     res.writeHead(200, {'Content-Type': 'text/css'});
     fs.createReadStream("./style.css").pipe(res);
@@ -23,10 +27,11 @@ var server = http.createServer(function (req, res) {
         fs.createReadStream("./iosocket.js").pipe(res);
        }
      else {
-      res.write('nibbo');
+      res.write('skrr');
       res.end();
     }
   }).listen(3000, function (err) {
+    if(err) console.log(err);
     console.log('Running');
   });
 

@@ -10,6 +10,15 @@ hr {
   border-radius:2px;
 }
 
+#values {
+  position:absolute;
+  left: 10px;
+  top:500px;
+  border-width:10px;
+  border-color:#000;
+  border-style: solid;
+}
+
 #data {
   font-size: 22px;
   font-family: "Arial";

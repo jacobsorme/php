@@ -12,8 +12,6 @@ function Game(){
   this.sendTime = null;
   this.keys = null;
   this.keymap = null;
-  this.database = null;
-  this.server = null;
   this.bulletSpeed = 0;
 }
 
@@ -41,57 +39,58 @@ Game.prototype = {
   // Converts a server player to a client-like player.
   // Also does checks on new incoming data VS last. This should affect globalPlayers.
   setglobalPlayers: function(data){
-    this.archivedGlobalPlayers = this.globalPlayers;
+    //this.archivedGlobalPlayers = this.globalPlayers;
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
+      //console.log("here");
       var p1 = data[i];
       if(p1.id == game.localPlayer.id) continue;
-      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.clr,p1.spd,p1.grot,p1.bts,p1.col,p1.gas,p1.rotSpd);
+      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.color,p1.spd,p1.grot,p1.bullets,p1.col,p1.gas,p1.rotSpd);
 
 
       // Going through the older data to see if the new data is relevant
       // Comparing the old data with the new Player() p2 created from the new data
-      for(var j in this.archivedData){
-        var oldD = this.archivedData[j];
-        if(oldD.id == p2.id){
-          // Check the X values - The speed of the player will be compared
-          // This will happen every 200 ms, while the run() goes 50ms. A player should have moved ca. 4*speed since last check.
-          if(proximity(oldD.x,p2.x,10) && p2.speed > 3 && ((p2.rot > 10 && p2.rot < 170) || (p2.rot < 350 && p2.rot > 190))) {
-            var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
-            if(oldP != false){
-              p2.x = oldP.x;
-              p2.y = oldP.y;
-              throttle(p2,p2.glideRot,p2.speed*0.8);
-            }
-          }
-          // Check the Y values
-          if(proximity(oldD.y,p2.y,10) && p2.speed > 3 && ((p2.rot > 100 && p2.rot < 260) || (p2.rot < 80 || p2.rot > 280))) {
-            var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
-            if(oldP != false){
-              p2.x = oldP.x;
-              p2.y = oldP.y;
-              throttle(p2,p2.glideRot,p2.speed*0.8);
-            }
-          }
-          if(JSON.stringify(p2.bullets) == JSON.stringify(oldD.bts)){
-
-            for(i in p2.bullets){
-              var b = p2.bullets[i];
-              var bOld = findSameId(oldD.bts,b.id);
-              if(bOld != false){
-                b.x = bOld.x;
-                b.y = bOld.y;
-                console.log("Yeet");
-                throttle(b,b.rot,game.bulletSpeed);
-              }
-
-            }
-          }
-        }
-      }
+      // for(var j in this.archivedData){
+      //   var oldD = this.archivedData[j];
+      //   if(oldD.id == p2.id){
+      //     // Check the X values - The speed of the player will be compared
+      //     // This will happen every 200 ms, while the run() goes 50ms. A player should have moved ca. 4*speed since last check.
+      //     if(proximity(oldD.x,p2.x,10) && p2.speed > 3 && ((p2.rot > 10 && p2.rot < 170) || (p2.rot < 350 && p2.rot > 190))) {
+      //       var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
+      //       if(oldP != false){
+      //         p2.x = oldP.x;
+      //         p2.y = oldP.y;
+      //         throttle(p2,p2.glideRot,p2.speed*0.8);
+      //       }
+      //     }
+      //     // Check the Y values
+      //     if(proximity(oldD.y,p2.y,10) && p2.speed > 3 && ((p2.rot > 100 && p2.rot < 260) || (p2.rot < 80 || p2.rot > 280))) {
+      //       var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
+      //       if(oldP != false){
+      //         p2.x = oldP.x;
+      //         p2.y = oldP.y;
+      //         throttle(p2,p2.glideRot,p2.speed*0.8);
+      //       }
+      //     }
+      //     if(JSON.stringify(p2.bullets) == JSON.stringify(oldD.bts)){
+      //
+      //       for(i in p2.bullets){
+      //         var b = p2.bullets[i];
+      //         var bOld = findSameId(oldD.bts,b.id);
+      //         if(bOld != false){
+      //           b.x = bOld.x;
+      //           b.y = bOld.y;
+      //           console.log("Yeet");
+      //           throttle(b,b.rot,game.bulletSpeed);
+      //         }
+      //
+      //       }
+      //     }
+      //   }
+      // }
       this.globalPlayers.push(p2);
     }
-    this.archivedData = data;
+    //this.archivedData = data;
   }
 }
 
@@ -139,15 +138,6 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 
 function start(idMessage) {
   console.log(idMessage);
-  var idObj = JSON.parse(idMessage);
-  if(idObj.status == 0){
-    document.getElementById("content").innerHTML = "Cound not join room:" + idObj.msg;
-    return;
-  }
-
-  // setTimeout(function() {
-  //   window.location = "http://duckduckgo.com";
-  // },1000000);
   var canvas = document.createElement("CANVAS");
   canvas.width = 1080;
   canvas.height = 720;
@@ -155,9 +145,10 @@ function start(idMessage) {
   canvas.id = "frame";
   document.getElementById("content").appendChild(canvas);
   game = new Game();
+  var login = document.getElementById("login");
+  document.getElementById("setup").removeChild(login);
+
   game.bulletSpeed = 30;
-  game.database = idObj.room;
-  game.server = "php/server.php"
   game.runTime = 30;
   game.sendTime = 100;
   game.setCanvas(document.getElementById("frame"));
@@ -171,23 +162,19 @@ function start(idMessage) {
   createPlayer(idMessage);
   startController();
 
-
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
-    game.sendInterval = setInterval(communicate.bind(null,dataMessage,update,game.server),game.sendTime);
+    game.sendInterval = setInterval(send.bind(null,"data",dataMessage),game.sendTime);
   }, 1000);
   game.runInterval = setInterval(run,game.runTime);
-  setInterval(displayData,300);
-  // setTimeout(function() {
-  //   setInterval(collision,200);
-  // }, 1000);
+  //setInterval(displayData,300);
 }
 
 // Create a player - the variable _palyer is assigned
 // Callback from communicate()
 function createPlayer(idMessage){
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.clr,2,0,[],0,0,0);
+  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.color,2,0,[],0,0,0);
   p.shootTime = true;
   game.setPlayer(p);
 }
@@ -196,7 +183,6 @@ function createPlayer(idMessage){
 function startController(){
   onkeydown = onkeyup = function(e) {
     game.keymap[e.keyCode] = (e.type == "keydown");
-    //document.getElementById("values").innerHTML = e.keyCode;
   }
 }
 
@@ -248,26 +234,27 @@ function run(){
       bullets.splice(i,1);
     }
   }
-  localupdate();
+  //localupdate();
   display(game.globalPlayers);
   render(game.localPlayer);
   collision();
 }
 
 function update(answer){
-  console.log(answer);
+  //console.log(answer + "\n\n\n");
     var ans = JSON.parse(answer);
-    if(!!ans.status){
-      // Something went wrong
-      if(ans.status == 404){
-        document.getElementById("content").innerHTML = ans.msg;
-        game.destroy();
-      } else if(ans.status == 100){
-        alert(ans.msg);
-      }
-    } else {
-      game.setglobalPlayers(ans);
-    }
+    //document.getElementById("messages").innerHTML += (answer.substr(0,50) + "<br>");
+    // if(!!ans.status){
+    //   // Something went wrong
+    //   if(ans.status == 404){
+    //     document.getElementById("content").innerHTML = ans.msg;
+    //     game.destroy();
+    //   } else if(ans.status == 100){
+    //     alert(ans.msg);
+    //   }
+    // } else {
+    game.setglobalPlayers(ans);
+    //}
     //document.getElementById("values").innerHTML = "<br>" + answer;
 
 }
@@ -302,6 +289,7 @@ function display(data){
 
 // Rendering
 function render(p){
+  //console.log(p.name + "  color:  " + p.color);
   game.ctx.textAlign = "center";
   game.ctx.fillStyle = "#000";
   game.ctx.font = "25px Arial";
