@@ -45,7 +45,7 @@ Game.prototype = {
       //console.log("here");
       var p1 = data[i];
       if(p1.id == game.localPlayer.id) continue;
-      var p2 = new Player(p1.name,p1.id,p1.x,p1.y,p1.rot,p1.color,p1.spd,p1.grot,p1.bullets,p1.col,p1.gas,p1.rotSpd);
+      var p2 = p1;
 
 
       // Going through the older data to see if the new data is relevant
@@ -115,6 +115,24 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,
   this.rotSpeed = rotSpeed;
 }
 
+Player.prototype = {
+  convertToLight: function(){
+    return new LightPlayer(this.name,this.id,this.x,this.y,this.rot,this.color,this.bullets,this.collisionCount,this.gas); 
+  }
+}
+
+function LightPlayer(name,id,x,y,rot,color,bullets,collisionCount,gas){
+  this.name = name;
+  this.id = id;
+  this.x = x;
+  this.y = y;
+  this.rot = rot;
+  this.color = color;
+  this.bullets = bullets;
+  this.collisionCount = collisionCount;
+  this.gas = gas;
+}
+
 function Bullet(playerId,id,x,y,rot){
   this.playerId = playerId;
   this.id = id;
@@ -137,11 +155,9 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 // Starts the operation
 
 function start(idMessage) {
-  console.log(idMessage);
-  var canvas = document.createElement("CANVAS");
+  var canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 720;
-  canvas.style.border = "4px solid #000";
   canvas.id = "frame";
   document.getElementById("content").appendChild(canvas);
   game = new Game();

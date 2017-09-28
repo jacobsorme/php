@@ -32,10 +32,7 @@ function idMessage(username,r,g,b){
   return JSON.stringify(object);
 }
 
-
-
-
 // Create a message with data of player
 function dataMessage(){
-  return JSON.stringify(game.localPlayer);
+  return JSON.stringify(game.localPlayer.convertToLight());
 }
