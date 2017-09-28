@@ -45,7 +45,6 @@ Game.prototype = {
       //console.log("here");
       var p1 = data[i];
       if(p1.id == game.localPlayer.id) continue;
-      var p2 = p1;
 
 
       // Going through the older data to see if the new data is relevant
@@ -88,7 +87,7 @@ Game.prototype = {
       //     }
       //   }
       // }
-      this.globalPlayers.push(p2);
+      this.globalPlayers.push(p1);
     }
     //this.archivedData = data;
   }
@@ -96,9 +95,10 @@ Game.prototype = {
 
 
 // Class Player
-function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,rotSpeed){
+function Player(name,id,socket,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,rotSpeed){
   this.name = name;
   this.id = id;
+  this.socket = socket;
   this.x = x;
   this.y = y;
   this.rot = rot;
@@ -117,13 +117,17 @@ function Player(name,id,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,
 
 Player.prototype = {
   convertToLight: function(){
-    return new LightPlayer(this.name,this.id,this.x,this.y,this.rot,this.color,this.bullets,this.collisionCount,this.gas); 
+    return new LightPlayer(this.name,this.id,this.socket,this.x,this.y,this.rot,this.color,this.bullets,this.collisionCount,this.gas);
+  },
+  toString: function(){
+    return this.name;
   }
 }
 
-function LightPlayer(name,id,x,y,rot,color,bullets,collisionCount,gas){
+function LightPlayer(name,id,socket,x,y,rot,color,bullets,collisionCount,gas){
   this.name = name;
   this.id = id;
+  this.socket = socket;
   this.x = x;
   this.y = y;
   this.rot = rot;
@@ -131,6 +135,12 @@ function LightPlayer(name,id,x,y,rot,color,bullets,collisionCount,gas){
   this.bullets = bullets;
   this.collisionCount = collisionCount;
   this.gas = gas;
+}
+
+LightPlayer.prototype = {
+  toString: function(){
+    return this.name;
+  }
 }
 
 function Bullet(playerId,id,x,y,rot){
@@ -166,7 +176,7 @@ function start(idMessage) {
 
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 100;
+  game.sendTime = 50;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -190,7 +200,7 @@ function start(idMessage) {
 // Callback from communicate()
 function createPlayer(idMessage){
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,400,400,90,idObj.color,2,0,[],0,0,0);
+  var p = new Player(idObj.name,idObj.id,idObj.socket,400,400,90,idObj.color,2,0,[],0,0,0);
   p.shootTime = true;
   game.setPlayer(p);
 }

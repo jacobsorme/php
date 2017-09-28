@@ -44,7 +44,6 @@
 <script src="script/script.js"></script>
 
 
-<div id="values"> AKJSH S</div>
 <div style="position:fixed;left:0.5%;" id="data"></div>
 <div style="position:fixed;left:20%;top:1%" id="content"></div>
 

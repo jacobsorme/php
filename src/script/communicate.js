@@ -16,8 +16,6 @@ function send(tag,message){
   } else {
     msg = message();
   }
-  //console.log("Sending this: "+ msg.substr(0,40));
-
   iosocket.emit(tag,msg);
 }
 
@@ -34,5 +32,5 @@ function idMessage(username,r,g,b){
 
 // Create a message with data of player
 function dataMessage(){
-  return JSON.stringify(game.localPlayer.convertToLight());
+  return JSON.stringify(game.localPlayer);
 }
