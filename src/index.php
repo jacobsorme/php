@@ -18,9 +18,8 @@
 <div id="setup">
 <div id="login">
   <center><h1 id="title">JetLag</h1></center>
-  <form id="form" autocomplete="off">
     <center>
-      <input type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
+      <input autocomplete="off" type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
       <b style="color:red;">R:</b>
       <input type="range" id="r" name="r" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><br>
       <b style="color:green;">G:</b>
@@ -31,7 +30,6 @@
       Choose a room:
     </center>
     <center><p><input type="button" value="Play" onclick="setup()"></center>
-  </form>
 </div>
 </div>
 
@@ -50,8 +48,12 @@
 
 
 <script>
+color(); 
 function setup() {
   var username = document.getElementById("username").value;
+  if(username == ""){
+    username = "Yoloista";
+  }
   var r = document.getElementById("r").value;
   var g = document.getElementById("g").value;
   var b = document.getElementById("b").value;

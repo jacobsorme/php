@@ -71,7 +71,7 @@ function bulletRender(p){
 
 
 // Draws polygon accordingly
-function polygons(x,y,rot,gas,pointsList,colorList){
+function polygons(x,y,rot,gas,colorList){
   game.ctx.translate(x,y);
   game.ctx.rotate(rot*(Math.PI/180));
   var i = 1;
@@ -79,12 +79,12 @@ function polygons(x,y,rot,gas,pointsList,colorList){
   if(gas == 1){
     i = 0;
   }
-  for(i; i< pointsList.length;i++){
+  for(i; i< game.pointsList.length;i++){
     game.ctx.fillStyle = colorList[i];
     game.ctx.strokeStyle = "#000";
     game.ctx.lineWidth = 4;
     game.ctx.beginPath();
-    var points = pointsList[i];
+    var points = game.pointsList[i];
     for(var j = 0; j < points.length; j++) {
       game.ctx.lineTo(points[j][0],points[j][1]);
     }

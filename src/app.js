@@ -7,6 +7,8 @@ var data = {
   id:1,
 }
 
+var interval = null;
+
 var counter = 0;
 
 var server = http.createServer(function (req, res) {
@@ -39,15 +41,16 @@ else if(req.url == '/mystyle.css'){
 
 function printData(){
   console.log("The data - counter: " + counter + "\n");
-  counter++; 
+  counter++;
   console.log(data);
   console.log("\n\n\n");
 
 }
 
 socketio.listen(server).on('connection', function (socket) {
-
-    setInterval(printData,10000);
+    if(interval == null){
+      interval = setInterval(printData,10000);
+    }
 
     socket.on('data', function (msg) {
 
@@ -66,7 +69,7 @@ socketio.listen(server).on('connection', function (socket) {
         if(!found){
           data.players.push(player);
         }
-        socket.to("playroom").emit('data',JSON.stringify(data.players));
+        socket.in("playroom").emit('data',JSON.stringify(data.players));
 
     });
     socket.on('disconnect', function(){
@@ -75,6 +78,7 @@ socketio.listen(server).on('connection', function (socket) {
         if(data.players[i].socket == socket.id){
           console.log("The Socket.id was equal");
           data.players.splice(i,1);
+          socket.in("playroom").emit('data',JSON.stringify(data.players));
           break;
         }
       }

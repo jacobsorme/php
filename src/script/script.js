@@ -13,6 +13,7 @@ function Game(){
   this.keys = null;
   this.keymap = null;
   this.bulletSpeed = 0;
+  this.pointsList = null;
 }
 
 Game.prototype = {
@@ -42,54 +43,11 @@ Game.prototype = {
     //this.archivedGlobalPlayers = this.globalPlayers;
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
-      //console.log("here");
       var p1 = data[i];
+      console.log(p1.name + "\n"); 
       if(p1.id == game.localPlayer.id) continue;
-
-
-      // Going through the older data to see if the new data is relevant
-      // Comparing the old data with the new Player() p2 created from the new data
-      // for(var j in this.archivedData){
-      //   var oldD = this.archivedData[j];
-      //   if(oldD.id == p2.id){
-      //     // Check the X values - The speed of the player will be compared
-      //     // This will happen every 200 ms, while the run() goes 50ms. A player should have moved ca. 4*speed since last check.
-      //     if(proximity(oldD.x,p2.x,10) && p2.speed > 3 && ((p2.rot > 10 && p2.rot < 170) || (p2.rot < 350 && p2.rot > 190))) {
-      //       var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
-      //       if(oldP != false){
-      //         p2.x = oldP.x;
-      //         p2.y = oldP.y;
-      //         throttle(p2,p2.glideRot,p2.speed*0.8);
-      //       }
-      //     }
-      //     // Check the Y values
-      //     if(proximity(oldD.y,p2.y,10) && p2.speed > 3 && ((p2.rot > 100 && p2.rot < 260) || (p2.rot < 80 || p2.rot > 280))) {
-      //       var oldP = findSameId(this.archivedGlobalPlayers,p2.id);
-      //       if(oldP != false){
-      //         p2.x = oldP.x;
-      //         p2.y = oldP.y;
-      //         throttle(p2,p2.glideRot,p2.speed*0.8);
-      //       }
-      //     }
-      //     if(JSON.stringify(p2.bullets) == JSON.stringify(oldD.bts)){
-      //
-      //       for(i in p2.bullets){
-      //         var b = p2.bullets[i];
-      //         var bOld = findSameId(oldD.bts,b.id);
-      //         if(bOld != false){
-      //           b.x = bOld.x;
-      //           b.y = bOld.y;
-      //           console.log("Yeet");
-      //           throttle(b,b.rot,game.bulletSpeed);
-      //         }
-      //
-      //       }
-      //     }
-      //   }
-      // }
       this.globalPlayers.push(p1);
     }
-    //this.archivedData = data;
   }
 }
 
@@ -174,6 +132,7 @@ function start(idMessage) {
   var login = document.getElementById("login");
   document.getElementById("setup").removeChild(login);
 
+  game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
   game.sendTime = 50;
@@ -191,7 +150,7 @@ function start(idMessage) {
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
     game.sendInterval = setInterval(send.bind(null,"data",dataMessage),game.sendTime);
-  }, 1000);
+  }, 500);
   game.runInterval = setInterval(run,game.runTime);
   //setInterval(displayData,300);
 }
@@ -260,44 +219,27 @@ function run(){
       bullets.splice(i,1);
     }
   }
-  //localupdate();
+  localupdate();
   display(game.globalPlayers);
   render(game.localPlayer);
   collision();
 }
 
 function update(answer){
-  //console.log(answer + "\n\n\n");
     var ans = JSON.parse(answer);
-    //document.getElementById("messages").innerHTML += (answer.substr(0,50) + "<br>");
-    // if(!!ans.status){
-    //   // Something went wrong
-    //   if(ans.status == 404){
-    //     document.getElementById("content").innerHTML = ans.msg;
-    //     game.destroy();
-    //   } else if(ans.status == 100){
-    //     alert(ans.msg);
-    //   }
-    // } else {
     game.setglobalPlayers(ans);
-    //}
-    //document.getElementById("values").innerHTML = "<br>" + answer;
-
 }
 
 function localupdate(){
   for(var i = 0; i < game.globalPlayers.length; i++){
     var p = game.globalPlayers[i];
     if(p.id != game.localPlayer.id){
-      if(Math.random() < 0.7){
-        rotate(p,p.rotSpeed);
-        throttle(p,p.glideRot,p.speed);
+      rotate(p,round(p.rotSpeed*0.7));
+      throttle(p,p.glideRot,p.speed);
+      for(var j = 0; j < p.bullets.length; j++){
+        var b = p.bullets[j];
+        throttle(b,b.rot,game.bulletSpeed);
       }
-    }
-
-    for(var j = 0; j < p.bullets.length; j++){
-      var b = p.bullets[j];
-      throttle(b,b.rot,game.bulletSpeed);
     }
   }
 }
@@ -319,8 +261,8 @@ function render(p){
   game.ctx.textAlign = "center";
   game.ctx.fillStyle = "#000";
   game.ctx.font = "25px Arial";
-  game.ctx.fillText(p.name,p.x,p.y-60);
+  game.ctx.fillText(p.name,p.x,p.y-70);
   bulletRender(p);
-  polygons(p.x,p.y,p.rot,p.gas,[planeFlame,planeBody,planeWing,planeWindow],["#F60","#" + p.color,"#888","#3FF"]);
+  polygons(p.x,p.y,p.rot,p.gas,["#F60","#" + p.color,"#888","#3FF"]);
   portalRender(p);
 }
