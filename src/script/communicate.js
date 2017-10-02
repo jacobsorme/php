@@ -8,6 +8,14 @@ iosocket.on('data', function(message) {
   update(message);
 });
 
+iosocket.on('rooms',function(message){
+  updateRooms(message);
+});
+
+iosocket.on('disconnect',function(){
+  clearInterval(game.runInterval);
+  clearInterval(game.sendInterval); 
+});
 
 function send(tag,message){
   var msg;
@@ -20,13 +28,15 @@ function send(tag,message){
 }
 
 // Create a message with ID-request
-function idMessage(username,r,g,b){
+function idMessage(username,room,r,g,b){
   var object = {
     name:username,
     r:r,
     g:g,
-    b:b
+    b:b,
+    room:room
   }
+  console.log(JSON.stringify(object));
   return JSON.stringify(object);
 }
 

@@ -44,7 +44,7 @@ Game.prototype = {
     this.globalPlayers = [];
     for(var i = 0; i < data.length; i++){
       var p1 = data[i];
-      console.log(p1.name + "\n"); 
+      console.log(p1.name + "\n");
       if(p1.id == game.localPlayer.id) continue;
       this.globalPlayers.push(p1);
     }

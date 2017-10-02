@@ -28,6 +28,7 @@
       <input type="range" id="b" name="b" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><p>
       <hr><p>
       Choose a room:
+      <div id="rooms"></div>
     </center>
     <center><p><input type="button" value="Play" onclick="setup()"></center>
 </div>
@@ -43,12 +44,26 @@
 
 
 <div style="position:fixed;left:0.5%;" id="data"></div>
-<div style="position:fixed;left:20%;top:1%" id="content"></div>
+<div style="position:fixed;left:5%;top:1%" id="content"></div>
 
 
 
 <script>
-color(); 
+color();
+window.onload = send("rooms","");
+
+function updateRooms(message){
+  var rooms = JSON.parse(message);
+  for( var i in rooms){
+    var option = document.createElement("input");
+    option.setAttribute("type","radio");
+    option.setAttribute("value",rooms[i].id);
+    document.getElementById("rooms").appendChild(option);
+    document.getElementById("rooms").innerHTML += rooms[i].name;
+    document.getElementById("rooms").innetHTML += "<br>";
+  }
+}
+
 function setup() {
   var username = document.getElementById("username").value;
   if(username == ""){
@@ -57,7 +72,8 @@ function setup() {
   var r = document.getElementById("r").value;
   var g = document.getElementById("g").value;
   var b = document.getElementById("b").value;
-  send("id",idMessage(username,r,g,b));
+  var roomId = 1;
+  send("id",idMessage(username,roomId,r,g,b));
 }
 
 function color(){

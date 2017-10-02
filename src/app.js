@@ -1,10 +1,16 @@
 var fs = require('fs')
     , http = require('http')
-    , socketio = require('socket.io');
+    , socketio = require('socket.io')
+    , Room = require('./serverwork.js');
 
 var data = {
   players:[],
+  rooms:[
+    {name:"Pjort",id:1,players:0},
+    {name:"Gurka",id:2,players:0}
+  ],
   id:1,
+  roomId:3
 }
 
 var interval = null;
@@ -52,45 +58,89 @@ socketio.listen(server).on('connection', function (socket) {
       interval = setInterval(printData,10000);
     }
 
-    socket.on('data', function (msg) {
+    // When a request for rooms is received
+    socket.on('rooms', function (msg) {
+      socket.emit('rooms',JSON.stringify(data.rooms));
+    });
 
-        //console.log('Got a msg: ', msg);
+    // When a data message is received
+    socket.on('data', function (msg) {
         //console.log(Object.keys(socket.rooms)[1]);
         //var room = Object.keys(socket.rooms)[1];
         //socket.to(room).emit('message',msg+"- Regards / server");
         var player = JSON.parse(msg);
         var found = false;
+        var changed = true;
         for(var i = 0; i<data.players.length;i++){
           if(data.players[i].id == player.id){
-            data.players[i] = player;
+            if(msg == JSON.stringify(data.players[i])){
+              changed = false;
+            } else {
+              data.players[i] = player;
+            }
             found = true;
           }
         }
         if(!found){
           data.players.push(player);
         }
-        socket.in("playroom").emit('data',JSON.stringify(data.players));
-
+        if(changed){
+          console.log("Sending to: " + Object.keys(socket.rooms)[0]);
+          socket.in(Object.keys(socket.rooms)[0]).emit('data',JSON.stringify(data.players));
+        }
     });
-    socket.on('disconnect', function(){
-      console.log("Disconnect: " + socket.id);
+
+
+    // When a disconnect happens
+    socket.on('disconnecting', function(){
       for(var i = 0; i < data.players.length; i++){
         if(data.players[i].socket == socket.id){
-          console.log("The Socket.id was equal");
+          socket.in(data.players[i].room).emit('data',JSON.stringify(data.players));
+          for(var j = 0; j< data.rooms.length; j++){
+            console.log("In disconnect-event - data.rooms[j].id: " + data.rooms[j].id);
+            //console.log(JSON.stringify(socket));
+            if(data.rooms[j].id == (Object.keys(socket.rooms)[0])){ // "Remove" player from room
+              console.log("Here: " + j);
+              data.rooms[j].players -= 1;
+            }
+            if(data.rooms[j].players == 0){ // Remove a empty room
+              data.rooms.splice(j,1);
+            }
+          }
           data.players.splice(i,1);
-          socket.in("playroom").emit('data',JSON.stringify(data.players));
           break;
         }
       }
     });
     socket.on('id', function (msg) {
-      socket.join("playroom");
-        var newid = data.id;
+        var newId = data.id;
+        console.log(msg);
         var msgObj = JSON.parse(msg);
-
         console.log(msgObj.name + " joined");
+
+        var newRoomId = -1;
+
+        if(msgObj.room == -1){ // Create a new room
+          var newRoom = new Room(msgObj.roomName,data.roomId);
+          newRoomId = newRoom.id;
+          data.rooms.push(newRoom);
+          data.roomId++;
+        } else { // Join a existing room
+          for(var i = 0; i < data.rooms.length; i++){
+            if(data.rooms[i].id == msgObj.room){
+              newRoomId = data.rooms[i].id;
+              data.rooms[i].players++;
+            }
+          }
+        }
+        if(newRoomId != -1){ // Join the room (in socket manner) if found
+          console.log("... and it joined: "+ newRoomId);
+          socket.join(newRoomId);
+        }
+
         var player = {
-          id:newid,
+          room: newRoomId,
+          id:newId,
           name:msgObj.name,
           color:rgbToHex(msgObj.r,msgObj.g,msgObj.b),
           socket:socket.id,
