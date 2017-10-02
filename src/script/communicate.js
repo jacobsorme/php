@@ -14,8 +14,22 @@ iosocket.on('rooms',function(message){
 
 iosocket.on('disconnect',function(){
   clearInterval(game.runInterval);
-  clearInterval(game.sendInterval); 
+  clearInterval(game.sendInterval);
 });
+
+iosocket.on('disco',function(socketId){
+  for(var key of game.globalPlayers.keys()){
+    if(game.globalPlayers.get(key).id == socketId){
+      game.globalPlayers.delete(key);
+    }
+  }
+});
+
+function playerDataSend(message){
+  if(changesCheck()){
+    send("data",message()); 
+  }
+}
 
 function send(tag,message){
   var msg;

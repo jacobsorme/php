@@ -3,9 +3,9 @@ function Game(){
   this.canvas = null;
   this.ctx = null;
   this.localPlayer = null;
-  this.globalPlayers = [];
-  this.archivedGlobalPlayers = [];
-  this.archivedData = [];
+  this.oldLocalPlayer = null;
+  this.oldChangeCheck = true; 
+  this.globalPlayers = new Map();
   this.runInterval = null;
   this.runTime = null;
   this.sendInterval = null;
@@ -40,14 +40,7 @@ Game.prototype = {
   // Converts a server player to a client-like player.
   // Also does checks on new incoming data VS last. This should affect globalPlayers.
   setglobalPlayers: function(data){
-    //this.archivedGlobalPlayers = this.globalPlayers;
-    this.globalPlayers = [];
-    for(var i = 0; i < data.length; i++){
-      var p1 = data[i];
-      console.log(p1.name + "\n");
-      if(p1.id == game.localPlayer.id) continue;
-      this.globalPlayers.push(p1);
-    }
+    this.globalPlayers.set(data.id,data);
   }
 }
 
@@ -149,7 +142,7 @@ function start(idMessage) {
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
-    game.sendInterval = setInterval(send.bind(null,"data",dataMessage),game.sendTime);
+    game.sendInterval = setInterval(playerDataSend.bind(null,dataMessage),game.sendTime);
   }, 500);
   game.runInterval = setInterval(run,game.runTime);
   //setInterval(displayData,300);
@@ -173,7 +166,7 @@ function startController(){
 
 function run(){
   // To check the real rotation and the rotation/direction of movement
-  var p = game.localPlayer;
+  var p = game.localPlayer; // Garbage?
   var bullets = p.bullets;
   if(game.keymap[game.keys.UP]) {
     p.gas = 1;
@@ -220,7 +213,7 @@ function run(){
     }
   }
   localupdate();
-  display(game.globalPlayers);
+  display();
   render(game.localPlayer);
   collision();
 }
@@ -231,8 +224,7 @@ function update(answer){
 }
 
 function localupdate(){
-  for(var i = 0; i < game.globalPlayers.length; i++){
-    var p = game.globalPlayers[i];
+  for(var p of game.globalPlayers.values()){
     if(p.id != game.localPlayer.id){
       rotate(p,round(p.rotSpeed*0.7));
       throttle(p,p.glideRot,p.speed);
@@ -244,13 +236,12 @@ function localupdate(){
   }
 }
 
-// Update frame with data from server
+// Render on canvas from thee Map game.globalPlayers
 function display(data){
   game.ctx.clearRect(0, 0, game.getWidth(), game.getHeight());
-  for(var i = 0; i < data.length; i++){
-    var p = data[i];
-    if(game.localPlayer.id != p.id){
-      render(p);
+  for(var value of game.globalPlayers.values()){
+    if(game.localPlayer.id != value.id){
+      render(value);
     }
   }
 }

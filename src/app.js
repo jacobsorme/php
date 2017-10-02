@@ -65,49 +65,23 @@ socketio.listen(server).on('connection', function (socket) {
 
     // When a data message is received
     socket.on('data', function (msg) {
-        //console.log(Object.keys(socket.rooms)[1]);
-        //var room = Object.keys(socket.rooms)[1];
-        //socket.to(room).emit('message',msg+"- Regards / server");
-        var player = JSON.parse(msg);
-        var found = false;
-        var changed = true;
-        for(var i = 0; i<data.players.length;i++){
-          if(data.players[i].id == player.id){
-            if(msg == JSON.stringify(data.players[i])){
-              changed = false;
-            } else {
-              data.players[i] = player;
-            }
-            found = true;
-          }
-        }
-        if(!found){
-          data.players.push(player);
-        }
-        if(changed){
-          console.log("Sending to: " + Object.keys(socket.rooms)[0]);
-          socket.in(Object.keys(socket.rooms)[0]).emit('data',JSON.stringify(data.players));
-        }
+      socket.in(Object.keys(socket.rooms)[0]).emit('data',msg);
     });
 
 
     // When a disconnect happens
     socket.on('disconnecting', function(){
-      for(var i = 0; i < data.players.length; i++){
-        if(data.players[i].socket == socket.id){
-          socket.in(data.players[i].room).emit('data',JSON.stringify(data.players));
-          for(var j = 0; j< data.rooms.length; j++){
-            console.log("In disconnect-event - data.rooms[j].id: " + data.rooms[j].id);
-            //console.log(JSON.stringify(socket));
-            if(data.rooms[j].id == (Object.keys(socket.rooms)[0])){ // "Remove" player from room
-              console.log("Here: " + j);
-              data.rooms[j].players -= 1;
-            }
-            if(data.rooms[j].players == 0){ // Remove a empty room
-              data.rooms.splice(j,1);
-            }
+      var room = Object.keys(socket.rooms)[0];
+      socket.in(room).emit('disco',socket.id);
+      for(var j = 0; j< data.rooms.length; j++){
+        //console.log("In disconnect-event - data.rooms[j].id: " + data.rooms[j].id);
+        //console.log(JSON.stringify(socket));
+        if(data.rooms[j].id == room){ // "Remove" player from room
+          console.log("Here: " + j);
+          data.rooms[j].players -= 1;
+          if(data.rooms[j].players == 0){ // Remove a empty room
+            data.rooms.splice(j,1);
           }
-          data.players.splice(i,1);
           break;
         }
       }
