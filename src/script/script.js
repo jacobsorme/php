@@ -4,7 +4,7 @@ function Game(){
   this.ctx = null;
   this.localPlayer = null;
   this.oldLocalPlayer = null;
-  this.oldChangeCheck = true; 
+  this.oldChangeCheck = true;
   this.globalPlayers = new Map();
   this.runInterval = null;
   this.runTime = null;
@@ -212,7 +212,7 @@ function run(){
       bullets.splice(i,1);
     }
   }
-  localupdate();
+  //localupdate();
   display();
   render(game.localPlayer);
   collision();

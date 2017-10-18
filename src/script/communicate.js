@@ -18,16 +18,18 @@ iosocket.on('disconnect',function(){
 });
 
 iosocket.on('disco',function(socketId){
+  console.log("A dicsonnect happened");
   for(var key of game.globalPlayers.keys()){
     if(game.globalPlayers.get(key).id == socketId){
       game.globalPlayers.delete(key);
+      console.log("Made a delete");
     }
   }
 });
 
 function playerDataSend(message){
   if(changesCheck()){
-    send("data",message()); 
+    send("data",message());
   }
 }
 

@@ -22,11 +22,7 @@ var server = http.createServer(function (req, res) {
   var path = req.url;
   if(req.url == '/'){
     res.writeHead(200, {'Content-Type': 'text/html'});
-    fs.createReadStream("./index.php").pipe(res);
-    }
-  else if(path.substring(0,5) == '/play'){
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    fs.createReadStream("./play.php").pipe(res);
+    fs.createReadStream("./index.html").pipe(res);
     }
 else if(req.url == '/mystyle.css'){
   res.writeHead(200, {'Content-Type': 'text/css'});
@@ -55,7 +51,7 @@ function printData(){
 
 socketio.listen(server).on('connection', function (socket) {
     if(interval == null){
-      interval = setInterval(printData,10000);
+      //interval = setInterval(printData,10000);
     }
 
     // When a request for rooms is received
