@@ -1,7 +1,13 @@
 var iosocket = io.connect();
 
 iosocket.on('id',function(message){
-  start(message)
+  if(message != -1) start(message);
+  else send("rooms","");
+});
+
+iosocket.on('hit',function(){
+  game.localPlayer.collisionCount++;
+  console.log("Hit!");
 });
 
 iosocket.on('data', function(message) {
@@ -20,13 +26,15 @@ iosocket.on('disconnect',function(){
 iosocket.on('disco',function(socketId){
   console.log("A dicsonnect happened");
   for(var key of game.globalPlayers.keys()){
-    if(game.globalPlayers.get(key).id == socketId){
+    if(game.globalPlayers.get(key).socket == socketId){
       game.globalPlayers.delete(key);
       console.log("Made a delete");
     }
   }
 });
 
+
+// changesCheck could make for less sending - if nothing changed = no send
 function playerDataSend(message){
   if(changesCheck()){
     send("data",message());
@@ -34,13 +42,7 @@ function playerDataSend(message){
 }
 
 function send(tag,message){
-  var msg;
-  if(typeof message === 'string') {
-    msg = message
-  } else {
-    msg = message();
-  }
-  iosocket.emit(tag,msg);
+  iosocket.emit(tag,message);
 }
 
 // Create a message with ID-request

@@ -6,7 +6,7 @@ var fs = require('fs')
 var data = {
   players:[],
   rooms:[
-    {name:"Pjort",id:1,players:0},
+    {name:"Pjort",id:1,players:300},
     {name:"Gurka",id:2,players:0}
   ],
   id:1,
@@ -82,6 +82,12 @@ socketio.listen(server).on('connection', function (socket) {
         }
       }
     });
+
+    socket.on('hit', function (msg) {
+        console.log("Hit, " + msg);
+        socket.to(msg).emit("hit");
+    });
+
     socket.on('id', function (msg) {
         var newId = data.id;
         console.log(msg);
@@ -90,30 +96,36 @@ socketio.listen(server).on('connection', function (socket) {
 
         var newRoomId = -1;
 
-        if(msgObj.room == -1){ // Create a new room
-          var newRoom = new Room(msgObj.roomName,data.roomId);
-          newRoomId = newRoom.id;
-          data.rooms.push(newRoom);
-          data.roomId++;
+
+        if(msgObj.room == 0){ // Create a new room
+            var newRoom = new Room(msgObj.name + "'s Room",data.roomId);
+            newRoomId = newRoom.id;
+            data.rooms.push(newRoom);
+            data.roomId++;
+
         } else { // Join a existing room
-          for(var i = 0; i < data.rooms.length; i++){
-            if(data.rooms[i].id == msgObj.room){
-              newRoomId = data.rooms[i].id;
-              data.rooms[i].players++;
+            for(var i = 0; i < data.rooms.length; i++){
+                if(data.rooms[i].id == msgObj.room){
+                    newRoomId = data.rooms[i].id;
+                    data.rooms[i].players++;
+                }
             }
-          }
         }
         if(newRoomId != -1){ // Join the room (in socket manner) if found
-          console.log("... and it joined: "+ newRoomId);
-          socket.join(newRoomId);
+            console.log("... and it joined: "+ newRoomId);
+            socket.join(newRoomId);
+        } else {
+            console.log("Could not find room: " + data.roomId);
+            socket.emit('id',-1);
+            return;
         }
 
         var player = {
-          room: newRoomId,
-          id:newId,
-          name:msgObj.name,
-          color:rgbToHex(msgObj.r,msgObj.g,msgObj.b),
-          socket:socket.id,
+             room: newRoomId,
+            id:newId,
+             name:msgObj.name,
+             color:rgbToHex(msgObj.r,msgObj.g,msgObj.b),
+            socket:socket.id,
         }
         data.id++;
         socket.emit('id',JSON.stringify(player));

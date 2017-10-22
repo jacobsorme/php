@@ -2,6 +2,23 @@ body {
   font-family: 'Titan One';
 }
 
+table{
+    border: 3px black solid;
+    border-radius: 15px;
+    border-collapse: collapse;
+}
+
+td,table{
+    border-collapse: collapse;
+    padding:7px;
+}
+table tr:nth-child(even) {
+  background-color:rgba(0,0,0,0.6);
+}
+table tr:nth-child(odd) {
+  background-color:rgba(0,0,0,0.4);
+}
+
 hr {
   height:3px;
   color:#000;
@@ -26,6 +43,10 @@ hr {
 
 #data br {
   text-indent: 5em;
+}
+
+#rooms {
+  text-align: left;
 }
 
 #content canvas {

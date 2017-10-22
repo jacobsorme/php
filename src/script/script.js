@@ -111,7 +111,7 @@ var planeFlame = [[-5,50],[0,65],[5,50],[0,40]];
 var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-50]];
 
 
- var game;
+var game = null;
 // Start function, used by button swag
 // Starts the operation
 
@@ -191,20 +191,20 @@ function run(){
   }
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
-    if(bullets.length < 10){
+    if(bullets.length < 3){
       var bullet = new Bullet(p.id,p.bulletId,round(p.x),round(p.y),p.rot);
       p.bulletId += 1;
       bullets.push(bullet);
       p.penetration.push(bullet);
     }
-    setTimeout(function() {p.shootTime = true;},200);
+    setTimeout(function() {p.shootTime = true;},100);
   }
 
   for(var i = 0; i < bullets.length; i++){
     throttle(bullets[i],bullets[i].rot,game.bulletSpeed);
-    if(bullets[i].bounce < 2){
+    if(bullets[i].bounce < 3){
       bordercheck(bullets[i],10);
-      if(bullets[i].bounce == 2) {
+      if(bullets[i].bounce == 3) {
          bullets.splice(i,1);
        } // The final bounce might just have happened
     } else {
@@ -252,7 +252,7 @@ function render(p){
   game.ctx.textAlign = "center";
   game.ctx.fillStyle = "#000";
   game.ctx.font = "25px Arial";
-  game.ctx.fillText(p.name,p.x,p.y-70);
+  game.ctx.fillText(p.name + p.collisionCount,p.x,p.y-70);
   bulletRender(p);
   polygons(p.x,p.y,p.rot,p.gas,["#F60","#" + p.color,"#888","#3FF"]);
   portalRender(p);
