@@ -51,7 +51,7 @@ function printData(){
 
 socketio.listen(server).on('connection', function (socket) {
     if(interval == null){
-      //interval = setInterval(printData,10000);
+      interval = setInterval(printData,10000);
     }
 
     // When a request for rooms is received
@@ -61,14 +61,14 @@ socketio.listen(server).on('connection', function (socket) {
 
     // When a data message is received
     socket.on('data', function (msg) {
-      socket.in(Object.keys(socket.rooms)[0]).emit('data',msg);
+      socket.to(Object.keys(socket.rooms)[0]).emit('data',msg);
     });
 
 
     // When a disconnect happens
     socket.on('disconnecting', function(){
       var room = Object.keys(socket.rooms)[0];
-      socket.in(room).emit('disco',socket.id);
+      socket.to(room).emit('disco',socket.id);
       for(var j = 0; j< data.rooms.length; j++){
         //console.log("In disconnect-event - data.rooms[j].id: " + data.rooms[j].id);
         //console.log(JSON.stringify(socket));

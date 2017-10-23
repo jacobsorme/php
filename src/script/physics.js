@@ -19,9 +19,6 @@ function speedDown(current){
 }
 
 function speedUp(current){
-  if(current + 0.5 > 9) {
-    return 9;
-  } else {
-    return round(current + 0.5);
-  }
+  if(current + 0.5 > 11) return 11;
+  else return round(current + 0.5);
 }

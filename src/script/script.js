@@ -48,7 +48,7 @@ Game.prototype = {
 // Class Player
 function Player(name,id,socket,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,rotSpeed){
   this.name = name;
-  this.id = id;
+  this.id = id; // Not required globally
   this.socket = socket;
   this.x = x;
   this.y = y;
@@ -58,9 +58,9 @@ function Player(name,id,socket,x,y,rot,color,speed,glideRot,bullets,collisionCou
   this.glideRot = glideRot;
   this.bullets = bullets;
   this.collisionCount = collisionCount;
-  this.bulletId = 0;
-  this.shootTime = null;
-  this.components = null;
+  this.bulletId = 0; // Not required globally
+  this.shootTime = null; // Not required globally
+  this.components = null; // Not required globally
   this.penetration = [];
   this.gas = gas;
   this.rotSpeed = rotSpeed;
@@ -75,17 +75,20 @@ Player.prototype = {
   }
 }
 
-function LightPlayer(name,id,socket,x,y,rot,color,bullets,collisionCount,gas){
-  this.name = name;
-  this.id = id;
-  this.socket = socket;
-  this.x = x;
-  this.y = y;
-  this.rot = rot;
-  this.color = color;
-  this.bullets = bullets;
-  this.collisionCount = collisionCount;
-  this.gas = gas;
+function LightPlayer(p){
+  this.name = p.name;
+  this.speed = p.speed;
+  this.socket = p.socket;
+  this.id = p.id;
+  this.glideRot = p.glideRot;
+  this.rotSpeed = p.rotSpeed;
+  this.x = p.x;
+  this.y = p.y;
+  this.rot = p.rot;
+  this.color = p.color;
+  this.bullets = p.bullets;
+  this.collisionCount = p.collisionCount;
+  this.gas = p.gas;
 }
 
 LightPlayer.prototype = {
@@ -143,7 +146,7 @@ function start(idMessage) {
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
     game.sendInterval = setInterval(playerDataSend.bind(null,dataMessage),game.sendTime);
-  }, 500);
+  }, 200);
   game.runInterval = setInterval(run,game.runTime);
   //setInterval(displayData,300);
 }
@@ -180,24 +183,29 @@ function run(){
     throttle(p,p.glideRot,p.speed);
   }
   // Rot speed slow down here?
-  p.rotSpeed = 0;
+
+
   if(game.keymap[game.keys.LEFT]){
-    p.rotSpeed = -5;
-    rotate(p,p.rotSpeed);
+    if(p.rotSpeed -1 < -5) p.rotSpeed = -5;
+    else p.rotSpeed -= 1;
+  } else if(game.keymap[game.keys.RIGHT]){
+    if(p.rotSpeed + 1 > 5) p.rotSpeed = 5;
+    else p.rotSpeed += 1;
+  } else {
+    if(p.rotSpeed > 0) p.rotSpeed -= 1;
+    else if(p.rotSpeed < 0) p.rotSpeed += 1;
+    else p.rotSpeed = 0;
   }
-  if(game.keymap[game.keys.RIGHT]){
-    p.rotSpeed = 5;
-    rotate(p,p.rotSpeed);
-  }
+  rotate(p,p.rotSpeed);
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
-    if(bullets.length < 3){
+    if(bullets.length < 50){
       var bullet = new Bullet(p.id,p.bulletId,round(p.x),round(p.y),p.rot);
       p.bulletId += 1;
       bullets.push(bullet);
-      p.penetration.push(bullet);
+      p.penetration.push(bullet.id);
     }
-    setTimeout(function() {p.shootTime = true;},100);
+    setTimeout(function() {p.shootTime = true;},500);
   }
 
   for(var i = 0; i < bullets.length; i++){
@@ -212,7 +220,7 @@ function run(){
       bullets.splice(i,1);
     }
   }
-  //localupdate();
+  localupdate();
   display();
   render(game.localPlayer);
   collision();
@@ -225,13 +233,11 @@ function update(answer){
 
 function localupdate(){
   for(var p of game.globalPlayers.values()){
-    if(p.id != game.localPlayer.id){
-      rotate(p,round(p.rotSpeed*0.7));
-      throttle(p,p.glideRot,p.speed);
-      for(var j = 0; j < p.bullets.length; j++){
-        var b = p.bullets[j];
-        throttle(b,b.rot,game.bulletSpeed);
-      }
+    rotate(p,round(p.rotSpeed));
+    throttle(p,p.glideRot,p.speed);
+    for(var j = 0; j < p.bullets.length; j++){
+      var b = p.bullets[j];
+      throttle(b,b.rot,game.bulletSpeed);
     }
   }
 }
@@ -240,9 +246,7 @@ function localupdate(){
 function display(data){
   game.ctx.clearRect(0, 0, game.getWidth(), game.getHeight());
   for(var value of game.globalPlayers.values()){
-    if(game.localPlayer.id != value.id){
-      render(value);
-    }
+    render(value);
   }
 }
 

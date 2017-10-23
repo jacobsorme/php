@@ -60,5 +60,5 @@ function idMessage(username,room,r,g,b){
 
 // Create a message with data of player
 function dataMessage(){
-  return JSON.stringify(game.localPlayer);
+  return JSON.stringify(new LightPlayer(game.localPlayer));
 }
