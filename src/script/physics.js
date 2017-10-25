@@ -14,14 +14,11 @@ function speedDown(current){
   if(current < 1){
     return 0;
   } else {
-    return current*0.985;
+    return round(current*0.985);
   }
 }
 
 function speedUp(current){
-  if(current + 0.5 > 9) {
-    return 9;
-  } else {
-    return current + 0.5;
-  }
+  if(current + 0.5 > 11) return 11;
+  else return round(current + 0.5);
 }

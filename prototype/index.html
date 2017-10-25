@@ -3,51 +3,15 @@
 <head>
     <meta charset="utf-8">
     <title>Namnlöst dokument</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <script type="text/javascript">
-
-        var iosocket = io.connect();
-
-        function send(){
-            var msg = document.getElementById("input").value;
-            document.getElementById("content").innerHTML += msg + "<br>";
-            document.getElementById("input").value = "";
-            iosocket.send(msg);
-        }
 
 
-        $(function(){
-            iosocket.on('connect', function () {
-                connected();
-                iosocket.on('message', function(message) {
-                    interpretMessage(message);
-                });
-                iosocket.on('disconnect', function() {
-                    disconnected();
-                });
-            });
-        });
 
-        function connected(){
-          document.getElementById("content").innerHTML += "Connected<br>";
-        }
-
-        function disconnected(){
-          document.getElementById("content").innerHTML += "Disconnected<br>";
-        }
-
-        function interpretMessage(message){
-          document.getElementById("content").innerHTML += message + "<br>";
-        }
-
-
-          </script>
 </head>
 
 <body>
-<div id="content"></div>
-<input type="text" id="input">
-<input type="button" value="Send" onclick="send()">
+<a href="chat.html">Chat</a>
 </body>
 </html>

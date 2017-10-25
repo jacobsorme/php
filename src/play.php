@@ -11,6 +11,7 @@
 <div style="position:fixed;left:0.5%;" id="data"></div>
 <div style="position:fixed;left:20%;top:1%" id="content"></div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src="script/math.js"></script>
 <script src="script/communicate.js"></script>
 <script src="script/collision.js"></script>
@@ -18,21 +19,23 @@
 <script src="script/physics.js"></script>
 <script src="script/script.js"></script>
 
+
 <script>
   window.onload = function(){
-    var username = "<?php echo htmlspecialchars($_GET["username"]) ?>";
+    var username = "<?php echo htmlspecialchars($_GET["username"]); ?>";
+    //var username = "YOloer";
     if(username == ""){
       username = "xX_NoName_Xx";
     }
     var r = "<?php echo htmlspecialchars($_GET["r"]) ?>";
     var g = "<?php echo htmlspecialchars($_GET["g"]) ?>";
     var b = "<?php echo htmlspecialchars($_GET["b"]) ?>";
-    var roomId = "<?php echo htmlspecialchars($_GET["room"]) ?>";
+    //var roomId = "<?php echo htmlspecialchars($_GET["room"]) ?>";
 
     console.log(roomId);
 
     function setup() {
-      communicate(idMessage.bind(null,username,r,g,b,roomId),start,"php/initserver.php");
+      send("id",idMessage(username,r,g,b));
     }
 
     setup();

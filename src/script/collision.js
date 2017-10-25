@@ -1,85 +1,25 @@
-function collisionBool(player,bullet){
-  return (player.x-50 < bullet.x && player.x+50 > bullet.x && player.y-50 <bullet.y && player.y+50 > bullet.y);
-}
 
 function collision(){
-  // Double checking penetrating bullets - if database have them gone so shall we!
-  // Be careful with your own bullets here!
-  var found = false;
-  var pL = game.localPlayer;
-  for(var i in pL.penetration){
-    var bp = pL.penetration[i];
-    for(var j in game.globalPlayers){
-      var pG = game.globalPlayers[j];
-      if(pG.id != pL.id){
-        for(var k in pG.bullets){
-          var b = pG.bullets[k];
-          if(b.id == bp.id && b.playerId == bp.playerId){
-            found = true;
-          }
+  for(var p of game.globalPlayers.values()){
+    for(var i in game.localPlayer.bullets){
+      var b = game.localPlayer.bullets[i];
+      if(proximity(p.x, b.x,40) && proximity(p.y, b.y,40)){
+        // two players might be at same place! Can't remove bullet yet
+        for(var q of game.globalPlayers.values()){
+          if(p.id == q.id) continue;
+          if(proximity(q.x, b.x,40) && proximity(q.y, b.y,40))send("hit", q.socket);
         }
+        game.localPlayer.bullets.splice(i,1);
+        send("hit", p.socket);
       }
-    }
-    if(!found){
-      // Taking care of the problem with the own bullets
-      if(pL.penetration[i].playerId != pL.id){
-        pL.penetration.splice(i,1);
-      }
-    }
-  }
-
-  // Local checking
-  var p = game.localPlayer
-  for(var i in p.bullets){
-    var b = p.bullets[i];
-    if(p.x-50 < b.x && p.x+50 > b.x && p.y-50 <b.y && p.y+50 > b.y){
-      // Checking if it is already inside the hitbox
-      var alreadyInside = false;
-      for(var j in p.penetration){
-        if(p.penetration[j].id == b.id && p.penetration[j].playerId == b.playerId){
-          alreadyInside = true;
+      if(proximity(game.localPlayer.x, b.x,40) && proximity(game.localPlayer.y, b.y,40)){
+        if(game.localPlayer.penetration.indexOf(b.id) == -1){
+          game.localPlayer.collisionCount += 1;
+          game.localPlayer.bullets.splice(i,1);
         }
-      }
-      if(!alreadyInside){
-        p.collisionCount += 1;
-        p.penetration.push(b);
-      }
-    } else { // If the bullet is outside we shall remove it from penetration
-      for(var k in p.penetration){
-        if(p.penetration[k].id == b.id && p.penetration[k].playerId == b.playerId){
-          p.penetration.splice(k,1);
-        }
-      }
-    }
-  }
-
-
-  for(var i in game.globalPlayers){
-    // We don't want to make checks on the local player based on what database says
-    if(game.globalPlayers[i].id != game.localPlayer.id){
-      var pG = game.globalPlayers[i];
-      for(var j in pG.bullets){
-        var b = pG.bullets[j];
-        var pL = game.localPlayer;
-        // If it is inside the hitbox
-        if(pL.x-50 < b.x && pL.x+50 > b.x && pL.y-50 <b.y && pL.y+50 > b.y){
-          // Checking if it is already inside the hitbox
-          var alreadyInside = false;
-          for(var k in pL.penetration){
-            if(pL.penetration[k].id == b.id && pL.penetration[k].playerId == b.playerId){
-              alreadyInside = true;
-            }
-          }
-          if(!alreadyInside){
-            pL.collisionCount += 1;
-            pL.penetration.push(b);
-          }
-        } else { // If the bullet is outside we shall remove it from penetration
-          for(var l in pL.penetration){
-            if(pL.penetration[l].id == b.id && pL.penetration[l].playerId == b.playerId){
-              pL.penetration.splice(l,1);
-            }
-          }
+      } else {
+        if(game.localPlayer.penetration.indexOf(b.id) != -1){
+          game.localPlayer.penetration.splice(game.localPlayer.penetration.indexOf(b.id),1);
         }
       }
     }
