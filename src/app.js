@@ -5,10 +5,7 @@ var fs = require('fs')
 
 var data = {
   players:[],
-  rooms:[
-    {name:"Pjort",id:1,players:300},
-    {name:"Gurka",id:2,players:0}
-  ],
+  rooms:[],
   id:1,
   roomId:3
 }

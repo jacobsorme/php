@@ -205,7 +205,7 @@ function run(){
       bullets.push(bullet);
       p.penetration.push(bullet.id);
     }
-    setTimeout(function() {p.shootTime = true;},500);
+    setTimeout(function() {p.shootTime = true;},700);
   }
 
   for(var i = 0; i < bullets.length; i++){
