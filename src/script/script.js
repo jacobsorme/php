@@ -255,6 +255,11 @@ function update(answer){
 function localupdate(){
   for(var p of game.globalPlayers.values()){
     rotate(p,round(p.rotSpeed));
+    if(p.gas ==1){
+      p.force[0] += addForceX(p.rot, 1);
+      p.force[1] -= addForceY(p.rot, 1);
+    }
+
     move(p);
     for(var j = 0; j < p.bullets.length; j++){
       var b = p.bullets[j];

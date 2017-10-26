@@ -46,8 +46,8 @@ function changesCheck(){
     game.oldLocalPlayer = JSON.stringify(game.localPlayer);
   }
   else {
-    console.log(game.oldLocalPlayer);
-    console.log(JSON.stringify(game.localPlayer));
+    //console.log(game.oldLocalPlayer);
+    //console.log(JSON.stringify(game.localPlayer));
 
     if(JSON.stringify(game.localPlayer) == game.oldLocalPlayer) {
 

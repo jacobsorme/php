@@ -9,6 +9,16 @@
 <body>
 
 <input type="checkbox" id="localupdate">
+<input type="button" onClick="end()" value="End">
+
+<script>
+  function end(){
+    clearInterval(game.sendInterval);
+  }
+
+
+</script>
+
 
 <div style="position:absolute;background-color:#000;width:100%;margin:0;padding:0;left:0px;top:0px;">
   <div style="width:50%;">
