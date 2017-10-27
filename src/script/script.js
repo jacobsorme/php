@@ -55,8 +55,7 @@ Game.prototype = {
         p.collisionCount = data.collisionCount;
       }
       if(data.weight == 0)  {
-        p.x = data.x;
-        p.y = data.y;
+        p.rotSpeed = data.rotSpeed; 
         p.force = data.force;
         p.bullets = data.bullets;
       }
@@ -149,8 +148,7 @@ function LightPlayer(p){
 function ExtraLightPlayer(p){
   this.weight = 0;
   this.force = p.force;
-  this.x = p.x;
-  this.y = p.y;
+  this.rotSpeed = p.rotSpeed;
   this.id = p.id;
   this.bullets = p.bullets;
 }
@@ -282,7 +280,7 @@ function run(){
       bullets.splice(i,1);
     }
   }
-  localupdate();
+  if(document.getElementById("localupdate").checked) localupdate();
   display();
   render(game.localPlayer);
   collision();
