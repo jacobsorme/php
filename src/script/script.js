@@ -4,7 +4,6 @@ function Game(){
   this.ctx = null;
   this.localPlayer = null;
   this.oldLocalPlayer = null;
-  this.oldChangeCheck = true;
   this.globalPlayers = new Map();
   this.runInterval = null;
   this.runTime = null;
@@ -113,7 +112,6 @@ LightPlayer.prototype = {
 }
 
 function Bullet(playerId,id,x,y,rot){
-  this.playerId = playerId;
   this.id = id;
   this.x = x;
   this.y = y;
@@ -239,9 +237,7 @@ function run(){
       bullets.splice(i,1);
     }
   }
-  if(document.getElementById("localupdate").checked) {
-    localupdate();
-  }
+  localupdate();
   display();
   render(game.localPlayer);
   collision();
