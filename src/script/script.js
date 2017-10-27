@@ -39,7 +39,32 @@ Game.prototype = {
   // Converts a server player to a client-like player.
   // Also does checks on new incoming data VS last. This should affect globalPlayers.
   setglobalPlayers: function(data){
-    this.globalPlayers.set(data.id,data);
+    /* Give a already stored player some updates
+        Includes probability on updates that are non-critical
+    */
+    if(this.globalPlayers.has(data.id)){
+      var p = this.globalPlayers.get(data.id);
+      if(data.weight == 1) {
+        p.x = data.x;
+        p.y = data.y;
+        p.bullets = data.bullets;
+        p.force = data.force;
+        p.gas = data.gas;
+        p.rot = data.rot;
+        p.rotSpeed = data.rotSpeed;
+        p.collisionCount = data.collisionCount;
+      }
+      if(data.weight == 0)  {
+        p.x = data.x;
+        p.y = data.y;
+        p.force = data.force;
+        p.bullets = data.bullets;
+      }
+    } else {
+      // A new player was found - this new one will need a full message from us
+      playerDataSend(dataMessageFull,false);
+      this.globalPlayers.set(data.id,data);
+    } //Store a fully equipped player
   }
 }
 
@@ -85,30 +110,49 @@ Player.prototype = {
   convertToLight: function(){
     return new LightPlayer(this);
   },
-  toString: function(){
-    return this.name;
+  convertToExtraLight: function(){
+    return new ExtraLightPlayer(this);
+  },
+  // OBS - this function depends on how LightPlayer looks
+  convertFromLight: function(data){
+    this.x = data.x;
+    this.y = data.y;
+    this.bullets = data.bullets;
+    this.force = data.force;
+    this.gas = data.gas;
+    this.rot = data.rot;
+    this.rotSpeed = data.rotSpeed;
+    this.collisionCount = data.collisionCount;
+  },
+  // OBS - this function depends on how ExtraLightPlayer looks
+  convertFromExtraLight: function(data){
+    this.force = data.force;
   }
 }
 
 function LightPlayer(p){
-  this.name = p.name;
-  this.socket = p.socket;
+  this.weight = 1;
   this.force = p.force;
   this.id = p.id;
   this.rotSpeed = p.rotSpeed;
   this.x = p.x;
   this.y = p.y;
   this.rot = p.rot;
-  this.color = p.color;
   this.bullets = p.bullets;
   this.collisionCount = p.collisionCount;
   this.gas = p.gas;
 }
 
-LightPlayer.prototype = {
-  toString: function(){
-    return this.name;
-  }
+/* Extra light player - good for thight sending.
+    Has type 0 - extra light
+ */
+function ExtraLightPlayer(p){
+  this.weight = 0;
+  this.force = p.force;
+  this.x = p.x;
+  this.y = p.y;
+  this.id = p.id;
+  this.bullets = p.bullets;
 }
 
 function Bullet(playerId,id,x,y,rot){
@@ -144,7 +188,7 @@ function start(idMessage) {
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 100;
+  game.sendTime = 30;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -154,17 +198,18 @@ function start(idMessage) {
   };
   game.keymap = [];
   createPlayer(idMessage);
+  playerDataSend(dataMessageFull,false); // Send a full equipped message
   startController();
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
-    game.sendInterval = setInterval(playerDataSend.bind(null,dataMessage),game.sendTime);
+    game.sendInterval = setInterval(playerDataSend.bind(null,dataMessageLight,true),game.sendTime);
   }, 200);
   game.runInterval = setInterval(run,game.runTime);
   //setInterval(displayData,300);
 }
 
-// Create a player - the variable _palyer is assigned
+// Create a player
 // Callback from communicate()
 function createPlayer(idMessage){
   var idObj = JSON.parse(idMessage);

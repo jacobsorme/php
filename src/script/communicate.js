@@ -35,8 +35,9 @@ iosocket.on('disco',function(socketId){
 
 
 // changesCheck could make for less sending - if nothing changed = no send
-function playerDataSend(message){
-  if(changesCheck()){
+function playerDataSend(message,makeChecks){
+  if(!makeChecks) send("data",message());
+  else if(changesCheck()){
     send("data",message());
   }
 }
@@ -59,6 +60,13 @@ function idMessage(username,room,r,g,b){
 }
 
 // Create a message with data of player
-function dataMessage(){
-  return JSON.stringify(new LightPlayer(game.localPlayer));
+function dataMessageLight(){
+  //There is a X% chance that the data sent is a LightPlayer - otherwise ExtraLightPlayer
+  if(Math.random() < 0.75) return JSON.stringify(new LightPlayer(game.localPlayer));
+  else return JSON.stringify(new ExtraLightPlayer(p));
+}
+
+
+function dataMessageFull(){
+  return JSON.stringify(game.localPlayer);
 }

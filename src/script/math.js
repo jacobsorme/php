@@ -17,44 +17,21 @@ function proximity(val1, val2, margin){
 }
 
 /*  Checking if things have changed with the local player
-    Returns true if it has changed
+    Returns true if it has changed - false if nothing changed
     Stores the previous value in game - to do some checks
 */
 function changesCheck(){
-  // if(Math.random() < 0.8){
-  //   var olp = game.oldLocalPlayer;
-  //   var lp = game.localPlayer;
-  //   var val = false;
-  //   if(olp == null){
-  //     game.oldLocalPlayer = JSON.stringify(game.localPlayer);
-  //     return true;
-  //   }
-  //   else if(olp != JSON.stringify(lp)) return true;
-  //   game.oldLocalPlayer = JSON.stringify(game.localPlayer);
-  //   // If we suddenly stop changing, make sure that is sent to others
-  //   if(game.oldChangeCheck && !val){
-  //     game.oldChangeCheck = val;
-  //     return true;
-  //   }
-  //   game.oldChangeCheck = val;
-  //   return val;
-  // } else {
-  //   return true;
-  // }
   var res = true;
   if(game.oldLocalPlayer == null) {
     game.oldLocalPlayer = JSON.stringify(game.localPlayer);
   }
   else {
-    //console.log(game.oldLocalPlayer);
-    //console.log(JSON.stringify(game.localPlayer));
-
     if(JSON.stringify(game.localPlayer) == game.oldLocalPlayer) {
-
       res = false;
     }
     game.oldLocalPlayer = JSON.stringify(game.localPlayer);
   }
+  // There is a 5% chance to still send - even if nothing changed
   if(Math.random()<0.95) return res;
   else return true;
 }
