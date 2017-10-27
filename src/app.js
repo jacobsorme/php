@@ -40,7 +40,7 @@ else if(req.url == '/mystyle.css'){
 
 function printData(){
   console.log("The data - counter: " + counter + "\n");
-  counter++;
+  //counter++;
   console.log(data);
   console.log("\n\n\n");
 
@@ -48,7 +48,7 @@ function printData(){
 
 socketio.listen(server).on('connection', function (socket) {
     if(interval == null){
-      interval = setInterval(printData,10000);
+      interval = setInterval(printData,5000);
     }
 
     // When a request for rooms is received
@@ -58,7 +58,8 @@ socketio.listen(server).on('connection', function (socket) {
 
     // When a data message is received
     socket.on('data', function (msg) {
-      socket.to(Object.keys(socket.rooms)[0]).emit('data',msg);
+        counter++;
+        socket.to(Object.keys(socket.rooms)[0]).emit('data',msg);
     });
 
 

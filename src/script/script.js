@@ -4,7 +4,6 @@ function Game(){
   this.ctx = null;
   this.localPlayer = null;
   this.oldLocalPlayer = null;
-  this.oldChangeCheck = true;
   this.globalPlayers = new Map();
   this.runInterval = null;
   this.runTime = null;
@@ -46,29 +45,45 @@ Game.prototype = {
 
 
 // Class Player
-function Player(name,id,socket,x,y,rot,color,speed,glideRot,bullets,collisionCount,gas,rotSpeed){
+function Player(name,id,socket,color){
   this.name = name;
   this.id = id; // Not required globally
   this.socket = socket;
-  this.x = x;
-  this.y = y;
-  this.rot = rot;
+  this.x = null;
+  this.y = null;
+  this.rot = null;
   this.color = color;
-  this.speed = speed;
-  this.glideRot = glideRot;
-  this.bullets = bullets;
-  this.collisionCount = collisionCount;
+  this.force = null;
+  this.forceIncr = null;
+  this.forceDecr = null;
+  this.bullets = [];
+  this.collisionCount = 0;
   this.bulletId = 0; // Not required globally
   this.shootTime = null; // Not required globally
-  this.components = null; // Not required globally
   this.penetration = [];
-  this.gas = gas;
-  this.rotSpeed = rotSpeed;
+  this.gas = 0;
+  this.rotSpeed = null;
 }
 
 Player.prototype = {
+  setPosition: function(x,y,rot) {
+    this.x = x;
+    this.y = y;
+    this.rot = rot;
+  },
+  setForceParameters: function(force,incr,decr,min){
+    this.force = force;
+    this.forceIncr = incr;
+    this.forceDecr = decr;
+    this.forceMin = min;
+  },
+  setRotParameters: function(rotSpeed,max,change){
+    this.rotSpeed = rotSpeed;
+    this.rotMaxSpeed = max;
+    this.rotChange = change;
+  },
   convertToLight: function(){
-    return new LightPlayer(this.name,this.id,this.socket,this.x,this.y,this.rot,this.color,this.bullets,this.collisionCount,this.gas);
+    return new LightPlayer(this);
   },
   toString: function(){
     return this.name;
@@ -77,10 +92,9 @@ Player.prototype = {
 
 function LightPlayer(p){
   this.name = p.name;
-  this.speed = p.speed;
   this.socket = p.socket;
+  this.force = p.force;
   this.id = p.id;
-  this.glideRot = p.glideRot;
   this.rotSpeed = p.rotSpeed;
   this.x = p.x;
   this.y = p.y;
@@ -98,7 +112,6 @@ LightPlayer.prototype = {
 }
 
 function Bullet(playerId,id,x,y,rot){
-  this.playerId = playerId;
   this.id = id;
   this.x = x;
   this.y = y;
@@ -131,7 +144,7 @@ function start(idMessage) {
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 50;
+  game.sendTime = 100;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -155,8 +168,11 @@ function start(idMessage) {
 // Callback from communicate()
 function createPlayer(idMessage){
   var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,idObj.socket,400,400,90,idObj.color,2,0,[],0,0,0);
+  var p = new Player(idObj.name,idObj.id,idObj.socket,idObj.color);
   p.shootTime = true;
+  p.setPosition(400,400,90);
+  p.setForceParameters([5,-5],1,0.96,0.1);
+  p.setRotParameters(20,6,1);
   game.setPlayer(p);
 }
 
@@ -171,32 +187,33 @@ function run(){
   // To check the real rotation and the rotation/direction of movement
   var p = game.localPlayer; // Garbage?
   var bullets = p.bullets;
+
+  if(Math.abs(p.force[0]) < p.forceMin) p.force[0] = 0;
+  else p.force[0] = round(p.force[0]* p.forceDecr);
+  if(Math.abs(p.force[1]) < p.forceMin) p.force[1] = 0;
+  else p.force[1] = round(p.force[1]* p.forceDecr);
+
   if(game.keymap[game.keys.UP]) {
     p.gas = 1;
-    p.speed = speedUp(p.speed);
-    p.glideRot = p.rot;
-    throttle(p,p.rot,p.speed);
+    p.force[0] += addForceX(p.rot, p.forceIncr);
+    p.force[1] -= addForceY(p.rot, p.forceIncr);
   } else {
     p.gas = 0;
-    if(p.speed > 0) p.speed = speedDown(p.speed);
-    else p.speed = 0;
-    throttle(p,p.glideRot,p.speed);
   }
-  // Rot speed slow down here?
-
 
   if(game.keymap[game.keys.LEFT]){
-    if(p.rotSpeed -1 < -5) p.rotSpeed = -5;
-    else p.rotSpeed -= 1;
+    if(p.rotSpeed - p.rotChange < -1*p.rotMaxSpeed) p.rotSpeed = -1*p.rotMaxSpeed;
+    else p.rotSpeed -= p.rotChange;
   } else if(game.keymap[game.keys.RIGHT]){
-    if(p.rotSpeed + 1 > 5) p.rotSpeed = 5;
-    else p.rotSpeed += 1;
+    if(p.rotSpeed + p.rotChange > p.rotMaxSpeed) p.rotSpeed = p.rotMaxSpeed;
+    else p.rotSpeed += p.rotChange;
   } else {
-    if(p.rotSpeed > 0) p.rotSpeed -= 1;
-    else if(p.rotSpeed < 0) p.rotSpeed += 1;
+    if(p.rotSpeed > 0) p.rotSpeed -= p.rotChange;
+    else if(p.rotSpeed < 0) p.rotSpeed += p.rotChange;
     else p.rotSpeed = 0;
   }
   rotate(p,p.rotSpeed);
+  move(p);
   if(game.keymap[game.keys.SPACE] && p.shootTime) {
     p.shootTime = false;
     if(bullets.length < 50){
@@ -234,7 +251,12 @@ function update(answer){
 function localupdate(){
   for(var p of game.globalPlayers.values()){
     rotate(p,round(p.rotSpeed));
-    throttle(p,p.glideRot,p.speed);
+    if(p.gas ==1){
+      p.force[0] += addForceX(p.rot, 1);
+      p.force[1] -= addForceY(p.rot, 1);
+    }
+
+    move(p);
     for(var j = 0; j < p.bullets.length; j++){
       var b = p.bullets[j];
       throttle(b,b.rot,game.bulletSpeed);

@@ -9,6 +9,20 @@ function throttle(object,rotateVariable, speed) {
 	object.x  = round(object.x + (speed*Math.sin(rot)));
 }
 
+function addForceX(rotateVariable, speed) {
+  var rot = (rotateVariable/360)*2*Math.PI;
+  return round((speed*Math.sin(rot)));
+}
+function addForceY(rotateVariable, speed) {
+  var rot = (rotateVariable/360)*2*Math.PI;
+  return round((speed*Math.cos(rot)));
+}
+
+function move(object){
+  object.x = round(object.x + object.force[0]);
+  object.y = round(object.y + object.force[1]);
+}
+
 // Controls the slow-down of player
 function speedDown(current){
   if(current < 1){

@@ -51,6 +51,8 @@ hr {
 
 #content canvas {
   border:4px solid #000;
+    left:50px;
+    position: absolute;
   background: white; /* For browsers that do not support gradients */
   /*background: -webkit-linear-gradient(left top, #fff, #eee); /* For Safari 5.1 to 6.0 */
   /*background: -o-linear-gradient(bottom right, #fff, #eee); /* For Opera 11.1 to 12.0 */

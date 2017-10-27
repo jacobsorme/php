@@ -41,7 +41,22 @@ function changesCheck(){
   // } else {
   //   return true;
   // }
-  return true; 
+  var res = true;
+  if(game.oldLocalPlayer == null) {
+    game.oldLocalPlayer = JSON.stringify(game.localPlayer);
+  }
+  else {
+    //console.log(game.oldLocalPlayer);
+    //console.log(JSON.stringify(game.localPlayer));
+
+    if(JSON.stringify(game.localPlayer) == game.oldLocalPlayer) {
+
+      res = false;
+    }
+    game.oldLocalPlayer = JSON.stringify(game.localPlayer);
+  }
+  if(Math.random()<0.95) return res;
+  else return true;
 }
 
 function findSameId(list,id){
