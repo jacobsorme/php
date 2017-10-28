@@ -6,7 +6,6 @@ var fs = require('fs')
 var data = {
   players:[],
   rooms:[],
-  id:1,
   roomId:3
 }
 
@@ -86,47 +85,49 @@ socketio.listen(server).on('connection', function (socket) {
         socket.to(msg).emit("hit");
     });
 
-    socket.on('id', function (msg) {
-        var newId = data.id;
-        console.log(msg);
-        var msgObj = JSON.parse(msg);
-        console.log(msgObj.name + " joined");
+    socket.on('id', function (message) {
+        var msg = JSON.parse(message);
+        var room;
 
-        var newRoomId = -1;
+        var player = {
+            name:msg.name,
+            color:rgbToHex(msg.r,msg.g,msg.b),
+            socket:socket.id,
+        }
 
-
-        if(msgObj.room == 0){ // Create a new room
-            var newRoom = new Room(msgObj.name + "'s Room",data.roomId);
-            newRoomId = newRoom.id;
-            data.rooms.push(newRoom);
+        if(msg.room == 0){ // Create a new room
+            room = new Room(msg.name + "'s Room",data.roomId);
+            data.rooms.push(room);
             data.roomId++;
+            socket.join(room.id);
 
+            player.room = room.id;
+            player.id = room.playerId;
+            player.creator = 1;
+            
+            room.playerId++;
+            socket.emit('id',JSON.stringify(player));
+            return;
         } else { // Join a existing room
             for(var i = 0; i < data.rooms.length; i++){
-                if(data.rooms[i].id == msgObj.room){
-                    newRoomId = data.rooms[i].id;
+                if(data.rooms[i].id == msg.room && data.rooms[i].players < 2){
                     data.rooms[i].players++;
+                    room = data.rooms[i];
+                    socket.join(room.id);
+
+                    player.room = room.id;
+                    player.id = room.playerId;
+                    player.creator = 0;
+
+                    room.playerId++;
+                    socket.emit('id',JSON.stringify(player));
+                    return;
                 }
             }
         }
-        if(newRoomId != -1){ // Join the room (in socket manner) if found
-            console.log("... and it joined: "+ newRoomId);
-            socket.join(newRoomId);
-        } else {
-            console.log("Could not find room: " + data.roomId);
-            socket.emit('id',-1);
-            return;
-        }
-
-        var player = {
-             room: newRoomId,
-            id:newId,
-             name:msgObj.name,
-             color:rgbToHex(msgObj.r,msgObj.g,msgObj.b),
-            socket:socket.id,
-        }
-        data.id++;
-        socket.emit('id',JSON.stringify(player));
+        console.log("Could not find room: " + data.roomId);
+        socket.emit('id',-1);
+        return;
     });
 });
 

@@ -1,166 +1,4 @@
 
-function Game(){
-  this.canvas = null;
-  this.ctx = null;
-  this.localPlayer = null;
-  this.oldLocalPlayer = null;
-  this.globalPlayers = new Map();
-  this.runInterval = null;
-  this.runTime = null;
-  this.sendInterval = null;
-  this.sendTime = null;
-  this.keys = null;
-  this.keymap = null;
-  this.bulletSpeed = 0;
-  this.pointsList = null;
-}
-
-Game.prototype = {
-  setPlayer: function(p){
-    this.localPlayer = p;
-  },
-  getPlayer: function(){
-    return this.localPlayer;
-  },
-  setCanvas: function(canvas){
-    this.canvas = canvas;
-    this.ctx = canvas.getContext("2d");
-  },
-  getWidth: function(){
-    return this.canvas.width;
-  },
-  getHeight: function(){
-    return this.canvas.height;
-  },
-  destroy: function(){
-    clearInterval(this.runInterval);
-    clearInterval(this.sendInterval);
-  },
-  // Converts a server player to a client-like player.
-  // Also does checks on new incoming data VS last. This should affect globalPlayers.
-  setglobalPlayers: function(data){
-    /* Give a already stored player some updates
-        Includes probability on updates that are non-critical
-    */
-    if(this.globalPlayers.has(data.id)){
-      var p = this.globalPlayers.get(data.id);
-      if(data.weight == 1) {
-        p.x = data.x;
-        p.y = data.y;
-        p.bullets = data.bullets;
-        p.force = data.force;
-        p.gas = data.gas;
-        p.rot = data.rot;
-        p.rotSpeed = data.rotSpeed;
-        p.collisionCount = data.collisionCount;
-      }
-      if(data.weight == 0)  {
-        p.rotSpeed = data.rotSpeed; 
-        p.force = data.force;
-        p.bullets = data.bullets;
-      }
-    } else {
-      // A new player was found - this new one will need a full message from us
-      playerDataSend(dataMessageFull,false);
-      this.globalPlayers.set(data.id,data);
-    } //Store a fully equipped player
-  }
-}
-
-
-// Class Player
-function Player(name,id,socket,color){
-  this.name = name;
-  this.id = id; // Not required globally
-  this.socket = socket;
-  this.x = null;
-  this.y = null;
-  this.rot = null;
-  this.color = color;
-  this.force = null;
-  this.forceIncr = null;
-  this.forceDecr = null;
-  this.bullets = [];
-  this.collisionCount = 0;
-  this.bulletId = 0; // Not required globally
-  this.shootTime = null; // Not required globally
-  this.penetration = [];
-  this.gas = 0;
-  this.rotSpeed = null;
-}
-
-Player.prototype = {
-  setPosition: function(x,y,rot) {
-    this.x = x;
-    this.y = y;
-    this.rot = rot;
-  },
-  setForceParameters: function(force,incr,decr,min){
-    this.force = force;
-    this.forceIncr = incr;
-    this.forceDecr = decr;
-    this.forceMin = min;
-  },
-  setRotParameters: function(rotSpeed,max,change){
-    this.rotSpeed = rotSpeed;
-    this.rotMaxSpeed = max;
-    this.rotChange = change;
-  },
-  convertToLight: function(){
-    return new LightPlayer(this);
-  },
-  convertToExtraLight: function(){
-    return new ExtraLightPlayer(this);
-  },
-  // OBS - this function depends on how LightPlayer looks
-  convertFromLight: function(data){
-    this.x = data.x;
-    this.y = data.y;
-    this.bullets = data.bullets;
-    this.force = data.force;
-    this.gas = data.gas;
-    this.rot = data.rot;
-    this.rotSpeed = data.rotSpeed;
-    this.collisionCount = data.collisionCount;
-  },
-  // OBS - this function depends on how ExtraLightPlayer looks
-  convertFromExtraLight: function(data){
-    this.force = data.force;
-  }
-}
-
-function LightPlayer(p){
-  this.weight = 1;
-  this.force = p.force;
-  this.id = p.id;
-  this.rotSpeed = p.rotSpeed;
-  this.x = p.x;
-  this.y = p.y;
-  this.rot = p.rot;
-  this.bullets = p.bullets;
-  this.collisionCount = p.collisionCount;
-  this.gas = p.gas;
-}
-
-/* Extra light player - good for thight sending.
-    Has type 0 - extra light
- */
-function ExtraLightPlayer(p){
-  this.weight = 0;
-  this.force = p.force;
-  this.rotSpeed = p.rotSpeed;
-  this.id = p.id;
-  this.bullets = p.bullets;
-}
-
-function Bullet(playerId,id,x,y,rot){
-  this.id = id;
-  this.x = x;
-  this.y = y;
-  this.rot = rot;
-  this.bounce = 0;
-}
-
 // The points
 var planeBody = [[0,45],[-10,50],[-10,40],[-47,40],[-15,0],[-30,0],[-10,-20],[0,-50],[10,-20],[30,0],[15,0],[47,40],[10,40],[10,50]];
 var planeWindow = [[0,-30],[-4,-25],[-4,-3],[0,0],[4,-3],[4,-25]];
@@ -170,9 +8,8 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 
 
 var game = null;
-// Start function, used by button swag
+// Start function, triggered by 'Play' button
 // Starts the operation
-
 function start(idMessage) {
   var canvas = document.createElement("canvas");
   canvas.width = 1080;
@@ -186,7 +23,7 @@ function start(idMessage) {
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 30;
+  game.sendTime = 50;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -276,11 +113,10 @@ function run(){
          bullets.splice(i,1);
        } // The final bounce might just have happened
     } else {
-      //removePenetration(bullets[i]);
       bullets.splice(i,1);
     }
   }
-  if(document.getElementById("localupdate").checked) localupdate();
+  localupdate();
   display();
   render(game.localPlayer);
   collision();

@@ -13,10 +13,10 @@ td,table{
     padding:7px;
 }
 table tr:nth-child(even) {
-  background-color:rgba(0,0,0,0.6);
+  background-color:rgba(255,255,255,0.1);
 }
 table tr:nth-child(odd) {
-  background-color:rgba(0,0,0,0.4);
+  background-color:rgba(255,255,255,0.2);
 }
 
 hr {
@@ -91,4 +91,8 @@ hr {
   border:3px solid #ccc;
   -webkit-border-radius: 5px;
   border-radius: 5px;
+}
+
+#frame {
+  top:50px;
 }
