@@ -80,6 +80,16 @@ socketio.listen(server).on('connection', function (socket) {
       }
     });
 
+    socket.on("match-start",function(msg){
+        socket.to(Object.keys(socket.rooms)[0]).emit('match-start',msg);
+        console.log("yeet");
+    })
+
+    socket.on("match-pos",function(msg){
+        socket.to(Object.keys(socket.rooms)[0]).emit('match-pos',msg);
+        console.log("BRUV");
+    })
+
     socket.on('hit', function (msg) {
         console.log("Hit, " + msg);
         socket.to(msg).emit("hit");
@@ -93,7 +103,7 @@ socketio.listen(server).on('connection', function (socket) {
             name:msg.name,
             color:rgbToHex(msg.r,msg.g,msg.b),
             socket:socket.id,
-        }
+        };
 
         if(msg.room == 0){ // Create a new room
             room = new Room(msg.name + "'s Room",data.roomId);
@@ -104,7 +114,7 @@ socketio.listen(server).on('connection', function (socket) {
             player.room = room.id;
             player.id = room.playerId;
             player.creator = 1;
-            
+
             room.playerId++;
             socket.emit('id',JSON.stringify(player));
             return;

@@ -96,3 +96,7 @@ hr {
 #frame {
   top:50px;
 }
+
+#controls{
+  border:3px solid #555;
+}

@@ -10,15 +10,18 @@ var planeWing = [[-10,-20],[-15,40],[-4,40],[0,10],[4,40],[15,40],[10,-20],[0,-5
 var game = null;
 // Start function, triggered by 'Play' button
 // Starts the operation
-function start(idMessage) {
+function start(message) {
   var canvas = document.createElement("canvas");
   canvas.width = 1080;
   canvas.height = 720;
   canvas.id = "frame";
   document.getElementById("content").appendChild(canvas);
+
   game = new Game();
+  game.canvas = canvas;
   var login = document.getElementById("login");
   document.getElementById("setup").removeChild(login);
+
 
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
@@ -32,7 +35,7 @@ function start(idMessage) {
     RIGHT: 39,
   };
   game.keymap = [];
-  createPlayer(idMessage);
+  createPlayer(message);
   playerDataSend(dataMessageFull,false); // Send a full equipped message
   startController();
 
@@ -46,14 +49,19 @@ function start(idMessage) {
 
 // Create a player
 // Callback from communicate()
-function createPlayer(idMessage){
-  var idObj = JSON.parse(idMessage);
-  var p = new Player(idObj.name,idObj.id,idObj.socket,idObj.color);
+function createPlayer(message){
+  var msg = JSON.parse(message);
+  var p = new Player(msg.name,msg.id,msg.socket,msg.color);
   p.shootTime = true;
   p.setPosition(400,400,90);
   p.setForceParameters([5,-5],1,0.96,0.1);
   p.setRotParameters(20,6,1);
   game.setPlayer(p);
+
+  if(msg.creator ==1){
+    displayControls();
+  }
+
 }
 
 // Start the controlling of keys
@@ -144,7 +152,7 @@ function localupdate(){
 }
 
 // Render on canvas from thee Map game.globalPlayers
-function display(data){
+function display(){
   game.ctx.clearRect(0, 0, game.getWidth(), game.getHeight());
   for(var value of game.globalPlayers.values()){
     render(value);

@@ -5,6 +5,20 @@ iosocket.on('id',function(message){
   else send("rooms","");
 });
 
+iosocket.on('match-start',function(position){
+  stopRunning();
+  console.log("Yuuh");
+  var pos = JSON.parse(position);
+  startSequence(pos);
+});
+
+iosocket.on('match-pos',function(message){
+  var msg = JSON.parse(message);
+  game.globalPlayers.get(msg.id).setPosition(msg.x,msg.y,msg.rot);
+  display();
+  render(game.localPlayer);
+});
+
 iosocket.on('hit',function(){
   game.localPlayer.collisionCount++;
   console.log("Hit!");
@@ -69,4 +83,9 @@ function dataMessageLight(){
 
 function dataMessageFull(){
   return JSON.stringify(game.localPlayer);
+}
+
+
+function startMatch(position){
+  send("match",JSON.stringify(position));
 }
