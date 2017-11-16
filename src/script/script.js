@@ -12,10 +12,16 @@ var game = null;
 // Starts the operation
 function start(message) {
   var canvas = document.createElement("canvas");
-  canvas.width = 1080;
-  canvas.height = 720;
+  canvas.width = 1280;
+  canvas.height = 1280;
   canvas.id = "frame";
-  document.getElementById("content").appendChild(canvas);
+
+  var console = document.createElement("div");
+  console.id = "console";
+  var content = document.getElementById("content");
+
+  content.insertBefore(console,content.childNodes[0]);
+  content.insertBefore(canvas,content.childNodes[0]);
 
   game = new Game();
   game.canvas = canvas;
@@ -26,7 +32,7 @@ function start(message) {
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 50;
+  game.sendTime = 100;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -42,7 +48,7 @@ function start(message) {
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {
     game.sendInterval = setInterval(playerDataSend.bind(null,dataMessageLight,true),game.sendTime);
-  }, 200);
+  }, 500);
   game.runInterval = setInterval(run,game.runTime);
   //setInterval(displayData,300);
 }
@@ -54,8 +60,7 @@ function createPlayer(message){
   var p = new Player(msg.name,msg.id,msg.socket,msg.color);
   p.shootTime = true;
   p.setPosition(400,400,90);
-  p.setForceParameters([5,-5],1,0.96,0.1);
-  p.setRotParameters(20,6,1);
+  p.setForceParameters([5,20]);
   game.setPlayer(p);
 
   if(msg.creator ==1){
@@ -110,18 +115,16 @@ function run(){
       bullets.push(bullet);
       p.penetration.push(bullet.id);
     }
-    setTimeout(function() {p.shootTime = true;},700);
+    setTimeout(function() {p.shootTime = true;},50);
   }
 
   for(var i = 0; i < bullets.length; i++){
     throttle(bullets[i],bullets[i].rot,game.bulletSpeed);
-    if(bullets[i].bounce < 3){
+    if(bulletCloseToEdges(bullets[i])){
       bordercheck(bullets[i],10);
-      if(bullets[i].bounce == 3) {
+      if(bullets[i].bounce >= 3) {
          bullets.splice(i,1);
        } // The final bounce might just have happened
-    } else {
-      bullets.splice(i,1);
     }
   }
   localupdate();
@@ -138,12 +141,17 @@ function update(answer){
 function localupdate(){
   for(var p of game.globalPlayers.values()){
     rotate(p,round(p.rotSpeed));
-    if(p.gas ==1){
-      p.force[0] += addForceX(p.rot, 1);
-      p.force[1] -= addForceY(p.rot, 1);
+
+    if(p.gas==1) {
+      p.force[0] += addForceX(p.rot, p.forceIncr);
+      p.force[1] -= addForceY(p.rot, p.forceIncr);
+    } else {
+      p.force[0] = round(p.force[0]* p.forceDecr);
+      p.force[1] = round(p.force[1]* p.forceDecr);
     }
 
     move(p);
+
     for(var j = 0; j < p.bullets.length; j++){
       var b = p.bullets[j];
       throttle(b,b.rot,game.bulletSpeed);

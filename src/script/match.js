@@ -9,8 +9,10 @@ function displayControls(){
     start.value="Start Game";
     start.onclick = startGame;
     document.getElementById("controls").appendChild(start);
+    game.startable = true;
 }
 function startGame(){
+    if(!game.startable) return;
     var pos = {
         id:game.localPlayer.id,
         x: Math.round(Math.random()*game.getWidth()),
@@ -20,7 +22,11 @@ function startGame(){
     stopRunning();
     game.localPlayer.setPosition(pos.x,pos.y,pos.rot);
     send("match-start",JSON.stringify(pos));
-    setTimeout(function(){alert("GO!")},5000);
+    game.startable = false;
+    setTimeout(function(){
+        game.sendInterval = setInterval(playerDataSend.bind(null,dataMessageLight,true),game.sendTime);
+        game.runInterval = setInterval(run,game.runTime);
+    },5000);
 }
 
 function stopRunning(){
@@ -43,5 +49,12 @@ function startSequence(pos){
     send('match-pos',JSON.stringify(pos));
     game.localPlayer.setPosition(pos.x,pos.y,pos.rot);
     render(game.localPlayer);
-    setTimeout(function(){alert("GO!")},5000);
+    setTimeout(function(){
+        game.sendInterval = setInterval(playerDataSend.bind(null,dataMessageLight,true),game.sendTime);
+        game.runInterval = setInterval(run,game.runTime);
+    },5000);
+}
+
+function surrender(){
+    send('match-surrender');
 }

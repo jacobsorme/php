@@ -13,6 +13,11 @@ function Game(){
     this.keymap = null;
     this.bulletSpeed = 0;
     this.pointsList = null;
+    this.forceIncr = 1;
+    this.forceDecr = 0.96;
+    this.forceMin = 0.1;
+    this.rotChange = 1;
+    this.rotMaxSpeed = 6;
 }
 
 Game.prototype = {
@@ -54,17 +59,24 @@ Game.prototype = {
                 p.rotSpeed = data.rotSpeed;
                 p.collisionCount = data.collisionCount;
             }
-            if(data.weight == 0)  {
+            else if(data.weight == 0)  {
                 p.rotSpeed = data.rotSpeed;
                 p.force = data.force;
                 p.bullets = data.bullets;
                 p.collisionCount = data.collisionCount;
+                p.gas = data.gas;
+            } else {
+                this.globalPlayers.set(data.id,p);
             }
         } else {
             // A new player was found - this new one will need a full message from us
 
             playerDataSend(dataMessageFull,false);
             var p = new Player(data.name,data.id,data.socket,data.color);
+            p.setPosition(data.x,data.y,data.rot);
+            p.setRotSpeed(data.rotSpeed);
+            p.setForceParameters(data.force);
+            console.log("NEW DATA"+JSON.stringify(data));
             this.globalPlayers.set(data.id,p);
         } //Store a fully equipped player
     }
@@ -80,9 +92,10 @@ function Player(name,id,socket,color){
     this.y = null;
     this.rot = null;
     this.color = color;
-    this.force = null;
-    this.forceIncr = null;
-    this.forceDecr = null;
+    this.force = [0,0];
+    this.forceIncr = game.forceIncr;
+    this.forceDecr = game.forceDecr;
+    this.forceMin = game.forceMin;
     this.bullets = [];
     this.collisionCount = 0;
     this.bulletId = 0; // Not required globally
@@ -90,6 +103,8 @@ function Player(name,id,socket,color){
     this.penetration = [];
     this.gas = 0;
     this.rotSpeed = null;
+    this.rotMaxSpeed = game.rotMaxSpeed;
+    this.rotChange = game.rotChange;
 }
 
 Player.prototype = {
@@ -98,16 +113,11 @@ Player.prototype = {
         this.y = y;
         this.rot = rot;
     },
-    setForceParameters: function(force,incr,decr,min){
+    setForceParameters: function(force){
         this.force = force;
-        this.forceIncr = incr;
-        this.forceDecr = decr;
-        this.forceMin = min;
     },
-    setRotParameters: function(rotSpeed,max,change){
+    setRotSpeed: function(rotSpeed){
         this.rotSpeed = rotSpeed;
-        this.rotMaxSpeed = max;
-        this.rotChange = change;
     },
     convertToLight: function(){
         return new LightPlayer(this);
@@ -155,6 +165,7 @@ function ExtraLightPlayer(p){
     this.id = p.id;
     this.bullets = p.bullets;
     this.collisionCount = p.collisionCount;
+    this.gas = p.gas;
 }
 
 function Bullet(playerId,id,x,y,rot){

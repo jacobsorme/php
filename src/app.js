@@ -83,12 +83,16 @@ socketio.listen(server).on('connection', function (socket) {
     socket.on("match-start",function(msg){
         socket.to(Object.keys(socket.rooms)[0]).emit('match-start',msg);
         console.log("yeet");
-    })
+    });
+
+    socket.on("match-surrender",function(){
+        socket.to(Object.keys(socket.rooms)[0]).emit('match-surrender');
+    });
 
     socket.on("match-pos",function(msg){
         socket.to(Object.keys(socket.rooms)[0]).emit('match-pos',msg);
         console.log("BRUV");
-    })
+    });
 
     socket.on('hit', function (msg) {
         console.log("Hit, " + msg);
@@ -120,7 +124,7 @@ socketio.listen(server).on('connection', function (socket) {
             return;
         } else { // Join a existing room
             for(var i = 0; i < data.rooms.length; i++){
-                if(data.rooms[i].id == msg.room && data.rooms[i].players < 2){
+                if(data.rooms[i].id == msg.room && data.rooms[i].players < 20){
                     data.rooms[i].players++;
                     room = data.rooms[i];
                     socket.join(room.id);

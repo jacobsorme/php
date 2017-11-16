@@ -1,5 +1,5 @@
 body {
-  font-family: 'Titan One';
+  font-family: 'Anton';
 }
 
 table{
@@ -36,6 +36,14 @@ hr {
   border-style: solid;
 }
 
+#console{
+  border:#ff0 3px solid;
+  float:left;
+  width:300px;
+  height:500px;
+
+}
+
 #data {
   font-size: 22px;
   font-family: "Arial";
@@ -49,10 +57,19 @@ hr {
   text-align: left;
 }
 
+#content {
+  left: 0px;
+  top:0px;
+  float: left;
+  height:700px;
+  border:4px solid #f00;
+  width: 90%;
+}
+
 #content canvas {
   border:4px solid #000;
-    left:50px;
-    position: absolute;
+  float:left;
+  height:95%;
   background: white; /* For browsers that do not support gradients */
   /*background: -webkit-linear-gradient(left top, #fff, #eee); /* For Safari 5.1 to 6.0 */
   /*background: -o-linear-gradient(bottom right, #fff, #eee); /* For Opera 11.1 to 12.0 */
@@ -78,16 +95,21 @@ hr {
   font-size: 40px;
 }
 #username:focus{
-  font-size:20px;
+  font-size:25px;
   border:3px solid #555;
 
 }
+#rgb{
+  font-size:30px;
+  font-weight:100;
+}
+
 #username{
-  font-family: 'Titan One';
+  font-family: 'Anton';
   font-weight: lighter;
   font-size: 15px;
   width:150px;
-  height:20px;
+  height:25px;
   border:3px solid #ccc;
   -webkit-border-radius: 5px;
   border-radius: 5px;
@@ -98,5 +120,7 @@ hr {
 }
 
 #controls{
-  border:3px solid #555;
+  border:3px solid #0f0;
+  float:left;
+  width:100%;
 }

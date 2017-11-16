@@ -4,27 +4,28 @@
 <meta charset="utf-8">
 <link rel="stylesheet" type="text/css" href="mystyle.css">
 <link href='https://fonts.googleapis.com/css?family=Titan One' rel='stylesheet'>
-<title>JetLag</title>
+  <link href='https://fonts.googleapis.com/css?family=Anton' rel='stylesheet'>
+  <title>JetLag</title>
 </head>
 <body>
 
-<div style="position:absolute;background-color:#000;width:100%;margin:0;padding:0;left:0px;top:0px;">
+<!--<div style="position:absolute;background-color:#000;width:100%;margin:0;padding:0;left:0px;top:0px;">
   <div style="width:50%;">
     <a href="index.html" style="color:#fff; font-size:20px">Home</a>
     <a href="about.php" style="color:#fff; font-size:20px">About</a>
     <a href="partners.php" style="color:#fff; font-size:20px">Partners</a>
   </div>
-</div>
+</div>-->
 <div id="setup">
 <div id="login">
   <center><h1 id="title">JetLag</h1></center>
     <center>
       <input autocomplete="off" type="text" id="username" name="username" placeholder="username" maxlength="20"><p>
-      <b style="color:red;">R:</b>
+      <b style="color:red;font-size:30px">R:</b>
       <input type="range" id="r" name="r" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><br>
-      <b style="color:green;">G:</b>
+      <b style="color:green;font-size:30px">G:</b>
       <input type="range" id="g" name="g" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><br>
-      <b style="color:blue;">B:</b>
+      <b style="color:blue;font-size:30px">B:</b>
       <input type="range" id="b" name="b" value="102" min="102" max="255" step="17" onkeydown="color()" onmousemove="color()"><p>
       <hr><p>
       Choose a room:
@@ -47,10 +48,11 @@
 <script src="script/script.js"></script>
 
 
-<div style="position:fixed;left:0.5%;" id="data"></div>
-<h1 id="matchname"></h1>
-<div style="position:fixed;left:5%;top:1%" id="content">
-  <div id="controls"></div>
+<b id="matchname">match</b>
+<div id="content">
+  <div id="controls">
+    <input type="checkbox" id="localupdates">Local updates
+  </div>
 </div>
 
 

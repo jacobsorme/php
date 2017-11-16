@@ -1,5 +1,5 @@
 function round(val){
-  return parseInt(val*100)/100;
+  return parseInt(val*1000)/1000;
 }
 
 function rgbToHex(r,g,b){
@@ -8,13 +8,7 @@ function rgbToHex(r,g,b){
   return hex;
 }
 
-function proximity(val1, val2, margin){
-  if( Math.abs(val1 - val2) <= margin){
-    return true;
-  } else {
-    return false;
-  }
-}
+
 
 /*  Checking if things have changed with the local player
     Returns true if it has changed - false if nothing changed

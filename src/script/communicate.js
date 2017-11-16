@@ -12,6 +12,10 @@ iosocket.on('match-start',function(position){
   startSequence(pos);
 });
 
+iosocket.on('match-surrender',function(){
+  //alert("WINNING");
+});
+
 iosocket.on('match-pos',function(message){
   var msg = JSON.parse(message);
   game.globalPlayers.get(msg.id).setPosition(msg.x,msg.y,msg.rot);
@@ -21,6 +25,7 @@ iosocket.on('match-pos',function(message){
 
 iosocket.on('hit',function(){
   game.localPlayer.collisionCount++;
+  if(game.localPlayer.collisionCount >= 21) surrender();
   console.log("Hit!");
 });
 
@@ -41,7 +46,7 @@ iosocket.on('disco',function(socketId){
   console.log("A dicsonnect happened");
   for(var key of game.globalPlayers.keys()){
     if(game.globalPlayers.get(key).socket == socketId){
-      game.globalPlayers.delete(key);
+      setTimeout(function(){game.globalPlayers.delete(key)},1000);
       console.log("Made a delete");
     }
   }
@@ -76,10 +81,10 @@ function idMessage(username,room,r,g,b){
 // Create a message with data of player
 function dataMessageLight(){
   //There is a X% chance that the data sent is a LightPlayer - otherwise ExtraLightPlayer
-  if(Math.random() < 0.5) return JSON.stringify(new LightPlayer(game.localPlayer));
-  else return JSON.stringify(new ExtraLightPlayer(game.localPlayer));
+  //if(Math.random()<0.5) return JSON.stringify(new LightPlayer(game.localPlayer));
+  //else return JSON.stringify(new ExtraLightPlayer(game.localPlayer));
+  return JSON.stringify(new LightPlayer(game.localPlayer));
 }
-
 
 function dataMessageFull(){
   return JSON.stringify(game.localPlayer);
