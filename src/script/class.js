@@ -18,6 +18,7 @@ function Game(){
     this.forceMin = 0.1;
     this.rotChange = 1;
     this.rotMaxSpeed = 6;
+    this.terminal = null;
 }
 
 Game.prototype = {
@@ -175,3 +176,52 @@ function Bullet(playerId,id,x,y,rot){
     this.rot = rot;
     this.bounce = 0;
 }
+
+function Terminal(){
+    this.maxlength = 20;
+    this.terminal = document.createElement("div");
+    this.terminal.id = "terminal";
+
+    this.chat = document.createElement("div");
+    this.chat.id = "terminal-chat";
+    this.terminal.appendChild(this.chat);
+
+    this.send = document.createElement("input");
+    this.send.type="button";
+    this.send.value="Send";
+    this.send.onclick=chatSend;
+    this.textbox = document.createElement("input");
+    this.textbox.type="text";
+    this.terminal.appendChild(this.send);
+    this.terminal.appendChild(this.textbox);
+    this.messages = [];
+}
+
+Terminal.prototype = {
+    setup: function(goal){
+        goal.appendChild(this.terminal);
+    },
+    clearMessage: function(){
+        this.textbox.value ="";
+    },
+    getMessage: function(){
+        var m = this.textbox.value;
+        if(this.messages.length>=this.maxlength) this.messages.shift();
+        this.messages.push(m);
+        this.chat.innerHTML ="";
+        for(var i in this.messages){
+            this.chat.innerHTML += this.messages[i]+"<br>";
+        }
+        this.clearMessage();
+        return m;
+
+    },
+    appendMessage:function(msg){
+        if(this.messages.length>=this.maxlength) this.messages.shift();
+        this.messages.push(msg);
+        this.chat.innerHTML="";
+        for(var i in this.messages){
+            this.chat.innerHTML += this.messages[i]+"<br>";
+        }
+    }
+};

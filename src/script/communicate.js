@@ -23,6 +23,10 @@ iosocket.on('match-pos',function(message){
   render(game.localPlayer);
 });
 
+iosocket.on("chat",function(message){
+  game.terminal.appendMessage(message);
+});
+
 iosocket.on('hit',function(){
   game.localPlayer.collisionCount++;
   if(game.localPlayer.collisionCount >= 21) surrender();
@@ -93,4 +97,8 @@ function dataMessageFull(){
 
 function startMatch(position){
   send("match",JSON.stringify(position));
+}
+
+function chatSend(){
+  send("chat",game.terminal.getMessage());
 }

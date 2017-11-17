@@ -36,12 +36,14 @@ hr {
   border-style: solid;
 }
 
-#console{
+#terminal{
   border:#ff0 3px solid;
   float:left;
   width:300px;
   height:500px;
-
+}
+#terminal input {
+  bottom:0px;
 }
 
 #data {

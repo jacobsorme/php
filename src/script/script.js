@@ -16,15 +16,17 @@ function start(message) {
   canvas.height = 1280;
   canvas.id = "frame";
 
-  var console = document.createElement("div");
-  console.id = "console";
   var content = document.getElementById("content");
+  content.appendChild(canvas);
 
-  content.insertBefore(console,content.childNodes[0]);
-  content.insertBefore(canvas,content.childNodes[0]);
+  var t = new Terminal();
+  t.setup(content);
 
   game = new Game();
+
   game.canvas = canvas;
+  game.terminal = t;
+
   var login = document.getElementById("login");
   document.getElementById("setup").removeChild(login);
 
@@ -32,7 +34,7 @@ function start(message) {
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 100;
+  game.sendTime = 50;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,

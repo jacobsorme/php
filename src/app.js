@@ -94,6 +94,10 @@ socketio.listen(server).on('connection', function (socket) {
         console.log("BRUV");
     });
 
+    socket.on('chat',function(msg){
+        socket.to(Object.keys(socket.rooms)[0]).emit('chat',msg);
+    });
+
     socket.on('hit', function (msg) {
         console.log("Hit, " + msg);
         socket.to(msg).emit("hit");
