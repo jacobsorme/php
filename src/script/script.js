@@ -19,13 +19,11 @@ function start(message) {
   var content = document.getElementById("content");
   content.appendChild(canvas);
 
-  var t = new Terminal();
-  t.setup(content);
+
 
   game = new Game();
 
   game.canvas = canvas;
-  game.terminal = t;
 
   var login = document.getElementById("login");
   document.getElementById("setup").removeChild(login);
@@ -46,6 +44,11 @@ function start(message) {
   createPlayer(message);
   playerDataSend(dataMessageFull,false); // Send a full equipped message
   startController();
+
+  var t = new Terminal();
+  game.terminal = t;
+  t.setup(content);
+
 
   // Start interval of function communicate() with paremeter update()
   setTimeout(function() {

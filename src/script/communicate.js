@@ -50,7 +50,12 @@ iosocket.on('disco',function(socketId){
   console.log("A dicsonnect happened");
   for(var key of game.globalPlayers.keys()){
     if(game.globalPlayers.get(key).socket == socketId){
-      setTimeout(function(){game.globalPlayers.delete(key)},1000);
+      game.globalPlayers.delete(key);
+      var msg = {
+        name:"Server",
+        text:"A player left"
+      };
+      game.terminal.appendMessage(JSON.stringify(msg));
       console.log("Made a delete");
     }
   }
@@ -99,6 +104,6 @@ function startMatch(position){
   send("match",JSON.stringify(position));
 }
 
-function chatSend(){
-  send("chat",game.terminal.getMessage());
+function chatSend(message){
+  send("chat",message);
 }

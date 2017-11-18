@@ -39,15 +39,31 @@ hr {
 #terminal{
   border:#ff0 3px solid;
   float:left;
-  width:300px;
+  width:350px;
   height:500px;
+  font-family: "Arial";
+  font-size: 18px;
 }
-#terminal input {
-  bottom:0px;
+#terminal input:not(:hover) {
+}
+
+#terminal-chat{
+  border:#f0f 3px solid;
+  height: 90%;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  padding: 5px;
+
+}
+#terminal-chat:after{
+  content: "";
+  display: block;
+  height: 20px;
+  width: 100%;
 }
 
 #data {
-  font-size: 22px;
+  font-size: 15px;
   font-family: "Arial";
 }
 

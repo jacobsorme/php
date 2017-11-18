@@ -178,7 +178,7 @@ function Bullet(playerId,id,x,y,rot){
 }
 
 function Terminal(){
-    this.maxlength = 20;
+    this.maxlength = 30;
     this.terminal = document.createElement("div");
     this.terminal.id = "terminal";
 
@@ -189,36 +189,47 @@ function Terminal(){
     this.send = document.createElement("input");
     this.send.type="button";
     this.send.value="Send";
-    this.send.onclick=chatSend;
+
     this.textbox = document.createElement("input");
     this.textbox.type="text";
     this.terminal.appendChild(this.send);
     this.terminal.appendChild(this.textbox);
     this.messages = [];
+
+    this.send.onclick= function(){
+        chatSend(game.terminal.getMessage());
+        this.send.focus = false;
+    }
 }
 
 Terminal.prototype = {
     setup: function(goal){
         goal.appendChild(this.terminal);
+        var initMsg = {
+            text:game.localPlayer.name+" joined",
+            name:"Server"
+        };
+        chatSend(JSON.stringify(initMsg));
+        this.appendMessage(JSON.stringify(initMsg));
     },
-    clearMessage: function(){
+    clearTextBox: function(){
         this.textbox.value ="";
     },
     getMessage: function(){
-        var m = this.textbox.value;
-        if(this.messages.length>=this.maxlength) this.messages.shift();
-        this.messages.push(m);
-        this.chat.innerHTML ="";
-        for(var i in this.messages){
-            this.chat.innerHTML += this.messages[i]+"<br>";
-        }
-        this.clearMessage();
-        return m;
-
+        console.log(this);
+        var msg = {
+            name: game.localPlayer.name,
+            text: this.textbox.value
+        };
+        this.appendMessage(JSON.stringify(msg));
+        this.clearTextBox();
+        this.chat.scrollTop = this.chat.scrollHeight;
+        return JSON.stringify(msg);
     },
-    appendMessage:function(msg){
+    appendMessage:function(message){
+        var msg = JSON.parse(message);
         if(this.messages.length>=this.maxlength) this.messages.shift();
-        this.messages.push(msg);
+        this.messages.push("> "+msg.name+": "+msg.text);
         this.chat.innerHTML="";
         for(var i in this.messages){
             this.chat.innerHTML += this.messages[i]+"<br>";
