@@ -12,8 +12,9 @@ iosocket.on('match-start',function(position){
   startSequence(pos);
 });
 
-iosocket.on('match-surrender',function(){
-  //alert("WINNING");
+iosocket.on('match-surrender',function(msg){
+  console.log("A player, "+msg+"surrendered");
+  game.globalPlayers.get(parseInt(msg)).inactivate();
 });
 
 iosocket.on('match-pos',function(message){

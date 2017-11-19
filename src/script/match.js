@@ -56,5 +56,6 @@ function startSequence(pos){
 }
 
 function surrender(){
-    send('match-surrender');
+    send('match-surrender',game.localPlayer.id);
+    game.localPlayer.inactivate();
 }

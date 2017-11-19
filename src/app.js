@@ -85,8 +85,9 @@ socketio.listen(server).on('connection', function (socket) {
         console.log("yeet");
     });
 
-    socket.on("match-surrender",function(){
-        socket.to(Object.keys(socket.rooms)[0]).emit('match-surrender');
+    socket.on("match-surrender",function(msg){
+        console.log("A player, "+msg+" surrendered");
+        socket.to(Object.keys(socket.rooms)[0]).emit('match-surrender',msg);
     });
 
     socket.on("match-pos",function(msg){
@@ -152,5 +153,5 @@ socketio.listen(server).on('connection', function (socket) {
 function rgbToHex(r,g,b){
   var rgb = b | (g << 8) | (r << 16);
   var hex =  (0x1000000 | rgb).toString(16).substring(1);
-  return hex;
+  return "#"+hex;
 }

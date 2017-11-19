@@ -4,18 +4,15 @@ function collision(){
     for(var i in game.localPlayer.bullets){
       var b = game.localPlayer.bullets[i];
       if(proximity(p.x, b.x,40) && proximity(p.y, b.y,40)){
-        // two players might be at same place! Can't remove bullet yet
-        for(var q of game.globalPlayers.values()){
-          if(p.id == q.id) continue;
-          if(proximity(q.x,b.x,40) && proximity(q.y,b.y,40))send("hit",q.socket);
-        }
         game.localPlayer.bullets.splice(i,1);
         send("hit", p.socket);
       }
       if(proximity(game.localPlayer.x,b.x,40) && proximity(game.localPlayer.y,b.y,40)){
         if(game.localPlayer.penetration.indexOf(b.id) == -1){
           game.localPlayer.collisionCount += 1;
+
           if(game.localPlayer.collisionCount >= 21) surrender();
+
           game.localPlayer.bullets.splice(i,1);
         }
       } else {

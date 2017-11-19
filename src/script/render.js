@@ -25,30 +25,30 @@ function portalRender(p){
   if(x+margin > width){
     if(x > (width+margin)){
       p.x = (x-width-offset);
-        polygons(p.x,p.y,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+        polygons(p.x,p.y,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     } else {
-      polygons(x-width-offset,p.y,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(x-width-offset,p.y,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     }
-  }if((x-margin) < 0){
+  }else if((x-margin) < 0){
     if(x < -1*margin){
       p.x = (width+x+offset);
-      polygons(p.x,p.y,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     } else {
-      polygons(width+x+offset,p.y,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(width+x+offset,p.y,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     }
   }if((y+margin) > height){
     if(y > (height+margin)){
       p.y = y-height-offset;
-      polygons(p.x,p.y,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,y-height-offset,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(p.x,y-height-offset,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     }
-  }if((y-margin) < 0 ){
+  }else if((y-margin) < 0 ){
     if(y < -1*margin){
       p.y = height+y+offset;
-      polygons(p.x,p.y,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(p.x,p.y,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     } else {
-      polygons(p.x,height+y+offset,p.rot,p.gas,["#f60","#" + p.color,"#888","#3FF"]);
+      polygons(p.x,height+y+offset,p.rot,p.gas,["#f60",p.color,"#888","#3FF"]);
     }
   }
 }
@@ -69,6 +69,17 @@ function bulletRender(p){
   }
 }
 
+// Rendering
+function render(p){
+  //console.log(p.name + "  color:  " + p.color);
+  game.ctx.textAlign = "center";
+  game.ctx.fillStyle = "#000";
+  game.ctx.font = "25px Arial";
+  game.ctx.fillText(p.name +": "+ p.collisionCount,p.x,p.y-70);
+  bulletRender(p);
+  polygons(p.x,p.y,p.rot,p.gas,["#F60",p.color,"#888","#3FF"]);
+  portalRender(p);
+}
 
 // Draws polygon accordingly
 function polygons(x,y,rot,gas,colorList){

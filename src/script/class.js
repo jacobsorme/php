@@ -106,6 +106,7 @@ function Player(name,id,socket,color){
     this.rotSpeed = null;
     this.rotMaxSpeed = game.rotMaxSpeed;
     this.rotChange = game.rotChange;
+    this.alive = true;
 }
 
 Player.prototype = {
@@ -140,6 +141,14 @@ Player.prototype = {
     // OBS - this function depends on how ExtraLightPlayer looks
     convertFromExtraLight: function(data){
         this.force = data.force;
+    },
+    inactivate: function(){
+        this.alive = false;
+        this.bullets =[];
+        this.setForceParameters([0,0]);
+        this.setRotSpeed(0);
+        this.gas = 0; 
+        this.color="#aaa";
     }
 }
 

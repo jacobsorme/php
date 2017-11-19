@@ -32,7 +32,7 @@ function start(message) {
   game.pointsList = [planeFlame,planeBody,planeWing,planeWindow];
   game.bulletSpeed = 30;
   game.runTime = 30;
-  game.sendTime = 50;
+  game.sendTime = 100;
   game.setCanvas(document.getElementById("frame"));
   game.keys = {
     SPACE: 32,
@@ -82,6 +82,14 @@ function startController(){
 }
 
 function run(){
+
+  localupdate();
+  display();
+  render(game.localPlayer);
+  collision();
+
+  if(!game.localPlayer.alive) return;
+
   // To check the real rotation and the rotation/direction of movement
   var p = game.localPlayer; // Garbage?
   var bullets = p.bullets;
@@ -120,7 +128,7 @@ function run(){
       bullets.push(bullet);
       p.penetration.push(bullet.id);
     }
-    setTimeout(function() {p.shootTime = true;},50);
+    setTimeout(function() {p.shootTime = true;},100);
   }
 
   for(var i = 0; i < bullets.length; i++){
@@ -132,10 +140,7 @@ function run(){
        } // The final bounce might just have happened
     }
   }
-  localupdate();
-  display();
-  render(game.localPlayer);
-  collision();
+
 }
 
 function update(answer){
@@ -147,13 +152,13 @@ function localupdate(){
   for(var p of game.globalPlayers.values()){
     rotate(p,round(p.rotSpeed));
 
+    p.force[0] = round(p.force[0]* p.forceDecr);
+    p.force[1] = round(p.force[1]* p.forceDecr);
     if(p.gas==1) {
       p.force[0] += addForceX(p.rot, p.forceIncr);
       p.force[1] -= addForceY(p.rot, p.forceIncr);
-    } else {
-      p.force[0] = round(p.force[0]* p.forceDecr);
-      p.force[1] = round(p.force[1]* p.forceDecr);
     }
+
 
     move(p);
 
@@ -170,16 +175,4 @@ function display(){
   for(var value of game.globalPlayers.values()){
     render(value);
   }
-}
-
-// Rendering
-function render(p){
-  //console.log(p.name + "  color:  " + p.color);
-  game.ctx.textAlign = "center";
-  game.ctx.fillStyle = "#000";
-  game.ctx.font = "25px Arial";
-  game.ctx.fillText(p.name + p.collisionCount,p.x,p.y-70);
-  bulletRender(p);
-  polygons(p.x,p.y,p.rot,p.gas,["#F60","#" + p.color,"#888","#3FF"]);
-  portalRender(p);
 }
